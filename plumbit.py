@@ -4,7 +4,7 @@
 # Author: Germain GAILLARD <gaillard.germain@gmail.com>
 # Version: 0.1
 # License: MIT
-#blabla
+
 """Importation des modules"""
 import sys
 import pygame
@@ -124,9 +124,9 @@ def place_block(valve_1, valve_2, locked):
     """Empeche un block de se placer devant l'entree ou la sortie"""
     pos = (randint(0, 17) * 60,randint(0, 12) * 60)
     if pos in list(open_to(valve_1)) or pos in list(open_to(valve_2)):
-        pos = place_block(valve_1, valve_2)
+        pos = place_block(valve_1, valve_2, locked)
     elif pos in locked:
-        pos = place_block(valve_1, valve_2)
+        pos = place_block(valve_1, valve_2, locked)
     return pos
 
 class Pipe(object):
