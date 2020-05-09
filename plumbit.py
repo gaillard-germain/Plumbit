@@ -154,6 +154,11 @@ def font_size(size):
     """Change la taille de la police principale"""
     return pygame.font.Font('fonts/Amatic-Bold.ttf', size)
 
+def centerx(surface, font, txt):
+    x = surface.get_width()
+    w = font.size(txt)[0]
+    return (x - w)/2
+
 class Pipe(object):
     """Un tuyau"""
     def __init__(self, ref):
@@ -291,7 +296,8 @@ class Plumbit(object):
 
             self.layer2.blit(dashboard, (0, 0))
             score_txt = font_size(40).render(str(self.score), True, (83, 162, 162))
-            self.layer2.blit(score_txt, (30, 15))
+            self.layer2.blit(score_txt, (centerx(self.layer2,
+                             font_size(40), str(self.score)), 15))
             self.layer2.blit(arrow, (arrow_x, 430))
             y = 430
             for pipe in self.box:
@@ -299,7 +305,8 @@ class Plumbit(object):
                 y -= 75
             countdown_txt = font_size(40).render(str(self.countdown), True,
                                         (70, 170, 60))
-            self.layer2.blit(countdown_txt, (50, 690))
+            self.layer2.blit(countdown_txt, (centerx(self.layer2,
+                             font_size(40), str(self.countdown)), 690))
 
             self.layer3.blit(self.liquid_image, self.liquid.topleft)
 
@@ -308,10 +315,12 @@ class Plumbit(object):
             if self.message:
                 """Fin de partie"""
                 message_txt = font_size(72).render(self.message, True, (165, 80, 80))
-                message2_txt = font_size(40).render('Press ENTER to continue', True,
-                                            (165, 80, 80))
-                self.layer3.blit(message_txt, (500, 50))
-                self.layer3.blit(message2_txt, (460, 650))
+                txt = 'Press ENTER to continue'
+                message2_txt = font_size(40).render(txt, True, (165, 80, 80))
+                self.layer3.blit(message_txt, (centerx(self.layer3,
+                                 font_size(72), self.message), 50))
+                self.layer3.blit(message2_txt, (centerx(self.layer3,
+                                 font_size(40), txt), 650))
                 screen.blit(self.layer3, (10, 10))
                 pygame.display.update()
                 pygame.event.clear()
@@ -338,8 +347,9 @@ class Plumbit(object):
 
     def menu(self):
         screen = pygame.display.set_mode((600, 900))
-        title = font_size(72).render("PLUMB'IT", True, (170, 60, 60))
-        screen.blit(title, (210, 50))
+        txt = "PLUMB'IT"
+        title = font_size(72).render(txt, True, (170, 60, 60))
+        screen.blit(title, (centerx(screen, font_size(72), txt), 50))
         y = 150
         for player in self.topten:
             name = font_size(40).render(player["name"], True, (50, 162, 162))
@@ -347,8 +357,9 @@ class Plumbit(object):
             screen.blit(name, (150, y))
             screen.blit(score, (370, y))
             y += 50
-        message_txt = font_size(32).render('Press ENTER to play', True, (170, 60, 60))
-        screen.blit(message_txt, (220, 800))
+        txt = 'Press ENTER to play'
+        message_txt = font_size(32).render(txt, True, (170, 60, 60))
+        screen.blit(message_txt, (centerx(screen, font_size(32), txt), 800))
         pygame.display.update()
         while True:
             event = pygame.event.wait()
@@ -362,12 +373,13 @@ class Plumbit(object):
         return 0
 
     def entry(self, rank):
-        screen = pygame.display.set_mode((640, 240))
+        screen = pygame.display.set_mode((600, 240))
         name = 'Enter your name'
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    break
+                    pygame.quit()
+                    sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_BACKSPACE:
                         if len(name)>0:
@@ -379,14 +391,14 @@ class Plumbit(object):
                         break
                     else:
                         name += event.unicode
-            txt = font_size(40).render(name, True, (60, 170, 170))
-            message = font_size(48).render((str(self.score) + ' is a new record !'),
-                                           True, (70, 150, 150))
+            entry = font_size(40).render(name, True, (170, 60, 60))
+            txt = str(self.score) + ' is a new record !'
+            message = font_size(48).render(txt, True, (83, 162, 162))
             screen.fill((0, 0, 0))
-            screen.blit(message, (20, 20))
-            screen.blit(txt, (50, 100))
+            screen.blit(message, (centerx(screen, font_size(48), txt), 20))
+            screen.blit(entry, (centerx(screen, font_size(40), name), 100))
             pygame.display.update()
         return 0
 
 if __name__ == '__main__':
-    Plumbit(0).menu()
+    Plumbit(3550).menu()
