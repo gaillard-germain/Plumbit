@@ -26,7 +26,7 @@ def weighted(weighted_list):
 
 def rotate(pipe):
     """Fait tourner le tuyau (anti-horaire)"""
-    coef = randint(0, 4)
+    coef = randint(0, 3)
     for i in range(coef):
         pipe.apertures.append(pipe.apertures.pop(0))
         pipe.image = pygame.transform.rotate(pipe.image, 90)
@@ -155,6 +155,7 @@ def font_size(size):
     return pygame.font.Font('fonts/Amatic-Bold.ttf', size)
 
 def centerx(surface, font, txt):
+    """retourne la position x pour que le txt soit centrer"""
     x = surface.get_width()
     w = font.size(txt)[0]
     return (x - w)/2
@@ -199,7 +200,7 @@ class Plumbit(object):
         self.circuit.append(self.end)
         self.locked.append(self.valve.rect.topleft)
         self.locked.append(self.end.rect.topleft)
-        for i in range(randint(0, 4)):
+        for i in range(randint(0, 5)):
             block = Pipe(('images/block.png', [0, 0, 0, 0]))
             block.rect.topleft = place_block(self.valve, self.end, self.locked)
             self.circuit.append(block)
@@ -219,12 +220,13 @@ class Plumbit(object):
         ANIM2 = pygame.USEREVENT +4
         board = pygame.image.load('images/board.png')
         dashboard = pygame.image.load('images/panel.png')
-        arrow = pygame.image.load('images/arrow.png')
+        arrow_image = pygame.image.load('images/arrow.png')
         pointer_image = pygame.image.load('images/pointer.png')
         locked_image = pygame.image.load('images/locked.png')
         cursor_image = pointer_image
         cursor = cursor_image.get_rect()
-        arrow_x = 5
+        arrow = arrow_image.get_rect()
+        arrow.topleft = (5, 430)
         path = (0, 0)
 
         pygame.time.set_timer(ANIM1, 500)
@@ -259,9 +261,9 @@ class Plumbit(object):
                     self.valve.image, self.valve.image_2 = (self.valve.image_2,
                                                             self.valve.image)
                 elif event.type == ANIM2:
-                    arrow_x += 1
-                    if arrow_x > 20:
-                        arrow_x = 5
+                    arrow = arrow.move(1, 0)
+                    if arrow.left > 20:
+                        arrow.left = 5
                 elif event.type == COUNTDOWN:
                     self.countdown -= 1
                     if self.countdown == 0:
@@ -295,17 +297,18 @@ class Plumbit(object):
             self.layer1.blit(cursor_image, cursor.topleft)
 
             self.layer2.blit(dashboard, (0, 0))
-            score_txt = font_size(40).render(str(self.score), True, (83, 162, 162))
-            self.layer2.blit(score_txt, (centerx(self.layer2,
+            img_txt = font_size(40).render(str(self.score), True,
+                                             (83, 162, 162))
+            self.layer2.blit(img_txt, (centerx(self.layer2,
                              font_size(40), str(self.score)), 15))
-            self.layer2.blit(arrow, (arrow_x, 430))
+            self.layer2.blit(arrow_image, arrow.topleft)
             y = 430
             for pipe in self.box:
                 self.layer2.blit(pipe.image, (30, y))
                 y -= 75
-            countdown_txt = font_size(40).render(str(self.countdown), True,
+            img_txt = font_size(40).render(str(self.countdown), True,
                                         (70, 170, 60))
-            self.layer2.blit(countdown_txt, (centerx(self.layer2,
+            self.layer2.blit(img_txt, (centerx(self.layer2,
                              font_size(40), str(self.countdown)), 690))
 
             self.layer3.blit(self.liquid_image, self.liquid.topleft)
@@ -314,12 +317,13 @@ class Plumbit(object):
 
             if self.message:
                 """Fin de partie"""
-                message_txt = font_size(72).render(self.message, True, (165, 80, 80))
-                txt = 'Press ENTER to continue'
-                message2_txt = font_size(40).render(txt, True, (165, 80, 80))
-                self.layer3.blit(message_txt, (centerx(self.layer3,
+                img_txt = font_size(72).render(self.message, True,
+                                                   (165, 80, 80))
+                self.layer3.blit(img_txt, (centerx(self.layer3,
                                  font_size(72), self.message), 50))
-                self.layer3.blit(message2_txt, (centerx(self.layer3,
+                txt = 'Press ENTER to continue'
+                img_txt = font_size(40).render(txt, True, (165, 80, 80))
+                self.layer3.blit(img_txt, (centerx(self.layer3,
                                  font_size(40), txt), 650))
                 screen.blit(self.layer3, (10, 10))
                 pygame.display.update()
@@ -332,6 +336,7 @@ class Plumbit(object):
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_RETURN:
                             if self.message == 'YOU WIN':
+                                self.score += 500
                                 self.__init__(self.score)
                                 break
                             elif self.message == 'YOU LOOSE':
@@ -342,24 +347,24 @@ class Plumbit(object):
                                     self.__init__(0)
                                     self.menu()
                                     break
-
         return 0
 
     def menu(self):
         screen = pygame.display.set_mode((600, 900))
         txt = "PLUMB'IT"
-        title = font_size(72).render(txt, True, (170, 60, 60))
-        screen.blit(title, (centerx(screen, font_size(72), txt), 50))
-        y = 150
+        img_txt = font_size(72).render(txt, True, (170, 60, 60))
+        screen.blit(img_txt, (centerx(screen, font_size(72), txt), 50))
+        y = 170
         for player in self.topten:
             name = font_size(40).render(player["name"], True, (50, 162, 162))
-            score = font_size(40).render(str(player["score"]), True, (50, 162, 162))
-            screen.blit(name, (150, y))
-            screen.blit(score, (370, y))
+            score = font_size(40).render(str(player["score"]), True,
+                                         (50, 162, 162))
+            screen.blit(name, (140, y))
+            screen.blit(score, (380, y))
             y += 50
         txt = 'Press ENTER to play'
-        message_txt = font_size(32).render(txt, True, (170, 60, 60))
-        screen.blit(message_txt, (centerx(screen, font_size(32), txt), 800))
+        img_txt = font_size(32).render(txt, True, (170, 60, 60))
+        screen.blit(img_txt, (centerx(screen, font_size(32), txt), 800))
         pygame.display.update()
         while True:
             event = pygame.event.wait()
@@ -382,23 +387,27 @@ class Plumbit(object):
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_BACKSPACE:
-                        if len(name)>0:
+                        if len(name) > 0:
                             name = name[:-1]
                     elif event.key == pygame.K_RETURN:
-                        update_json('topten.json', self.topten, rank, name, self.score)
+                        update_json('topten.json', self.topten, rank, name,
+                                    self.score)
                         self.__init__(0)
                         self.menu()
                         break
                     else:
-                        name += event.unicode
-            entry = font_size(40).render(name, True, (170, 60, 60))
-            txt = str(self.score) + ' is a new record !'
-            message = font_size(48).render(txt, True, (83, 162, 162))
+                        if name == 'Enter your name':
+                            name = ''
+                        if len(name) < 18:
+                            name += event.unicode
             screen.fill((0, 0, 0))
-            screen.blit(message, (centerx(screen, font_size(48), txt), 20))
-            screen.blit(entry, (centerx(screen, font_size(40), name), 100))
+            txt = str(self.score) + ' is a new record !'
+            img_txt = font_size(48).render(txt, True, (83, 162, 162))
+            screen.blit(img_txt, (centerx(screen, font_size(48), txt), 20))
+            img_txt = font_size(40).render(name, True, (170, 60, 60))
+            screen.blit(img_txt, (centerx(screen, font_size(40), name), 100))
             pygame.display.update()
         return 0
 
 if __name__ == '__main__':
-    Plumbit(3550).menu()
+    Plumbit(0).menu()
