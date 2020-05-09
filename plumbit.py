@@ -9,6 +9,7 @@
 import sys
 import pygame
 from random import randint
+import json
 
 def weighted(weighted_list):
     #Merci a Simon <Relic> GAILLARD pour cette fonction.
@@ -129,6 +130,30 @@ def place_block(valve_1, valve_2, locked):
         pos = place_block(valve_1, valve_2, locked)
     return pos
 
+def load_json(data_file):
+    with open(data_file) as data:
+        return json.load(data)
+
+def new_record(score, topten):
+    """Verifie si le score peu entrer dans le top ten"""
+    for index, player in enumerate(topten):
+        if score > player["score"]:
+            return index
+    return None
+
+def update_json(data_file, topten, index, winner, score):
+    """met a jour le fichier json"""
+    topten.insert(index, dict(name = winner, score = score))
+    if len(topten) > 10:
+        del topten[-1]
+    with open(data_file, 'w') as file:
+        json.dump(topten, file, indent = 4)
+    return 0
+
+def font_size(size):
+    """Change la taille de la police principale"""
+    return pygame.font.Font('fonts/Amatic-Bold.ttf', size)
+
 class Pipe(object):
     """Un tuyau"""
     def __init__(self, ref):
@@ -144,8 +169,12 @@ class Pipe(object):
 class Plumbit(object):
     """Plumbit"""
     def __init__(self, score):
+        pygame.init()
+        pygame.display.set_caption("Plumb'it")
+        self.topten = load_json('topten.json')
         self.layer1 = pygame.Surface((1080, 780), 32)
-        self.layer2 = pygame.Surface((1080, 780), pygame.SRCALPHA, 32)
+        self.layer2 = pygame.Surface((120, 780), 32)
+        self.layer3 = pygame.Surface((1080, 780), pygame.SRCALPHA, 32)
         self.circuit = []
         self.locked = []
         self.box = []
@@ -154,6 +183,7 @@ class Plumbit(object):
         self.end = Pipe(('images/valve_2.png', [0, 0, 1, 0]))
         self.liquid_image = pygame.image.load('images/liquid.png')
         self.liquid = self.liquid_image.get_rect()
+
         self.valve.rect.topleft = (randint(1, 7) * 60,
                               randint(1, 11) * 60)
         self.end.rect.topleft = (randint(10, 16) * 60,
@@ -177,14 +207,11 @@ class Plumbit(object):
         self.message = ''
 
     def main(self):
-        pygame.init()
-        pygame.display.set_caption('Plumbit')
-        font = pygame.font.Font('fonts/Amatic-Bold.ttf', 40)
-        font2 = pygame.font.Font('fonts/Amatic-Bold.ttf', 72)
         screen = pygame.display.set_mode((1230, 800))
         COUNTDOWN = pygame.USEREVENT +1
         FLOOD = pygame.USEREVENT +2
-        ANIM = pygame.USEREVENT +3
+        ANIM1 = pygame.USEREVENT +3
+        ANIM2 = pygame.USEREVENT +4
         board = pygame.image.load('images/board.png')
         dashboard = pygame.image.load('images/panel.png')
         arrow = pygame.image.load('images/arrow.png')
@@ -192,9 +219,11 @@ class Plumbit(object):
         locked_image = pygame.image.load('images/locked.png')
         cursor_image = pointer_image
         cursor = cursor_image.get_rect()
-        arrow_x = 1100
+        arrow_x = 5
         path = (0, 0)
-        pygame.time.set_timer(ANIM, 200)
+
+        pygame.time.set_timer(ANIM1, 500)
+        pygame.time.set_timer(ANIM2, 30)
 
         while True:
             for event in pygame.event.get():
@@ -221,12 +250,13 @@ class Plumbit(object):
                     if event.key == pygame.K_SPACE:
                         pygame.time.set_timer(COUNTDOWN, 0)
                         pygame.time.set_timer(FLOOD, 20)
-                elif event.type == ANIM:
+                elif event.type == ANIM1:
                     self.valve.image, self.valve.image_2 = (self.valve.image_2,
                                                             self.valve.image)
-                    arrow_x += 3
-                    if arrow_x > 1118:
-                        arrow_x = 1100
+                elif event.type == ANIM2:
+                    arrow_x += 1
+                    if arrow_x > 20:
+                        arrow_x = 5
                 elif event.type == COUNTDOWN:
                     self.countdown -= 1
                     if self.countdown == 0:
@@ -249,35 +279,40 @@ class Plumbit(object):
                     else:
                         pygame.time.set_timer(FLOOD, 0)
                         self.message = 'YOU LOOSE'
-                        self.score = 0
 
             screen.blit(self.layer1, (10, 10))
-            screen.blit(dashboard, (1100, 10))
-            screen.blit(arrow, (arrow_x, 440))
-            score_txt = font.render(str(self.score), True, (83, 162, 162))
-            screen.blit(score_txt, (1130, 25))
-            countdown_txt = font.render(str(self.countdown), True,
-                                        (70, 170, 60))
-            screen.blit(countdown_txt, (1150, 700))
+            screen.blit(self.layer2, (1100, 10))
+            screen.blit(self.layer3, (10, 10))
+
             self.layer1.blit(board, (0, 0))
             for pipe in self.circuit:
                 self.layer1.blit(pipe.image, pipe.rect.topleft)
             self.layer1.blit(cursor_image, cursor.topleft)
-            screen.blit(self.layer2, (10, 10))
-            self.layer2.blit(self.liquid_image, self.liquid.topleft)
-            y = 440
+
+            self.layer2.blit(dashboard, (0, 0))
+            score_txt = font_size(40).render(str(self.score), True, (83, 162, 162))
+            self.layer2.blit(score_txt, (30, 15))
+            self.layer2.blit(arrow, (arrow_x, 430))
+            y = 430
             for pipe in self.box:
-                screen.blit(pipe.image, (1130, y))
+                self.layer2.blit(pipe.image, (30, y))
                 y -= 75
+            countdown_txt = font_size(40).render(str(self.countdown), True,
+                                        (70, 170, 60))
+            self.layer2.blit(countdown_txt, (50, 690))
+
+            self.layer3.blit(self.liquid_image, self.liquid.topleft)
+
             pygame.display.update()
 
             if self.message:
-                '''Fin de partie'''
-                message_txt = font2.render(self.message, True, (165, 80, 80))
-                message2_txt = font.render('Press ENTER to continue', True,
+                """Fin de partie"""
+                message_txt = font_size(72).render(self.message, True, (165, 80, 80))
+                message2_txt = font_size(40).render('Press ENTER to continue', True,
                                             (165, 80, 80))
-                screen.blit(message_txt, (510, 60))
-                screen.blit(message2_txt, (470, 660))
+                self.layer3.blit(message_txt, (500, 50))
+                self.layer3.blit(message2_txt, (460, 650))
+                screen.blit(self.layer3, (10, 10))
                 pygame.display.update()
                 pygame.event.clear()
                 while True:
@@ -287,9 +322,71 @@ class Plumbit(object):
                         sys.exit()
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_RETURN:
-                            self.__init__(self.score)
-                            break
+                            if self.message == 'YOU WIN':
+                                self.__init__(self.score)
+                                break
+                            elif self.message == 'YOU LOOSE':
+                                rank = new_record(self.score, self.topten)
+                                if rank != None:
+                                    self.entry(rank)
+                                else:
+                                    self.__init__(0)
+                                    self.menu()
+                                    break
+
+        return 0
+
+    def menu(self):
+        screen = pygame.display.set_mode((600, 900))
+        title = font_size(72).render("PLUMB'IT", True, (170, 60, 60))
+        screen.blit(title, (210, 50))
+        y = 150
+        for player in self.topten:
+            name = font_size(40).render(player["name"], True, (50, 162, 162))
+            score = font_size(40).render(str(player["score"]), True, (50, 162, 162))
+            screen.blit(name, (150, y))
+            screen.blit(score, (370, y))
+            y += 50
+        message_txt = font_size(32).render('Press ENTER to play', True, (170, 60, 60))
+        screen.blit(message_txt, (220, 800))
+        pygame.display.update()
+        while True:
+            event = pygame.event.wait()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.main()
+                    break
+        return 0
+
+    def entry(self, rank):
+        screen = pygame.display.set_mode((640, 240))
+        name = 'Enter your name'
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    break
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        if len(name)>0:
+                            name = name[:-1]
+                    elif event.key == pygame.K_RETURN:
+                        update_json('topten.json', self.topten, rank, name, self.score)
+                        self.__init__(0)
+                        self.menu()
+                        break
+                    else:
+                        name += event.unicode
+            txt = font_size(40).render(name, True, (60, 170, 170))
+            message = font_size(48).render((str(self.score) + ' is a new record !'),
+                                           True, (70, 150, 150))
+            screen.fill((0, 0, 0))
+            screen.blit(message, (20, 20))
+            screen.blit(txt, (50, 100))
+            pygame.display.update()
         return 0
 
 if __name__ == '__main__':
-    Plumbit(0).main()
+    Plumbit(0).menu()
