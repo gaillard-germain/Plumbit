@@ -178,9 +178,9 @@ class Plumbit(object):
         pygame.init()
         pygame.display.set_caption("Plumb'it")
         self.topten = load_json('topten.json')
-        self.layer1 = pygame.Surface((1080, 780), 32)
-        self.layer2 = pygame.Surface((120, 780), 32)
-        self.layer3 = pygame.Surface((1080, 780), pygame.SRCALPHA, 32)
+        self.layer1 = pygame.Surface((1020, 840), pygame.SRCALPHA, 32)
+        self.layer2 = pygame.Surface((388, 880), pygame.SRCALPHA, 32)
+        self.layer3 = pygame.Surface((1020, 840), pygame.SRCALPHA, 32)
         self.circuit = []
         self.locked = []
         self.box = []
@@ -190,10 +190,10 @@ class Plumbit(object):
         self.liquid_image = pygame.image.load('images/liquid.png')
         self.liquid = self.liquid_image.get_rect()
 
-        self.valve.rect.topleft = (randint(1, 7) * 60,
-                              randint(1, 11) * 60)
-        self.end.rect.topleft = (randint(10, 16) * 60,
-                                 randint(1, 11) * 60)
+        self.valve.rect.topleft = (randint(1, 6) * 60,
+                              randint(1, 12) * 60)
+        self.end.rect.topleft = (randint(9, 15) * 60,
+                                 randint(1, 12) * 60)
         self.valve = rotate(self.valve)
         self.end = rotate(self.end)
         self.circuit.append(self.valve)
@@ -213,20 +213,19 @@ class Plumbit(object):
         self.message = ''
 
     def main(self):
-        screen = pygame.display.set_mode((1230, 800))
+        screen = pygame.display.set_mode((1438, 900))
         COUNTDOWN = pygame.USEREVENT +1
         FLOOD = pygame.USEREVENT +2
         ANIM1 = pygame.USEREVENT +3
         ANIM2 = pygame.USEREVENT +4
-        board = pygame.image.load('images/board.png')
-        dashboard = pygame.image.load('images/panel.png')
+        dashboard = pygame.image.load('images/dashboard.png')
         arrow_image = pygame.image.load('images/arrow.png')
         pointer_image = pygame.image.load('images/pointer.png')
         locked_image = pygame.image.load('images/locked.png')
         cursor_image = pointer_image
         cursor = cursor_image.get_rect()
         arrow = arrow_image.get_rect()
-        arrow.topleft = (5, 430)
+        arrow.topleft = (60, 500)
         path = (0, 0)
 
         pygame.time.set_timer(ANIM1, 500)
@@ -261,9 +260,9 @@ class Plumbit(object):
                     self.valve.image, self.valve.image_2 = (self.valve.image_2,
                                                             self.valve.image)
                 elif event.type == ANIM2:
-                    arrow = arrow.move(1, 0)
-                    if arrow.left > 20:
-                        arrow.left = 5
+                    arrow = arrow.move(-1, 0)
+                    if arrow.left < 40:
+                        arrow.left = 60
                 elif event.type == COUNTDOWN:
                     self.countdown -= 1
                     if self.countdown == 0:
@@ -287,29 +286,31 @@ class Plumbit(object):
                         pygame.time.set_timer(FLOOD, 0)
                         self.message = 'YOU LOOSE'
 
-            screen.blit(self.layer1, (10, 10))
-            screen.blit(self.layer2, (1100, 10))
-            screen.blit(self.layer3, (10, 10))
+            screen.fill((10, 10, 10))
+            screen.blit(self.layer1, (10, 30))
+            screen.blit(self.layer2, (1040, 10))
+            screen.blit(self.layer3, (10, 30))
 
-            self.layer1.blit(board, (0, 0))
+            self.layer1.fill((60, 60, 60))
             for pipe in self.circuit:
                 self.layer1.blit(pipe.image, pipe.rect.topleft)
             self.layer1.blit(cursor_image, cursor.topleft)
 
-            self.layer2.blit(dashboard, (0, 0))
+            self.layer2.fill((120, 120, 120))
+            self.layer2.blit(dashboard, (-5,0))
             img_txt = font_size(40).render(str(self.score), True,
                                              (83, 162, 162))
             self.layer2.blit(img_txt, (centerx(self.layer2,
-                             font_size(40), str(self.score)), 15))
+                             font_size(40), str(self.score)), 115))
             self.layer2.blit(arrow_image, arrow.topleft)
-            y = 430
+            y = 500
             for pipe in self.box:
-                self.layer2.blit(pipe.image, (30, y))
-                y -= 75
+                self.layer2.blit(pipe.image, (20, y))
+                y += 75
             img_txt = font_size(40).render(str(self.countdown), True,
                                         (70, 170, 60))
             self.layer2.blit(img_txt, (centerx(self.layer2,
-                             font_size(40), str(self.countdown)), 690))
+                             font_size(40), str(self.countdown)), 725))
 
             self.layer3.blit(self.liquid_image, self.liquid.topleft)
 
