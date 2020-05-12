@@ -125,7 +125,7 @@ def clog(path, apertures):
 
 def place_block(valve_1, valve_2, locked):
     """Empeche un block de se placer devant l'entree ou la sortie"""
-    pos = (randint(0, 15) * 60,randint(0, 12) * 60)
+    pos = (randint(0, 14) * 60,randint(0, 9) * 60)
     if pos in list(open_to(valve_1)) or pos in list(open_to(valve_2)):
         pos = place_block(valve_1, valve_2, locked)
     elif pos in locked:
@@ -180,8 +180,8 @@ class Plumbit(object):
         pygame.init()
         pygame.display.set_caption("Plumb'it")
         self.topten = load_json('topten.json')
-        self.layer1 = pygame.Surface((960, 840), 32)
-        self.layer2 = pygame.Surface((960, 840), pygame.SRCALPHA, 32)
+        self.layer1 = pygame.Surface((900, 660), 32)
+        self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
         self.layer3 = pygame.Surface((200, 880), pygame.SRCALPHA, 32)
         self.circuit = []
         self.locked = []
@@ -193,9 +193,9 @@ class Plumbit(object):
         self.liquid = self.liquid_image.get_rect()
 
         self.valve.rect.topleft = (randint(1, 5) * 60,
-                              randint(1, 12) * 60)
-        self.end.rect.topleft = (randint(8, 14) * 60,
-                                 randint(1, 12) * 60)
+                              randint(1, 9) * 60)
+        self.end.rect.topleft = (randint(9, 14) * 60,
+                                 randint(1, 9) * 60)
         self.valve = rotate(self.valve)
         self.end = rotate(self.end)
         self.circuit.append(self.valve)
@@ -215,22 +215,21 @@ class Plumbit(object):
         self.message = ''
 
     def main(self):
-        screen = pygame.display.set_mode((1420, 900))
+        screen = pygame.display.set_mode((1440, 900))
         COUNTDOWN = pygame.USEREVENT +1
         FLOOD = pygame.USEREVENT +2
         ANIM1 = pygame.USEREVENT +3
         ANIM2 = pygame.USEREVENT +4
         dashboard = pygame.image.load('images/dashboard.png')
         back = pygame.image.load('images/dashboard_back.png')
-        toolbox = pygame.image.load('images/toolbox.png')
         arrow_image = pygame.image.load('images/arrow.png')
         pointer_image = pygame.image.load('images/pointer.png')
         locked_image = pygame.image.load('images/locked.png')
         cursor_image = pointer_image
         cursor = cursor_image.get_rect()
         arrow = arrow_image.get_rect()
-        board_pos = (160, 30)
-        arrow.topleft = (66, 570)
+        board_pos = (250, 120)
+        arrow.topleft = (120, 495)
         path = (0, 0)
 
         pygame.time.set_timer(ANIM1, 500)
@@ -266,9 +265,10 @@ class Plumbit(object):
                     self.valve.image, self.valve.image_2 = (self.valve.image_2,
                                                             self.valve.image)
                 elif event.type == ANIM2:
-                    arrow = arrow.move(-2, 0)
-                    if arrow.left < 40:
-                        arrow.left = 66
+                    if arrow.left > 90:
+                        arrow = arrow.move(-2, 0)
+                    else:
+                        arrow.left = 120
                 elif event.type == COUNTDOWN:
                     self.countdown -= 1
                     if self.countdown == 0:
@@ -292,44 +292,41 @@ class Plumbit(object):
                         pygame.time.set_timer(FLOOD, 0)
                         self.message = 'YOU LOOSE'
 
-            screen.fill((120, 120, 120))
-            screen.blit(self.layer3, (1135, 10))
+            screen.fill((66, 63, 56))
             screen.blit(self.layer1, board_pos)
             screen.blit(self.layer2, board_pos)
-            screen.blit(dashboard, (1040,10))
-            screen.blit(toolbox, (10,480))
+            screen.blit(dashboard, (0, 0))
+            screen.blit(self.layer3, (1135, 10))
             screen.blit(arrow_image, arrow.topleft)
-            y = 550
+            y = 480
             for pipe in self.box:
-                screen.blit(pipe.image, (100, y))
+                screen.blit(pipe.image, (150, y))
                 y += 80
-            self.layer1.fill((60, 60, 60))
+            self.layer1.fill((96, 93, 86))
             for pipe in self.circuit:
                 self.layer1.blit(pipe.image, pipe.rect.topleft)
             self.layer1.blit(cursor_image, cursor.topleft)
             self.layer2.blit(self.liquid_image, self.liquid.topleft)
-            self.layer3.blit(back, (0, 0))
+            self.layer3.blit(back, (32, 105))
             img_txt = font_size(40).render(str(self.score), True,
                                              (83, 162, 162))
             self.layer3.blit(img_txt, (centerx(self.layer3,
-                             font_size(40), str(self.score)), 115))
+                             font_size(40), str(self.score)), 110))
             img_txt = font_size(40).render(str(self.countdown), True,
                                         (70, 170, 60))
             self.layer3.blit(img_txt, (centerx(self.layer3,
-                             font_size(40), str(self.countdown)), 725))
+                             font_size(40), str(self.countdown)), 730))
             pygame.display.update()
 
             if self.message:
                 """Fin de partie"""
                 img_txt = font_size(72).render(self.message, True,
-                                                   (165, 80, 80))
-                self.layer2.blit(img_txt, (centerx(self.layer2,
-                                 font_size(72), self.message), 70))
+                                                   (194, 69, 26))
+                screen.blit(img_txt, (centerx(screen, font_size(72),
+                                      self.message), 20))
                 txt = 'Press ENTER to continue'
-                img_txt = font_size(40).render(txt, True, (165, 80, 80))
-                self.layer2.blit(img_txt, (centerx(self.layer2,
-                                 font_size(40), txt), 700))
-                screen.blit(self.layer2, board_pos)
+                img_txt = font_size(40).render(txt, True, (194, 69, 26))
+                screen.blit(img_txt, (centerx(screen, font_size(40), txt), 800))
                 pygame.display.update()
                 pygame.event.clear()
                 while True:
