@@ -177,12 +177,14 @@ class Pipe(object):
 class Plumbit(object):
     """Plumbit"""
     def __init__(self, score):
+        pygame.mixer.pre_init(44100, -16, 2, 2048)
+        pygame.mixer.init()
         pygame.init()
         pygame.display.set_caption("Plumb'it")
         self.topten = load_json('topten.json')
         self.layer1 = pygame.Surface((900, 660), 32)
         self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
-        self.layer3 = pygame.Surface((200, 880), pygame.SRCALPHA, 32)
+        self.layer3 = pygame.Surface((134, 682), pygame.SRCALPHA, 32)
         self.circuit = []
         self.locked = []
         self.box = []
@@ -220,6 +222,12 @@ class Plumbit(object):
         FLOOD = pygame.USEREVENT +2
         ANIM1 = pygame.USEREVENT +3
         ANIM2 = pygame.USEREVENT +4
+        music = pygame.mixer.Sound('son/Solve The Puzzle.ogg')
+        put = pygame.mixer.Sound('son/put.ogg')
+        tic = pygame.mixer.Sound('son/tic.ogg')
+        sub = pygame.mixer.Sound('son/sub.ogg')
+        loose = pygame.mixer.Sound('son/loose.ogg')
+        win = pygame.mixer.Sound('son/win.ogg')
         dashboard = pygame.image.load('images/dashboard.png')
         back = pygame.image.load('images/dashboard_back.png')
         arrow_image = pygame.image.load('images/arrow.png')
@@ -231,7 +239,7 @@ class Plumbit(object):
         board_pos = (250, 120)
         arrow.topleft = (120, 495)
         path = (0, 0)
-
+        music.play()
         pygame.time.set_timer(ANIM1, 500)
         pygame.time.set_timer(ANIM2, 30)
 
@@ -253,6 +261,7 @@ class Plumbit(object):
                         if self.countdown == 60:
                             pygame.time.set_timer(COUNTDOWN, 1000)
                         if cursor.topleft not in self.locked:
+                            put.play()
                             pipe = pick_up(self.box)
                             pipe.rect.topleft = cursor.topleft
                             self.circuit = add(self.circuit, pipe)
@@ -261,6 +270,7 @@ class Plumbit(object):
                     if event.key == pygame.K_SPACE:
                         pygame.time.set_timer(COUNTDOWN, 0)
                         pygame.time.set_timer(FLOOD, 20)
+                        sub.play()
                 elif event.type == ANIM1:
                     self.valve.image, self.valve.image_2 = (self.valve.image_2,
                                                             self.valve.image)
@@ -270,10 +280,12 @@ class Plumbit(object):
                     else:
                         arrow.left = 120
                 elif event.type == COUNTDOWN:
+                    tic.play()
                     self.countdown -= 1
                     if self.countdown == 0:
                         pygame.time.set_timer(COUNTDOWN, 0)
                         pygame.time.set_timer(FLOOD, 40)
+                        sub.play()
                 elif event.type == FLOOD:
                     pipe = check(self.circuit, self.previous, path)
                     if pipe:
@@ -286,7 +298,7 @@ class Plumbit(object):
                         elif self.liquid.topleft == pipe.rect.topleft:
                             pipe.apertures = clog(path, pipe.apertures)
                             self.locked.append(pipe.rect.topleft)
-                            self.score += 200
+                            self.score += 100
                             self.previous = pipe
                     else:
                         pygame.time.set_timer(FLOOD, 0)
@@ -296,30 +308,33 @@ class Plumbit(object):
             screen.blit(self.layer1, board_pos)
             screen.blit(self.layer2, board_pos)
             screen.blit(dashboard, (0, 0))
-            screen.blit(self.layer3, (1135, 10))
+            screen.blit(self.layer3, (1167, 115))
             screen.blit(arrow_image, arrow.topleft)
-            y = 480
-            for pipe in self.box:
-                screen.blit(pipe.image, (150, y))
-                y += 80
+            for i, pipe in enumerate(self.box):
+                screen.blit(pipe.image, (150, 480 + i * 80))
             self.layer1.fill((96, 93, 86))
             for pipe in self.circuit:
                 self.layer1.blit(pipe.image, pipe.rect.topleft)
             self.layer1.blit(cursor_image, cursor.topleft)
             self.layer2.blit(self.liquid_image, self.liquid.topleft)
-            self.layer3.blit(back, (32, 105))
+            self.layer3.blit(back, (0, 0))
             img_txt = font_size(40).render(str(self.score), True,
                                              (83, 162, 162))
             self.layer3.blit(img_txt, (centerx(self.layer3,
-                             font_size(40), str(self.score)), 110))
+                             font_size(40), str(self.score)), 5))
             img_txt = font_size(40).render(str(self.countdown), True,
                                         (70, 170, 60))
             self.layer3.blit(img_txt, (centerx(self.layer3,
-                             font_size(40), str(self.countdown)), 730))
+                             font_size(40), str(self.countdown)), 625))
             pygame.display.update()
 
             if self.message:
                 """Fin de partie"""
+                music.stop()
+                if self.message == 'YOU WIN':
+                    win.play()
+                else:
+                    loose.play()
                 img_txt = font_size(72).render(self.message, True,
                                                    (194, 69, 26))
                 screen.blit(img_txt, (centerx(screen, font_size(72),
@@ -337,8 +352,9 @@ class Plumbit(object):
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_RETURN:
                             if self.message == 'YOU WIN':
-                                self.score += 500
+                                self.score += 200
                                 self.__init__(self.score)
+                                music.play()
                                 break
                             elif self.message == 'YOU LOOSE':
                                 rank = new_record(self.score, self.topten)
@@ -355,14 +371,12 @@ class Plumbit(object):
         txt = "PLUMB'IT"
         img_txt = font_size(72).render(txt, True, (170, 60, 60))
         screen.blit(img_txt, (centerx(screen, font_size(72), txt), 50))
-        y = 170
-        for player in self.topten:
+        for i, player in enumerate(self.topten):
             name = font_size(40).render(player["name"], True, (50, 162, 162))
             score = font_size(40).render(str(player["score"]), True,
                                          (50, 162, 162))
-            screen.blit(name, (140, y))
-            screen.blit(score, (380, y))
-            y += 50
+            screen.blit(name, (140, 170 + i * 50))
+            screen.blit(score, (380, 170 + i * 50))
         txt = 'Press ENTER to play'
         img_txt = font_size(32).render(txt, True, (170, 60, 60))
         screen.blit(img_txt, (centerx(screen, font_size(32), txt), 800))
