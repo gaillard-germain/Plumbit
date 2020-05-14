@@ -176,11 +176,12 @@ class Pipe(object):
 
 class Plumbit(object):
     """Plumbit"""
-    def __init__(self, score):
+    def __init__(self):
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.mixer.init()
         pygame.init()
         pygame.display.set_caption("Plumb'it")
+
         self.topten = load_json('topten.json')
         self.layer1 = pygame.Surface((900, 660), 32)
         self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
@@ -188,15 +189,20 @@ class Plumbit(object):
         self.circuit = []
         self.locked = []
         self.box = []
-        self.valve = Pipe(('images/valve_1.png', [0, 0, 1, 0]))
+        self.valve = Pipe(('images/valve_1.png', (0, 0, 1, 0)))
         self.valve.image_2 = pygame.image.load('images/valve_1a.png')
-        self.end = Pipe(('images/valve_2.png', [0, 0, 1, 0]))
+        self.end = Pipe(('images/valve_2.png', (0, 0, 1, 0)))
         self.liquid_image = pygame.image.load('images/liquid.png')
         self.liquid = self.liquid_image.get_rect()
 
+    def set_up(self, score):
+        self.circuit.clear()
+        self.locked.clear()
+        self.box.clear()
+        self.layer2.fill((255, 255, 255, 0))
         self.valve.rect.topleft = (randint(1, 5) * 60,
                               randint(1, 9) * 60)
-        self.end.rect.topleft = (randint(9, 14) * 60,
+        self.end.rect.topleft = (randint(9, 13) * 60,
                                  randint(1, 9) * 60)
         self.valve = rotate(self.valve)
         self.end = rotate(self.end)
@@ -205,7 +211,7 @@ class Plumbit(object):
         self.locked.append(self.valve.rect.topleft)
         self.locked.append(self.end.rect.topleft)
         for i in range(randint(0, 5)):
-            block = Pipe(('images/block.png', [0, 0, 0, 0]))
+            block = Pipe(('images/block.png', (0, 0, 0, 0)))
             block.rect.topleft = place_block(self.valve, self.end, self.locked)
             self.circuit.append(block)
             self.locked.append(block.rect.topleft)
@@ -268,9 +274,9 @@ class Plumbit(object):
                             self.score -= 50
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        sub.play()
                         pygame.time.set_timer(COUNTDOWN, 0)
                         pygame.time.set_timer(FLOOD, 20)
-                        sub.play()
                 elif event.type == ANIM1:
                     self.valve.image, self.valve.image_2 = (self.valve.image_2,
                                                             self.valve.image)
@@ -353,18 +359,15 @@ class Plumbit(object):
                         if event.key == pygame.K_RETURN:
                             if self.message == 'YOU WIN':
                                 self.score += 200
-                                self.__init__(self.score)
+                                self.set_up(self.score)
                                 music.play()
                                 break
-                            elif self.message == 'YOU LOOSE':
+                            else:
                                 rank = new_record(self.score, self.topten)
                                 if rank != None:
-                                    self.entry(rank)
+                                    return self.entry(rank)
                                 else:
-                                    self.__init__(0)
-                                    self.menu()
-                                    break
-        return 0
+                                    return self.menu()
 
     def menu(self):
         screen = pygame.display.set_mode((600, 900))
@@ -388,33 +391,31 @@ class Plumbit(object):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    self.main()
+                    self.set_up(25000)
                     break
-        return 0
+        return self.main()
 
     def entry(self, rank):
         screen = pygame.display.set_mode((600, 240))
         name = 'Enter your name'
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_BACKSPACE:
-                        if len(name) > 0:
-                            name = name[:-1]
-                    elif event.key == pygame.K_RETURN:
-                        update_json('topten.json', self.topten, rank, name,
-                                    self.score)
-                        self.__init__(0)
-                        self.menu()
-                        break
-                    else:
-                        if name == 'Enter your name':
-                            name = ''
-                        if len(name) < 18:
-                            name += event.unicode
+            event = pygame.event.wait()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    if len(name) > 0:
+                        name = name[:-1]
+                elif event.key == pygame.K_RETURN:
+                    update_json('topten.json', self.topten, rank, name,
+                                self.score)
+                    break
+                else:
+                    if name == 'Enter your name':
+                        name = ''
+                    if len(name) < 18:
+                        name += event.unicode
             screen.fill((0, 0, 0))
             txt = str(self.score) + ' is a new record !'
             img_txt = font_size(48).render(txt, True, (83, 162, 162))
@@ -422,7 +423,7 @@ class Plumbit(object):
             img_txt = font_size(40).render(name, True, (170, 60, 60))
             screen.blit(img_txt, (centerx(screen, font_size(40), name), 100))
             pygame.display.update()
-        return 0
+        return self.menu()
 
 if __name__ == '__main__':
-    Plumbit(0).menu()
+    Plumbit().menu()
