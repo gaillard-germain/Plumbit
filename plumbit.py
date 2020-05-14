@@ -71,19 +71,19 @@ def pick_up(box):
     box.append(new)
     return pipe
 
-def cursor_pos(cursor, board_pos, coords, area):
+def cursor_pos(cursor, board, coords):
     """Maitien le curseur dans une zone definie"""
-    x = coords[0] - board_pos[0]
-    y = coords[1] - board_pos[1]
+    x = coords[0] - board.left
+    y = coords[1] - board.top
     cursor.topleft = (x-x%60, y-y%60)
-    if cursor.left < area.left:
-        cursor.left = area.left
-    elif cursor.right > area.right:
-        cursor.right = area.right
-    if cursor.top < area.top:
-        cursor.top = area.top
-    elif cursor.bottom > area.bottom:
-        cursor.bottom = area.bottom
+    if cursor.left < 0:
+        cursor.left = 0
+    elif cursor.right > board.width:
+        cursor.right = board.width
+    if cursor.top < 0:
+        cursor.top = 0
+    elif cursor.bottom > board.height:
+        cursor.bottom = board.height
     return cursor.topleft
 
 def add(circuit, current):
@@ -136,19 +136,21 @@ def load_json(data_file):
     with open(data_file) as data:
         return json.load(data)
 
-def new_record(score, topten):
+def new_record(score):
     """Verifie si le score peu entrer dans le top ten"""
+    topten = load_json('topten.json')
     for index, player in enumerate(topten):
         if score > player["score"]:
             return index
     return None
 
-def update_json(data_file, topten, index, winner, score):
+def update_json(index, winner, score):
     """met a jour le fichier json"""
+    topten = load_json('topten.json')
     topten.insert(index, dict(name = winner, score = score))
     if len(topten) > 10:
         del topten[-1]
-    with open(data_file, 'w') as file:
+    with open('topten.json', 'w') as file:
         json.dump(topten, file, indent = 4)
     return 0
 
@@ -182,7 +184,6 @@ class Plumbit(object):
         pygame.init()
         pygame.display.set_caption("Plumb'it")
 
-        self.topten = load_json('topten.json')
         self.layer1 = pygame.Surface((900, 660), 32)
         self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
         self.layer3 = pygame.Surface((134, 682), pygame.SRCALPHA, 32)
@@ -200,10 +201,8 @@ class Plumbit(object):
         self.locked.clear()
         self.box.clear()
         self.layer2.fill((255, 255, 255, 0))
-        self.valve.rect.topleft = (randint(1, 5) * 60,
-                              randint(1, 9) * 60)
-        self.end.rect.topleft = (randint(9, 13) * 60,
-                                 randint(1, 9) * 60)
+        self.valve.rect.topleft = (randint(1, 5) * 60, randint(1, 9) * 60)
+        self.end.rect.topleft = (randint(9, 13) * 60, randint(1, 9) * 60)
         self.valve = rotate(self.valve)
         self.end = rotate(self.end)
         self.circuit.append(self.valve)
@@ -240,14 +239,15 @@ class Plumbit(object):
         pointer_image = pygame.image.load('images/pointer.png')
         locked_image = pygame.image.load('images/locked.png')
         cursor_image = pointer_image
+        board = self.layer1.get_rect()
         cursor = cursor_image.get_rect()
         arrow = arrow_image.get_rect()
-        board_pos = (250, 120)
+        board.topleft = (250, 120)
         arrow.topleft = (120, 495)
         path = (0, 0)
-        music.play()
         pygame.time.set_timer(ANIM1, 500)
         pygame.time.set_timer(ANIM2, 30)
+        music.play()
 
         while True:
             for event in pygame.event.get():
@@ -255,9 +255,8 @@ class Plumbit(object):
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.MOUSEMOTION:
-                    cursor.topleft = cursor_pos(cursor, board_pos,
-                                                pygame.mouse.get_pos(),
-                                                self.layer1.get_rect())
+                    cursor.topleft = cursor_pos(cursor, board,
+                                                pygame.mouse.get_pos())
                     if cursor.topleft in self.locked:
                         cursor_image = locked_image
                     else:
@@ -311,8 +310,8 @@ class Plumbit(object):
                         self.message = 'YOU LOOSE'
 
             screen.fill((66, 63, 56))
-            screen.blit(self.layer1, board_pos)
-            screen.blit(self.layer2, board_pos)
+            screen.blit(self.layer1, board.topleft)
+            screen.blit(self.layer2, board.topleft)
             screen.blit(dashboard, (0, 0))
             screen.blit(self.layer3, (1167, 115))
             screen.blit(arrow_image, arrow.topleft)
@@ -358,12 +357,12 @@ class Plumbit(object):
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_RETURN:
                             if self.message == 'YOU WIN':
-                                self.score += 200
+                                self.score += 500
                                 self.set_up(self.score)
                                 music.play()
                                 break
                             else:
-                                rank = new_record(self.score, self.topten)
+                                rank = new_record(self.score)
                                 if rank != None:
                                     return self.entry(rank)
                                 else:
@@ -371,10 +370,11 @@ class Plumbit(object):
 
     def menu(self):
         screen = pygame.display.set_mode((600, 900))
+        topten = load_json('topten.json')
         txt = "PLUMB'IT"
         img_txt = font_size(72).render(txt, True, (170, 60, 60))
         screen.blit(img_txt, (centerx(screen, font_size(72), txt), 50))
-        for i, player in enumerate(self.topten):
+        for i, player in enumerate(topten):
             name = font_size(40).render(player["name"], True, (50, 162, 162))
             score = font_size(40).render(str(player["score"]), True,
                                          (50, 162, 162))
@@ -391,7 +391,7 @@ class Plumbit(object):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    self.set_up(25000)
+                    self.set_up(2550)
                     break
         return self.main()
 
@@ -408,8 +408,7 @@ class Plumbit(object):
                     if len(name) > 0:
                         name = name[:-1]
                 elif event.key == pygame.K_RETURN:
-                    update_json('topten.json', self.topten, rank, name,
-                                self.score)
+                    update_json(rank, name, self.score)
                     break
                 else:
                     if name == 'Enter your name':
