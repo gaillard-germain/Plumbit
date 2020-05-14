@@ -391,7 +391,7 @@ class Plumbit(object):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    self.set_up(2550)
+                    self.set_up(0)
                     break
         return self.main()
 
