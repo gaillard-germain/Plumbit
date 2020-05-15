@@ -154,15 +154,16 @@ def update_json(index, winner, score):
         json.dump(topten, file, indent = 4)
     return 0
 
-def font_size(size):
-    """Change la taille de la police principale"""
-    return pygame.font.Font('fonts/Amatic-Bold.ttf', size)
-
-def centerx(surface, font, txt):
-    """retourne la position x pour que le txt soit centrer"""
-    x = surface.get_width()
-    w = font.size(txt)[0]
-    return (x - w)/2
+def display_txt(txt, size, color, surface, x = 'center', y = 'center'):
+    """Affiche le texte au milieu de la surface"""
+    txt = str(txt)
+    font = pygame.font.Font('fonts/Amatic-Bold.ttf', size)
+    img_txt = font.render(txt, True, color)
+    if x == 'center':
+        x = (surface.get_width() - font.size(txt)[0])/2
+    if y == 'center':
+        y = (surface.get_height() - font.size(txt)[0])/2
+    return surface.blit(img_txt, (x, y))
 
 class Pipe(object):
     """Un tuyau"""
@@ -220,6 +221,7 @@ class Plumbit(object):
         self.countdown = 60
         self.score = score
         self.message = ''
+        return 0
 
     def main(self):
         screen = pygame.display.set_mode((1440, 900))
@@ -323,14 +325,10 @@ class Plumbit(object):
             self.layer1.blit(cursor_image, cursor.topleft)
             self.layer2.blit(self.liquid_image, self.liquid.topleft)
             self.layer3.blit(back, (0, 0))
-            img_txt = font_size(40).render(str(self.score), True,
-                                             (83, 162, 162))
-            self.layer3.blit(img_txt, (centerx(self.layer3,
-                             font_size(40), str(self.score)), 5))
-            img_txt = font_size(40).render(str(self.countdown), True,
-                                        (70, 170, 60))
-            self.layer3.blit(img_txt, (centerx(self.layer3,
-                             font_size(40), str(self.countdown)), 625))
+            display_txt(self.score, 40, (83, 162, 162),self.layer3,
+                        'center', 5)
+            display_txt(self.countdown, 40, (70, 170, 60),self.layer3,
+                        'center', 625)
             pygame.display.update()
 
             if self.message:
@@ -340,13 +338,11 @@ class Plumbit(object):
                     win.play()
                 else:
                     loose.play()
-                img_txt = font_size(72).render(self.message, True,
-                                                   (194, 69, 26))
-                screen.blit(img_txt, (centerx(screen, font_size(72),
-                                      self.message), 20))
+                display_txt(self.message, 72, (194, 69, 26), screen,
+                            'center', 20)
                 txt = 'Press ENTER to continue'
-                img_txt = font_size(40).render(txt, True, (194, 69, 26))
-                screen.blit(img_txt, (centerx(screen, font_size(40), txt), 800))
+                display_txt(txt, 40, (194, 69, 26), screen,
+                            'center', 800)
                 pygame.display.update()
                 pygame.event.clear()
                 while True:
@@ -372,17 +368,14 @@ class Plumbit(object):
         screen = pygame.display.set_mode((600, 900))
         topten = load_json('topten.json')
         txt = "PLUMB'IT"
-        img_txt = font_size(72).render(txt, True, (170, 60, 60))
-        screen.blit(img_txt, (centerx(screen, font_size(72), txt), 50))
+        display_txt(txt, 72, (170, 60, 60), screen, 'center', 50)
         for i, player in enumerate(topten):
-            name = font_size(40).render(player["name"], True, (50, 162, 162))
-            score = font_size(40).render(str(player["score"]), True,
-                                         (50, 162, 162))
-            screen.blit(name, (140, 170 + i * 50))
-            screen.blit(score, (380, 170 + i * 50))
+            display_txt(player["name"], 40, (50, 162, 162), screen, 140,
+                        170 + i * 50)
+            display_txt(player["score"], 40, (50, 162, 162), screen, 380,
+                        170 + i * 50)
         txt = 'Press ENTER to play'
-        img_txt = font_size(32).render(txt, True, (170, 60, 60))
-        screen.blit(img_txt, (centerx(screen, font_size(32), txt), 800))
+        display_txt(txt, 32, (170, 60, 60), screen, 'center', 800)
         pygame.display.update()
         while True:
             event = pygame.event.wait()
@@ -416,11 +409,9 @@ class Plumbit(object):
                     if len(name) < 18:
                         name += event.unicode
             screen.fill((0, 0, 0))
-            txt = str(self.score) + ' is a new record !'
-            img_txt = font_size(48).render(txt, True, (83, 162, 162))
-            screen.blit(img_txt, (centerx(screen, font_size(48), txt), 20))
-            img_txt = font_size(40).render(name, True, (170, 60, 60))
-            screen.blit(img_txt, (centerx(screen, font_size(40), name), 100))
+            txt = str(self.score) + ' is a new RECORD !'
+            display_txt(txt, 48, (83, 162, 162), screen, 'center', 20)
+            display_txt(name, 40, (170, 60, 60), screen, 'center', 100)
             pygame.display.update()
         return self.menu()
 
