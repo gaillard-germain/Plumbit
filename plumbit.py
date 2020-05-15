@@ -50,8 +50,8 @@ def open_to(pipe):
 def pipe_dispenser():
     """Retourne un tuyau en fonction de sa 'rareté' """
     stock = {('images/cross.png', (1, 1, 1, 1)) : 10,
-             ('images/regular_1.png', (0, 1, 0, 1)) : 50,
-             ('images/regular_2.png', (0, 1, 1, 0)) : 40}
+             ('images/regular_1.png', (0, 1, 0, 1)) : 45,
+             ('images/regular_2.png', (0, 1, 1, 0)) : 45}
     return Pipe(weighted(stock))
 
 def fill_box(box):
@@ -171,7 +171,6 @@ class Pipe(object):
         self.image = pygame.image.load(ref[0])
         self.image_2 = None
         self.apertures = list(ref[1])
-        self.points = 100
         self.rect = self.image.get_rect()
         self.name = 'regular'
         if sum(self.apertures) == 4:
@@ -249,6 +248,7 @@ class Plumbit(object):
         path = (0, 0)
         pygame.time.set_timer(ANIM1, 500)
         pygame.time.set_timer(ANIM2, 30)
+        music.set_volume(0.4)
         music.play()
 
         while True:
@@ -303,6 +303,7 @@ class Plumbit(object):
                             pygame.time.set_timer(FLOOD, 0)
                             self.message = 'YOU WIN'
                         elif self.liquid.topleft == pipe.rect.topleft:
+                            sub.play()
                             pipe.apertures = clog(path, pipe.apertures)
                             self.locked.append(pipe.rect.topleft)
                             self.score += 100
