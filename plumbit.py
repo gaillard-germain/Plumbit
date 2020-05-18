@@ -407,7 +407,7 @@ class Plumbit(object):
                                     else:
                                         return self.menu()
                     screen.blit(button3.image, button3.rect.topleft)
-                    pygame.display.update(button3.rect)
+                    pygame.display.update()
 
     def menu(self):
         screen = pygame.display.set_mode((600, 900))
