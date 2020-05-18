@@ -50,8 +50,8 @@ def open_to(pipe):
 def pipe_dispenser():
     """Retourne un tuyau en fonction de sa 'rareté' """
     stock = {('images/cross.png', (1, 1, 1, 1)) : 10,
-             ('images/regular_1.png', (0, 1, 0, 1)) : 45,
-             ('images/regular_2.png', (0, 1, 1, 0)) : 45}
+             ('images/regular_1.png', (0, 1, 0, 1)) : 40,
+             ('images/regular_2.png', (0, 1, 1, 0)) : 50}
     return Pipe(weighted(stock))
 
 def fill_box(box):
@@ -71,10 +71,10 @@ def pick_up(box):
     box.append(new)
     return pipe
 
-def cursor_pos(cursor, board, coords):
+def cursor_pos(cursor, board, mouse_pos):
     """Maitien le curseur dans une zone definie"""
-    x = coords[0] - board.left
-    y = coords[1] - board.top
+    x = mouse_pos[0] - board.left
+    y = mouse_pos[1] - board.top
     cursor.topleft = (x-x%60, y-y%60)
     if cursor.left < 0:
         cursor.left = 0
@@ -196,11 +196,13 @@ class Button(object):
         if mouse_pos[1] > self.rect.top and mouse_pos[1] < self.rect.bottom:
             y = True
         if x and y:
-            self.image = self.image_2
-            self.glow = True
-        else:
-            self.image = self.image_1
-            self.glow = False
+            if not self.glow:
+                self.image = self.image_2
+                self.glow = True
+        elif not x or not y:
+            if self.glow:
+                self.image = self.image_1
+                self.glow = False
 
 class Plumbit(object):
     """Plumbit"""
@@ -271,6 +273,7 @@ class Plumbit(object):
         arrow = arrow_image.get_rect()
         button = Button('FLOOD', (20, 50))
         button2 = Button('GIVE-UP', (20, 150))
+        button3 = Button('CONTINUE', (20, 250))
         board.topleft = (250, 120)
         arrow.topleft = (120, 495)
         path = (0, 0)
@@ -380,7 +383,6 @@ class Plumbit(object):
                 txt = 'Click CONTINUE Button'
                 display_txt(txt, 40, (194, 69, 26), screen,
                             'center', 800)
-                button3 = Button('CONTINUE', (20, 250))
                 pygame.event.clear()
                 while True:
                     event = pygame.event.wait()
@@ -405,14 +407,14 @@ class Plumbit(object):
                                     else:
                                         return self.menu()
                     screen.blit(button3.image, button3.rect.topleft)
-                    pygame.display.update()
+                    pygame.display.update(button3.rect)
 
     def menu(self):
         screen = pygame.display.set_mode((600, 900))
         screen.fill((40, 42, 44))
         topten = load_json('topten.json')
-        button = Button('PLAY', (195, 700))
-        button2 = Button('QUIT', (195, 800))
+        button = Button('PLAY', (180, 700))
+        button2 = Button('QUIT', (180, 800))
         txt = "PLUMB'IT"
         display_txt(txt, 72, (170, 60, 60), screen, 'center', 50)
         for i, player in enumerate(topten):
