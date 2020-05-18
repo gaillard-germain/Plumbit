@@ -247,7 +247,6 @@ class Plumbit(object):
         self.liquid.topleft = self.valve.rect.topleft
         self.countdown = 60
         self.score = score
-        self.message = ''
         return 0
 
     def main(self):
@@ -277,6 +276,7 @@ class Plumbit(object):
         board.topleft = (250, 120)
         arrow.topleft = (120, 495)
         path = (0, 0)
+        game_over = False
         pygame.time.set_timer(ANIM1, 500)
         pygame.time.set_timer(ANIM2, 30)
         music.set_volume(0.4)
@@ -289,15 +289,18 @@ class Plumbit(object):
                     sys.exit()
                 elif event.type == pygame.MOUSEMOTION:
                     mouse_pos = pygame.mouse.get_pos()
-                    button.over(mouse_pos)
-                    button2.over(mouse_pos)
-                    cursor.topleft = cursor_pos(cursor, board, mouse_pos)
-                    if cursor.topleft in self.locked:
-                        cursor_image = locked_image
+                    if not game_over:
+                        button.over(mouse_pos)
+                        button2.over(mouse_pos)
+                        cursor.topleft = cursor_pos(cursor, board, mouse_pos)
+                        if cursor.topleft in self.locked:
+                            cursor_image = locked_image
+                        else:
+                            cursor_image = pointer_image
                     else:
-                        cursor_image = pointer_image
+                        button3.over(mouse_pos)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
+                    if event.button == 1 and not game_over:
                         if self.countdown == 60:
                             pygame.time.set_timer(COUNTDOWN, 1000)
                         if button.glow:
@@ -315,6 +318,19 @@ class Plumbit(object):
                             pipe.rect.topleft = cursor.topleft
                             self.circuit = add(self.circuit, pipe)
                             self.score -= 50
+                    elif event.button == 1 and game_over:
+                        if button3.glow:
+                            if game_over == 'YOU WIN':
+                                self.score += 500
+                                self.set_up(self.score)
+                                game_over = False
+                                music.play()
+                            else:
+                                rank = new_record(self.score)
+                                if rank != None:
+                                    return self.entry(rank)
+                                else:
+                                    return self.menu()
                 elif event.type == ANIM1:
                     self.valve.image, self.valve.image_2 = (self.valve.image_2,
                                                             self.valve.image)
@@ -338,7 +354,9 @@ class Plumbit(object):
                         self.liquid = self.liquid.move(path[0]/60, path[1]/60)
                         if self.liquid.topleft == self.end.rect.topleft:
                             pygame.time.set_timer(FLOOD, 0)
-                            self.message = 'YOU WIN'
+                            game_over = 'YOU WIN'
+                            music.stop()
+                            win.play()
                         elif self.liquid.topleft == pipe.rect.topleft:
                             sub.play()
                             pipe.apertures = clog(path, pipe.apertures)
@@ -347,7 +365,9 @@ class Plumbit(object):
                             self.previous = pipe
                     else:
                         pygame.time.set_timer(FLOOD, 0)
-                        self.message = 'YOU LOOSE'
+                        game_over = 'YOU LOOSE'
+                        music.stop()
+                        loose.play()
 
             screen.fill((66, 63, 56))
             screen.blit(self.layer1, board.topleft)
@@ -369,45 +389,14 @@ class Plumbit(object):
                         'center', 5)
             display_txt(self.countdown, 40, (70, 170, 60),self.layer3,
                         'center', 625)
-            pygame.display.update()
-
-            if self.message:
-                """Fin de partie"""
-                music.stop()
-                if self.message == 'YOU WIN':
-                    win.play()
-                else:
-                    loose.play()
-                display_txt(self.message, 72, (194, 69, 26), screen,
+            if game_over:
+                display_txt(game_over, 72, (194, 69, 26), screen,
                             'center', 20)
                 txt = 'Click CONTINUE Button'
                 display_txt(txt, 40, (194, 69, 26), screen,
                             'center', 800)
-                pygame.event.clear()
-                while True:
-                    event = pygame.event.wait()
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                    elif event.type == pygame.MOUSEMOTION:
-                        mouse_pos = pygame.mouse.get_pos()
-                        button3.over(mouse_pos)
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
-                        if event.button == 1:
-                            if button3.glow:
-                                if self.message == 'YOU WIN':
-                                    self.score += 500
-                                    self.set_up(self.score)
-                                    music.play()
-                                    break
-                                else:
-                                    rank = new_record(self.score)
-                                    if rank != None:
-                                        return self.entry(rank)
-                                    else:
-                                        return self.menu()
-                    screen.blit(button3.image, button3.rect.topleft)
-                    pygame.display.update()
+                screen.blit(button3.image, button3.rect.topleft)
+            pygame.display.update()
 
     def menu(self):
         screen = pygame.display.set_mode((600, 900))
