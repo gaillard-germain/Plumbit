@@ -161,9 +161,9 @@ def display_txt(txt, size, color, surface, x = 'center', y = 'center'):
     font = pygame.font.Font('fonts/Amatic-Bold.ttf', size)
     img_txt = font.render(txt, True, color)
     if x == 'center':
-        x = (surface.get_width() - font.size(txt)[0])/2
+        x = int((surface.get_width() - font.size(txt)[0])/2)
     if y == 'center':
-        y = (surface.get_height() - font.size(txt)[1])/2
+        y = int((surface.get_height() - font.size(txt)[1])/2)
     return surface.blit(img_txt, (x, y))
 
 class Pipe(object):
@@ -355,7 +355,8 @@ class Plumbit(object):
                     if pipe:
                         path = (pipe.rect.left - self.previous.rect.left,
                                 pipe.rect.top - self.previous.rect.top)
-                        self.liquid = self.liquid.move(path[0]/60, path[1]/60)
+                        self.liquid = self.liquid.move(int(path[0]/60),
+                                                       int(path[1]/60))
                         if self.liquid.topleft == self.end.rect.topleft:
                             pygame.time.set_timer(FLOOD, 0)
                             game_over = 'YOU WIN'
