@@ -1,5 +1,7 @@
 # Plumb'it
 
+![plumb'it screenshot](plumbit.png "plumb'it screenshot")
+
 ## About
 Plumb'it is a puzzle game, the goal is to create a circuit connecting the start valve to the end valve before the liquid leaks.
 It was inspired by the game "pipe mania" written by Assembly line and published by Empire in 1989 for the commodore AMIGA.
