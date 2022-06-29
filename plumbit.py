@@ -26,6 +26,7 @@ class Plumbit(object):
         self.circuit = None
         self.sound = Sound()
         self.countdown = 60
+        self.score = 0
 
         self.layer1 = pygame.Surface((900, 660), 32)
         self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
@@ -65,7 +66,6 @@ class Plumbit(object):
         arrow.topleft = (120, 485)
 
         game_over = False
-        score = 0
 
         pygame.time.set_timer(ANIM1, 500)
         pygame.time.set_timer(ANIM2, 30)
@@ -79,13 +79,13 @@ class Plumbit(object):
                 elif event.type == pygame.MOUSEMOTION:
                     mouse_pos = pygame.mouse.get_pos()
                     if not game_over:
-                        button.over(mouse_pos)
-                        button2.over(mouse_pos)
+                        button.hover(mouse_pos)
+                        button2.hover(mouse_pos)
                         cursor.rect.topleft = cursor.confine(
                             board, mouse_pos)
                         cursor.hover_locked(self.circuit)
                     else:
-                        button3.over(mouse_pos)
+                        button3.hover(mouse_pos)
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1 and not game_over:
@@ -94,7 +94,7 @@ class Plumbit(object):
                         if button.glow:
                             self.sound.sub.play()
                             pygame.time.set_timer(COUNTDOWN, 0)
-                            pygame.time.set_timer(FLOOD, 20)
+                            pygame.time.set_timer(FLOOD, 10)
                         elif button2.glow:
                             self.sound.music.stop()
                             pygame.time.set_timer(COUNTDOWN, 0)
@@ -103,24 +103,24 @@ class Plumbit(object):
                         elif not self.circuit.is_locked(cursor.rect.topleft):
                             self.sound.put.play()
                             self.circuit.drop_and_pickup(cursor.rect.topleft)
-                            score -= 50
+                            self.score -= 50
 
                     elif event.button == 1 and game_over:
                         if button3.glow:
                             if game_over == 'YOU WIN':
-                                score += 500
+                                self.score += 500 + self.countdown * 10
                                 self.set_up()
                                 game_over = False
 
                             else:
-                                rank = new_record(score)
+                                rank = new_record(self.score)
                                 if rank is not None:
-                                    return self.entry(rank, score)
+                                    return self.entry(rank)
                                 else:
                                     return self.menu()
 
                 elif event.type == ANIM1:
-                    pass
+                    self.circuit.anim_valve()
 
                 elif event.type == ANIM2:
                     if arrow.left > 90:
@@ -130,11 +130,10 @@ class Plumbit(object):
 
                 elif event.type == COUNTDOWN:
                     self.sound.tic.play()
-                    self.circuit.anim_valve()
                     self.countdown -= 1
                     if self.countdown == 0:
                         pygame.time.set_timer(COUNTDOWN, 0)
-                        pygame.time.set_timer(FLOOD, 40)
+                        pygame.time.set_timer(FLOOD, 30)
                         self.sound.sub.play()
 
                 elif event.type == FLOOD:
@@ -151,8 +150,7 @@ class Plumbit(object):
                         self.sound.loose.play()
 
                     elif game_over == 'PASS':
-                        self.sound.sub.play()
-                        score += 100
+                        self.score += 100
                         game_over = False
 
             screen.fill((66, 63, 56))
@@ -163,16 +161,16 @@ class Plumbit(object):
             screen.blit(arrow_image, arrow.topleft)
             screen.blit(button.image, button.rect.topleft)
             screen.blit(button2.image, button2.rect.topleft)
-            for i, pipe in enumerate(self.circuit.box):
-                screen.blit(pipe.image, (150, 470 + i * 70))
+
+            self.circuit.draw_box(screen)
             self.layer1.fill((96, 93, 86))
-            for pipe in self.circuit.circuit:
-                self.layer1.blit(pipe.image, pipe.rect.topleft)
-            self.layer1.blit(cursor.image, cursor.rect.topleft)
-            self.layer2.blit(self.circuit.liquid_image,
-                             self.circuit.liquid.topleft)
+            self.circuit.draw_pipes(self.layer1)
+
+            cursor.draw(self.layer1)
+            self.circuit.draw_liquid(self.layer2)
             self.layer3.blit(back, (0, 0))
-            display_txt(score, 40, (83, 162, 162), self.layer3,
+
+            display_txt(self.score, 40, (83, 162, 162), self.layer3,
                         'center', 5)
             display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
                         'center', 625)
@@ -207,8 +205,8 @@ class Plumbit(object):
                 sys.exit()
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
-                button.over(mouse_pos)
-                button2.over(mouse_pos)
+                button.hover(mouse_pos)
+                button2.hover(mouse_pos)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if button.glow:
@@ -222,7 +220,7 @@ class Plumbit(object):
             pygame.display.update()
         return self.main()
 
-    def entry(self, rank, score):
+    def entry(self, rank):
         """Enregistre le nom du joueur dans le TopTen"""
 
         screen = pygame.display.set_mode((600, 300))
@@ -238,7 +236,7 @@ class Plumbit(object):
                     if len(name) > 0:
                         name = name[:-1]
                 elif event.key == pygame.K_RETURN:
-                    update_json(rank, name, score)
+                    update_json(rank, name, self.score)
                     break
                 else:
                     if name == 'Enter your name':
@@ -247,15 +245,15 @@ class Plumbit(object):
                         name += event.unicode
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
-                button.over(mouse_pos)
+                button.hover(mouse_pos)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if button.glow:
-                        update_json(rank, name, score)
+                        update_json(rank, name, self.score)
                         break
 
             screen.fill((40, 42, 44))
-            txt = str(score) + ' is a new RECORD !'
+            txt = str(self.score) + ' is a new RECORD !'
             display_txt(txt, 48, (83, 162, 162), screen, 'center', 20)
             display_txt(name, 40, (170, 60, 60), screen, 'center', 100)
             screen.blit(button.image, button.rect.topleft)

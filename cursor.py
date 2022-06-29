@@ -30,3 +30,6 @@ class Cursor:
             self.image = self.locked_image
         else:
             self.image = self.pointer_image
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect.topleft)

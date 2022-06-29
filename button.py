@@ -15,7 +15,7 @@ class Button:
         self.rect.topleft = pos
         self.glow = False
 
-    def over(self, mouse_pos):
+    def hover(self, mouse_pos):
         x = False
         y = False
         if mouse_pos[0] > self.rect.left and mouse_pos[0] < self.rect.right:

@@ -56,7 +56,7 @@ class Circuit:
         """Empeche un block de se placer devant l'entree ou la sortie"""
 
         pos = (randint(0, 14) * 60, randint(0, 9) * 60)
-        if pos in list(self.valve.open_to()) or pos in list(self.end.open_to()):
+        if (pos in self.valve.open_to() or pos in self.end.open_to()):
             pos = self.place_block(block)
         elif self.is_locked(pos):
             pos = self.place_block(block)
@@ -145,3 +145,14 @@ class Circuit:
 
         else:
             return 'YOU LOOSE'
+
+    def draw_box(self, surface):
+        for i, pipe in enumerate(self.box):
+            surface.blit(pipe.image, (150, 470 + i * 70))
+
+    def draw_pipes(self, surface):
+        for pipe in self.circuit:
+            surface.blit(pipe.image, pipe.rect.topleft)
+
+    def draw_liquid(self, surface):
+        surface.blit(self.liquid_image, self.liquid.topleft)
