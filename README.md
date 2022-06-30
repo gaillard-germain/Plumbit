@@ -10,6 +10,10 @@ It's one of my firsts python project.
 ## Languages
 It is developed in python3 and uses the Pygame library.
 
+## Requirements
+- Python 3.8
+- Pygame 2.1.2
+
 ## Install
 Fork it, clone it, and create a python3 virtual environement.
 Install the requirements with PIP: `pip install -r requirements.txt`
