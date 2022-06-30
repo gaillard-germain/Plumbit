@@ -1,11 +1,27 @@
 [
     {
         "name": "Plumber",
-        "score": 10000
+        "score": 20000
     },
     {
         "name": "Plumber",
-        "score": 9000
+        "score": 18000
+    },
+    {
+        "name": "Plumber",
+        "score": 16000
+    },
+    {
+        "name": "Plumber",
+        "score": 14000
+    },
+    {
+        "name": "Plumber",
+        "score": 12000
+    },
+    {
+        "name": "Plumber",
+        "score": 10000
     },
     {
         "name": "Plumber",
@@ -13,15 +29,7 @@
     },
     {
         "name": "Plumber",
-        "score": 7000
-    },
-    {
-        "name": "Plumber",
         "score": 6000
-    },
-    {
-        "name": "Plumber",
-        "score": 5000
     },
     {
         "name": "Plumber",
@@ -29,14 +37,6 @@
     },
     {
         "name": "Plumber",
-        "score": 3000
-    },
-    {
-        "name": "Screw-Pack",
-        "score": 2950
-    },
-    {
-        "name": "Uly",
-        "score": 2200
+        "score": 2000
     }
 ]

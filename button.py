@@ -3,7 +3,7 @@ from tools import display_txt
 
 
 class Button:
-    """Un bouton"""
+    """A menu button"""
 
     def __init__(self, txt, pos):
         self.image_1 = pgimage.load('images/button.png')
@@ -16,6 +16,7 @@ class Button:
         self.glow = False
 
     def hover(self, mouse_pos):
+        """ Change state if mouse is hover """
         x = False
         y = False
         if mouse_pos[0] > self.rect.left and mouse_pos[0] < self.rect.right:

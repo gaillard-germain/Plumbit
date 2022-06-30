@@ -3,7 +3,7 @@ import json
 
 
 def display_txt(txt, size, color, surface, x='center', y='center'):
-    """Affiche le texte au milieu de la surface"""
+    """ Display text in the middle of a surface """
     txt = str(txt)
     font = pgfont.Font('fonts/Amatic-Bold.ttf', size)
     img_txt = font.render(txt, True, color)
@@ -15,13 +15,13 @@ def display_txt(txt, size, color, surface, x='center', y='center'):
 
 
 def load_json(data_file):
-    """Charge le fichier json"""
+    """ Load a json file """
     with open(data_file) as data:
         return json.load(data)
 
 
 def new_record(score):
-    """Verifie si le score peu entrer dans le top ten"""
+    """ Check if the score could enter the TopTen """
 
     topten = load_json('topten.json')
     for index, player in enumerate(topten):
@@ -31,7 +31,7 @@ def new_record(score):
 
 
 def update_json(index, winner, score):
-    """met a jour le fichier json"""
+    """ Update the topten.json  file """
 
     topten = load_json('topten.json')
     topten.insert(index, dict(name=winner, score=score))

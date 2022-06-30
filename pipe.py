@@ -1,49 +1,21 @@
-from pygame import image as pgimage, transform
-from random import randint, choices
+from pygame import transform
+from random import randint
 
 
 class Pipe:
-    """Un tuyau"""
+    """ A Pipe """
 
-    STOCK = {
-        10: {
-            'image': 'images/cross.png',
-            'image2': None,
-            'apertures': [1, 1, 1, 1],
-            'name': 'cross'
-        },
-        40: {
-            'image': 'images/regular_1.png',
-            'image2': None,
-            'apertures': [0, 1, 0, 1],
-            'name': 'regular'
-        },
-        50: {
-            'image': 'images/regular_2.png',
-            'image2': None,
-            'apertures': [0, 1, 1, 0],
-            'name': 'regular'
-            }
-    }
-
-    @classmethod
-    def create(cls):
-        ref = choices(list(cls.STOCK.values()), weights=cls.STOCK.keys(), k=1)
-        return cls(ref[0])
-
-    def __init__(self, ref):
-        self.image = pgimage.load(ref['image'])
-        if ref['image2']:
-            self.image_2 = pgimage.load('images/valve_1a.png')
-        else:
-            self.image_2 = ref['image2']
-        self.apertures = list(ref['apertures'])
+    def __init__(self, data):
+        self.image = data['image']
+        self.image_2 = data['image2']
+        self.apertures = data['apertures'].copy()
+        self.name = data['name']
+        self.value = data['value']
+        self.locked = data['locked']
         self.rect = self.image.get_rect()
-        self.name = ref['name']
-        self.locked = False
 
     def rotate(self):
-        """Fait tourner le tuyau (anti-horaire)"""
+        """ Rotate the pipe (anti-clockwise)"""
 
         coef = randint(0, 3)
         for i in range(coef):
@@ -55,7 +27,7 @@ class Pipe:
         return self
 
     def open_to(self):
-        """Pointe les coordonnees vers lesquels le tuyau est ouvert"""
+        """ Get the coordinates which where the pipe is open to """
 
         for index, aperture in enumerate(self.apertures):
             if aperture:
@@ -69,7 +41,7 @@ class Pipe:
                     yield (self.rect.left, self.rect.bottom)
 
     def clog(self, path):
-        """Bouche l'ouverture par laquelle le liquide est passé"""
+        """ Clogs the opening through which the liquid has passed """
 
         if path[0] < 0:
             self.apertures[2] = 0
@@ -83,4 +55,10 @@ class Pipe:
         self.lock()
 
     def lock(self):
+        """ Locks the pipe """
         self.locked = True
+
+    def anim(self):
+        """ Animates the starting valve """
+        if self.image_2:
+            self.image, self.image_2 = (self.image_2, self.image)

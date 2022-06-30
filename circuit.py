@@ -1,94 +1,80 @@
 import pygame
 from random import randint
-from pipe import Pipe
+from factory import Factory
 
 
 class Circuit:
     def __init__(self):
+        self.factory = Factory()
         self.circuit = []
         self.box = []
+        self.score = 0
+        self.lvl = 1
 
-        self.valve = Pipe(
-            {
-                'image': 'images/valve_1.png',
-                'image2': 'images/valve_1a.png',
-                'apertures': [0, 0, 1, 0],
-                'name': 'regular'
-                }
-        )
-        self.end = Pipe(
-            {
-                'image': 'images/valve_2.png',
-                'image2': None,
-                'apertures': [0, 0, 1, 0],
-                'name': 'end'
-                }
-        )
         self.liquid_image = pygame.image.load('images/liquid.png')
         self.liquid = self.liquid_image.get_rect()
-        self.previous = self.valve
+
+    def reset(self):
+        """ Reset score and level """
+        self.score = 0
+        self.lvl = 1
+
+    def set_up(self):
+        """ Set_up the circuit """
+        if self.circuit:
+            self.circuit.clear()
+
+        self.fill_box()
+
+        self.valve = self.factory.get_extra('valve').rotate()
+        self.end = self.factory.get_extra('end').rotate()
 
         self.valve.rect.topleft = (randint(1, 5) * 60, randint(1, 9) * 60)
         self.end.rect.topleft = (randint(9, 13) * 60, randint(1, 9) * 60)
-        self.valve = self.valve.rotate()
-        self.end = self.end.rotate()
+
         self.circuit.append(self.valve)
         self.circuit.append(self.end)
-        self.valve.lock()
-        self.end.lock()
-        for i in range(randint(0, 5)):
-            block = Pipe(
-                {
-                    'image': 'images/block.png',
-                    'image2': None,
-                    'apertures': [0, 0, 0, 0],
-                    'name': 'block'
-                    }
-            )
-            self.place_block(block)
 
-        self.fill_box()
+        for i in range(randint(int(self.lvl / 2), self.lvl)):
+            self.place_block(self.factory.get_extra('block'))
+
         self.previous = self.valve
         self.liquid.topleft = self.valve.rect.topleft
         self.path = (0, 0)
 
     def place_block(self, block):
-        """Empeche un block de se placer devant l'entree ou la sortie"""
+        """ Prevents a block from being placed in front of
+            the entrance or the exit """
 
         pos = (randint(0, 14) * 60, randint(0, 9) * 60)
-        if (pos in self.valve.open_to() or pos in self.end.open_to()):
-            pos = self.place_block(block)
-        elif self.is_locked(pos):
-            pos = self.place_block(block)
-
-        block.rect.topleft = pos
-
-        self.circuit.append(block)
-        block.lock()
+        if (pos in self.valve.open_to()
+                or pos in self.end.open_to()
+                or self.is_locked(pos)):
+            return
+        else:
+            block.rect.topleft = pos
+            self.circuit.append(block)
 
     def fill_box(self):
-        """initialise la pioche"""
+        """ Refill the pipe's box """
 
-        self.box = []
+        if self.box:
+            self.box.clear()
 
-        for i in range(4):
-            pipe = Pipe.create()
-            pipe = pipe.rotate()
-            self.box.append(pipe)
+        for _ in range(4):
+            self.box.append(self.factory.get_pipe())
 
     def drop_and_pickup(self, pos):
-        """Pioche le tuyau courant et replace un autre en bout de pile"""
+        """ Place the current pipe and replace another in the pile """
+
         pipe = self.box.pop(0)
         pipe.rect.topleft = pos
-        new = Pipe.create()
-        new = new.rotate()
-        self.box.append(new)
         self.add(pipe)
-
-        return pipe.rect.topleft
+        self.box.append(self.factory.get_pipe())
+        self.score -= int(pipe.value / 2)
 
     def add(self, current):
-        """Ajoute le tuyau courant au circuit"""
+        """ Adds the current pipe to the circuit """
 
         for pipe in self.circuit:
             if pipe.rect.topleft == current.rect.topleft:
@@ -97,12 +83,12 @@ class Circuit:
         self.circuit.append(current)
 
     def check(self):
-        """Retourne le bon tuyau"""
+        """ Returns the next floodable pipe """
         eligibles = []
         elected = None
         for pipe in self.circuit:
-            if (pipe.rect.topleft in list(self.previous.open_to())
-                    and self.previous.rect.topleft in list(pipe.open_to())):
+            if (pipe.rect.topleft in self.previous.open_to()
+                    and self.previous.rect.topleft in pipe.open_to()):
                 eligibles.append(pipe)
         for pipe in eligibles:
             if self.previous.name == 'regular':
@@ -113,22 +99,21 @@ class Circuit:
                     elected = pipe
         return elected
 
-    def anim_valve(self):
-        self.valve.image, self.valve.image_2 = (self.valve.image_2,
-                                                self.valve.image)
-
     def get_locked(self):
+        """ Get the list of the locked pipes """
         for pipe in self.circuit:
             if pipe.locked:
                 yield pipe.rect.topleft
 
     def is_locked(self, pos):
+        """ Checks if the position is locked """
         if pos in self.get_locked():
             return True
         else:
             return False
 
     def flood(self):
+        """ Floods the circuit """
         pipe = self.check()
         if pipe:
             self.path = (pipe.rect.left - self.previous.rect.left,
@@ -136,23 +121,29 @@ class Circuit:
             self.liquid = self.liquid.move(int(self.path[0]/60),
                                            int(self.path[1]/60))
             if self.liquid.topleft == self.end.rect.topleft:
+                self.score += self.end.value
+                self.lvl += 1
                 return 'YOU WIN'
 
             elif self.liquid.topleft == pipe.rect.topleft:
                 pipe.clog(self.path)
                 self.previous = pipe
-                return 'PASS'
+                self.score += pipe.value
+                return False
 
         else:
             return 'YOU LOOSE'
 
     def draw_box(self, surface):
+        """ Blit the pipes in the pipes box """
         for i, pipe in enumerate(self.box):
             surface.blit(pipe.image, (150, 470 + i * 70))
 
     def draw_pipes(self, surface):
+        """ Blit all the pipes in the circuit """
         for pipe in self.circuit:
             surface.blit(pipe.image, pipe.rect.topleft)
 
     def draw_liquid(self, surface):
+        """ Blit the liquid """
         surface.blit(self.liquid_image, self.liquid.topleft)
