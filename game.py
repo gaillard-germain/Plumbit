@@ -193,7 +193,7 @@ class Game:
 
         display_txt(txt, 32, color, self.layer4)
 
-    def draw(self, surface):
+    def draw(self, surface, continue_btn):
         surface.blit(self.layer1, self.board.topleft)
         surface.blit(self.layer2, self.board.topleft)
         surface.blit(self.dashboard, (0, 0))
@@ -220,3 +220,19 @@ class Game:
                     'center', 625)
 
         self.layer1.blit(self.layer4, self.pipe_score.topleft)
+
+        if self.state == 'WIN' or self.state == 'LOOSE':
+            display_txt('YOU {}'.format(self.state), 72,
+                        (194, 69, 26), surface, 'center', 20)
+            txt = 'Click CONTINUE Button'
+            display_txt(txt, 40, (194, 69, 26), surface,
+                        'center', 800)
+            surface.blit(continue_btn.image, continue_btn.rect.topleft)
+
+    def anim(self):
+        if self.pipe_score.top >= -20:
+            self.pipe_score = self.pipe_score.move(0, -2)
+        if self.arrow.left > 90:
+            self.arrow = self.arrow.move(-1, 0)
+        else:
+            self.arrow.left = 120

@@ -33,15 +33,13 @@ class Plumbit(object):
 
         self.screen = pygame.display.set_mode((1440, 900))
 
-        ANIM1 = pygame.USEREVENT + 3
-        ANIM2 = pygame.USEREVENT + 4
+        ANIM = pygame.USEREVENT + 3
 
         flood_btn = Button('FLOOD', (20, 50), self.flood_now)
         giveup_btn = Button('GIVE-UP', (20, 150), self.give_up)
         continue_btn = Button('CONTINUE', (20, 250), self.next_step)
 
-        pygame.time.set_timer(ANIM1, 500)
-        pygame.time.set_timer(ANIM2, 30)
+        pygame.time.set_timer(ANIM, 15)
 
         clock = pygame.time.Clock()
 
@@ -63,24 +61,18 @@ class Plumbit(object):
                             self.game.state = 'RUNNING'
                             pygame.time.set_timer(self.COUNTDOWN, 1000)
 
-                        if (self.game.board.collidepoint(pygame.mouse.get_pos())
-                                and self.game.drop_and_pickup()):
+                        if (self.game.board.collidepoint(
+                            pygame.mouse.get_pos()
+                        ) and self.game.drop_and_pickup()):
                             self.sound.put.play()
 
-                if event.type == ANIM1:
-                    self.game.valve.anim()
-
-                if event.type == ANIM2:
-                    if self.game.pipe_score.top >= -20:
-                        self.game.pipe_score = self.game.pipe_score.move(0, -2)
-                    if self.game.arrow.left > 90:
-                        self.game.arrow = self.game.arrow.move(-2, 0)
-                    else:
-                        self.game.arrow.left = 120
+                if event.type == ANIM:
+                    self.game.anim()
 
                 if event.type == self.COUNTDOWN:
                     self.sound.tic.play()
                     self.game.countdown -= 1
+                    self.game.valve.anim()
                     if self.game.countdown <= 0:
                         pygame.time.set_timer(self.COUNTDOWN, 0)
                         pygame.time.set_timer(self.FLOOD, 30)
@@ -101,18 +93,10 @@ class Plumbit(object):
 
             self.screen.fill((66, 63, 56))
 
-            self.game.draw(self.screen)
+            self.game.draw(self.screen, continue_btn)
 
             self.screen.blit(flood_btn.image, flood_btn.rect.topleft)
             self.screen.blit(giveup_btn.image, giveup_btn.rect.topleft)
-
-            if self.game.state == 'WIN' or self.game.state == 'LOOSE':
-                display_txt('YOU {}'.format(self.game.state), 72,
-                            (194, 69, 26), self.screen, 'center', 20)
-                txt = 'Click CONTINUE Button'
-                display_txt(txt, 40, (194, 69, 26), self.screen,
-                            'center', 800)
-                self.screen.blit(continue_btn.image, continue_btn.rect.topleft)
 
             flood_btn.process()
             giveup_btn.process()
