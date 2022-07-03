@@ -1,26 +1,49 @@
 import pygame
 from random import randint
+
 from factory import Factory
+from cursor import Cursor
+from tools import display_txt
 
 
-class Circuit:
+class Game:
     def __init__(self):
         self.factory = Factory()
+        self.cursor = Cursor()
         self.circuit = []
         self.box = []
         self.score = 0
         self.lvl = 1
+        self.state = 'WAITING'
 
         self.liquid_image = pygame.image.load('images/liquid.png')
+        self.dashboard = pygame.image.load('images/dashboard.png')
+        self.back = pygame.image.load('images/dashboard_back.png')
+        self.arrow_image = pygame.image.load('images/arrow.png')
+
+        self.layer1 = pygame.Surface((900, 660), 32)
+        self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
+        self.layer3 = pygame.Surface((134, 682), pygame.SRCALPHA, 32)
+
         self.liquid = self.liquid_image.get_rect()
+        self.board = self.layer1.get_rect()
+        self.arrow = self.arrow_image.get_rect()
+
+        self.board.topleft = (250, 120)
+        self.arrow.topleft = (120, 485)
 
     def reset(self):
         """ Reset score and level """
         self.score = 0
-        self.lvl = 1
+        self.lvl = 0
+        self.countdown = 60
+        self.state = 'WAITING'
 
     def set_up(self):
         """ Set_up the circuit """
+
+        self.layer2.fill((255, 255, 255, 0))
+
         if self.circuit:
             self.circuit.clear()
 
@@ -41,6 +64,11 @@ class Circuit:
         self.previous = self.valve
         self.liquid.topleft = self.valve.rect.topleft
         self.path = (0, 0)
+        self.countdown = 60 - self.lvl
+        self.state = 'WAITING'
+
+    def process(self):
+        self.cursor.process(self.board, self.is_locked)
 
     def place_block(self, block):
         """ Prevents a block from being placed in front of
@@ -64,14 +92,19 @@ class Circuit:
         for _ in range(4):
             self.box.append(self.factory.get_pipe())
 
-    def drop_and_pickup(self, pos):
+    def drop_and_pickup(self):
         """ Place the current pipe and replace another in the pile """
 
-        pipe = self.box.pop(0)
-        pipe.rect.topleft = pos
-        self.add(pipe)
-        self.box.append(self.factory.get_pipe())
-        self.score -= int(pipe.value / 2)
+        pos = self.cursor.rect.topleft
+
+        if not self.is_locked(pos):
+            pipe = self.box.pop(0)
+            pipe.rect.topleft = pos
+            self.add(pipe)
+            self.box.append(self.factory.get_pipe())
+            self.score -= int(pipe.value / 2)
+
+            return True
 
     def add(self, current):
         """ Adds the current pipe to the circuit """
@@ -101,12 +134,14 @@ class Circuit:
 
     def get_locked(self):
         """ Get the list of the locked pipes """
+
         for pipe in self.circuit:
             if pipe.locked:
                 yield pipe.rect.topleft
 
     def is_locked(self, pos):
         """ Checks if the position is locked """
+
         if pos in self.get_locked():
             return True
         else:
@@ -114,6 +149,7 @@ class Circuit:
 
     def flood(self):
         """ Floods the circuit """
+
         pipe = self.check()
         if pipe:
             self.path = (pipe.rect.left - self.previous.rect.left,
@@ -121,29 +157,40 @@ class Circuit:
             self.liquid = self.liquid.move(int(self.path[0]/60),
                                            int(self.path[1]/60))
             if self.liquid.topleft == self.end.rect.topleft:
-                self.score += self.end.value
+                self.score += self.end.value + self.countdown * 10
                 self.lvl += 1
-                return 'YOU WIN'
+                self.state = 'WIN'
 
             elif self.liquid.topleft == pipe.rect.topleft:
                 pipe.clog(self.path)
                 self.previous = pipe
                 self.score += pipe.value
-                return False
 
         else:
-            return 'YOU LOOSE'
+            self.state = 'LOOSE'
 
-    def draw_box(self, surface):
-        """ Blit the pipes in the pipes box """
+    def draw(self, surface):
+        surface.blit(self.layer1, self.board.topleft)
+        surface.blit(self.layer2, self.board.topleft)
+        surface.blit(self.dashboard, (0, 0))
+        surface.blit(self.layer3, (1167, 115))
+        surface.blit(self.arrow_image, self.arrow.topleft)
+
         for i, pipe in enumerate(self.box):
             surface.blit(pipe.image, (150, 470 + i * 70))
 
-    def draw_pipes(self, surface):
-        """ Blit all the pipes in the circuit """
-        for pipe in self.circuit:
-            surface.blit(pipe.image, pipe.rect.topleft)
+        self.layer1.fill((96, 93, 86))
 
-    def draw_liquid(self, surface):
-        """ Blit the liquid """
-        surface.blit(self.liquid_image, self.liquid.topleft)
+        for pipe in self.circuit:
+            self.layer1.blit(pipe.image, pipe.rect.topleft)
+
+        self.cursor.draw(self.layer1)
+
+        self.layer2.blit(self.liquid_image, self.liquid.topleft)
+
+        self.layer3.blit(self.back, (0, 0))
+
+        display_txt(self.score, 40, (83, 162, 162), self.layer3,
+                    'center', 5)
+        display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
+                    'center', 625)

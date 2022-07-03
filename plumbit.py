@@ -4,8 +4,7 @@ import sys
 from sound import Sound
 from tools import display_txt, new_record, load_json, update_json
 from button import Button
-from circuit import Circuit
-from cursor import Cursor
+from game import Game
 
 
 class Plumbit(object):
@@ -15,245 +14,228 @@ class Plumbit(object):
         pygame.init()
         pygame.display.set_caption("Plumb'it")
 
-        self.circuit = Circuit()
-        self.sound = Sound()
-        self.countdown = 60
+        self.screen = None
 
-        self.layer1 = pygame.Surface((900, 660), 32)
-        self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
-        self.layer3 = pygame.Surface((134, 682), pygame.SRCALPHA, 32)
+        self.game = Game()
+        self.sound = Sound()
+
+        self.COUNTDOWN = pygame.USEREVENT + 1
+        self.FLOOD = pygame.USEREVENT + 2
 
     def set_up(self):
         """ Set_up the game """
 
-        self.circuit.set_up()
-        self.layer2.fill((255, 255, 255, 0))
-        self.sound.music.play()
-        self.countdown = 60 - self.circuit.lvl
+        self.game.set_up()
+        self.sound.music.play(loops=-1)
 
     def main(self):
         """ main game """
 
-        screen = pygame.display.set_mode((1440, 900))
+        self.screen = pygame.display.set_mode((1440, 900))
 
-        COUNTDOWN = pygame.USEREVENT + 1
-        FLOOD = pygame.USEREVENT + 2
         ANIM1 = pygame.USEREVENT + 3
         ANIM2 = pygame.USEREVENT + 4
 
-        dashboard = pygame.image.load('images/dashboard.png')
-        back = pygame.image.load('images/dashboard_back.png')
-        arrow_image = pygame.image.load('images/arrow.png')
-
-        cursor = Cursor()
-        board = self.layer1.get_rect()
-        arrow = arrow_image.get_rect()
-
-        flood_btn = Button('FLOOD', (20, 50))
-        giveup_btn = Button('GIVE-UP', (20, 150))
-        continue_btn = Button('CONTINUE', (20, 250))
-
-        board.topleft = (250, 120)
-        arrow.topleft = (120, 485)
-
-        game_over = False
+        flood_btn = Button('FLOOD', (20, 50), self.flood_now)
+        giveup_btn = Button('GIVE-UP', (20, 150), self.give_up)
+        continue_btn = Button('CONTINUE', (20, 250), self.next_step)
 
         pygame.time.set_timer(ANIM1, 500)
         pygame.time.set_timer(ANIM2, 30)
 
+        clock = pygame.time.Clock()
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    self.quit()
 
-                if event.type == pygame.MOUSEMOTION:
-                    mouse_pos = pygame.mouse.get_pos()
-                    if not game_over:
-                        flood_btn.hover(mouse_pos)
-                        giveup_btn.hover(mouse_pos)
-                        cursor.rect.topleft = cursor.confine(
-                            board, mouse_pos)
-                        cursor.hover_locked(self.circuit)
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+
+                    if self.game.state == 'LOOSE' or self.game.state == 'WIN':
+                        continue_btn.click()
+
                     else:
-                        continue_btn.hover(mouse_pos)
+                        flood_btn.click()
+                        giveup_btn.click()
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1 and not game_over:
-                        if self.countdown == 60 - self.circuit.lvl:
-                            pygame.time.set_timer(COUNTDOWN, 1000)
-                        if flood_btn.glow:
-                            self.sound.sub.play()
-                            pygame.time.set_timer(COUNTDOWN, 0)
-                            pygame.time.set_timer(FLOOD, 10)
-                        elif giveup_btn.glow:
-                            self.sound.music.stop()
-                            pygame.time.set_timer(COUNTDOWN, 0)
-                            pygame.time.set_timer(FLOOD, 0)
-                            return self.menu()
-                        elif not self.circuit.is_locked(cursor.rect.topleft):
+                        if self.game.state == 'WAITING':
+                            self.game.state = 'RUNNING'
+                            pygame.time.set_timer(self.COUNTDOWN, 1000)
+
+                        if (self.game.board.collidepoint(pygame.mouse.get_pos())
+                                and self.game.drop_and_pickup()):
                             self.sound.put.play()
-                            self.circuit.drop_and_pickup(cursor.rect.topleft)
-
-                    elif event.button == 1 and game_over:
-                        if continue_btn.glow:
-                            if game_over == 'YOU WIN':
-                                self.set_up()
-                                game_over = False
-
-                            else:
-                                rank = new_record(self.circuit.score)
-                                if rank is not None:
-                                    return self.entry(rank)
-                                else:
-                                    return self.menu()
 
                 if event.type == ANIM1:
-                    self.circuit.valve.anim()
+                    self.game.valve.anim()
 
                 if event.type == ANIM2:
-                    if arrow.left > 90:
-                        arrow = arrow.move(-2, 0)
+                    if self.game.arrow.left > 90:
+                        self.game.arrow = self.game.arrow.move(-2, 0)
                     else:
-                        arrow.left = 120
+                        self.game.arrow.left = 120
 
-                if event.type == COUNTDOWN:
+                if event.type == self.COUNTDOWN:
                     self.sound.tic.play()
-                    self.countdown -= 1
-                    if self.countdown == 0:
-                        pygame.time.set_timer(COUNTDOWN, 0)
-                        pygame.time.set_timer(FLOOD, 30)
+                    self.game.countdown -= 1
+                    if self.game.countdown <= 0:
+                        pygame.time.set_timer(self.COUNTDOWN, 0)
+                        pygame.time.set_timer(self.FLOOD, 30)
                         self.sound.sub.play()
 
-                if event.type == FLOOD:
-                    state = self.circuit.flood()
+                if event.type == self.FLOOD:
+                    self.game.flood()
 
-                    if state == 'YOU WIN':
-                        pygame.time.set_timer(FLOOD, 0)
+                    if self.game.state == 'WIN':
+                        pygame.time.set_timer(self.FLOOD, 0)
                         self.sound.music.stop()
                         self.sound.win.play()
-                        game_over = 'YOU WIN'
 
-                    elif state == 'YOU LOOSE':
-                        pygame.time.set_timer(FLOOD, 0)
+                    elif self.game.state == 'LOOSE':
+                        pygame.time.set_timer(self.FLOOD, 0)
                         self.sound.music.stop()
                         self.sound.loose.play()
-                        game_over = 'YOU LOOSE'
 
-            screen.fill((66, 63, 56))
-            screen.blit(self.layer1, board.topleft)
-            screen.blit(self.layer2, board.topleft)
-            screen.blit(dashboard, (0, 0))
-            screen.blit(self.layer3, (1167, 115))
-            screen.blit(arrow_image, arrow.topleft)
-            screen.blit(flood_btn.image, flood_btn.rect.topleft)
-            screen.blit(giveup_btn.image, giveup_btn.rect.topleft)
+            self.screen.fill((66, 63, 56))
 
-            self.circuit.draw_box(screen)
-            self.layer1.fill((96, 93, 86))
-            self.circuit.draw_pipes(self.layer1)
+            self.game.draw(self.screen)
 
-            cursor.draw(self.layer1)
-            self.circuit.draw_liquid(self.layer2)
-            self.layer3.blit(back, (0, 0))
+            self.screen.blit(flood_btn.image, flood_btn.rect.topleft)
+            self.screen.blit(giveup_btn.image, giveup_btn.rect.topleft)
 
-            display_txt(self.circuit.score, 40, (83, 162, 162), self.layer3,
-                        'center', 5)
-            display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
-                        'center', 625)
-
-            if game_over:
-                display_txt(game_over, 72, (194, 69, 26), screen,
-                            'center', 20)
+            if self.game.state == 'WIN' or self.game.state == 'LOOSE':
+                display_txt('YOU {}'.format(self.game.state), 72,
+                            (194, 69, 26), self.screen, 'center', 20)
                 txt = 'Click CONTINUE Button'
-                display_txt(txt, 40, (194, 69, 26), screen,
+                display_txt(txt, 40, (194, 69, 26), self.screen,
                             'center', 800)
-                screen.blit(continue_btn.image, continue_btn.rect.topleft)
+                self.screen.blit(continue_btn.image, continue_btn.rect.topleft)
+
+            flood_btn.process()
+            giveup_btn.process()
+            continue_btn.process()
+
+            self.game.process()
 
             pygame.display.update()
+            clock.tick(60)
 
     def menu(self):
         """ The menu with the TopTen """
-        screen = pygame.display.set_mode((600, 900))
-        screen.fill((40, 42, 44))
+
+        self.screen = pygame.display.set_mode((600, 900))
+        self.screen.fill((40, 42, 44))
         topten = load_json('topten.json')
-        play_btn = Button('PLAY', (180, 700))
-        quit_btn = Button('QUIT', (180, 800))
+        play_btn = Button('PLAY', (180, 700), self.play)
+        quit_btn = Button('QUIT', (180, 800), self.quit)
         txt = "PLUMB'IT"
-        display_txt(txt, 72, (170, 60, 60), screen, 'center', 50)
+
+        display_txt(txt, 72, (170, 60, 60), self.screen, 'center', 50)
         for i, player in enumerate(topten):
-            display_txt(player["name"], 40, (50, 162, 162), screen, 140,
+            display_txt(player["name"], 40, (50, 162, 162), self.screen, 140,
                         170 + i * 50)
-            display_txt(player["score"], 40, (50, 162, 162), screen, 380,
+            display_txt(player["score"], 40, (50, 162, 162), self.screen, 380,
                         170 + i * 50)
         while True:
             event = pygame.event.wait()
 
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                self.quit()
 
-            elif event.type == pygame.MOUSEMOTION:
-                mouse_pos = pygame.mouse.get_pos()
-                play_btn.hover(mouse_pos)
-                quit_btn.hover(mouse_pos)
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                play_btn.click()
+                quit_btn.click()
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if play_btn.glow:
-                        self.circuit.reset()
-                        self.set_up()
-                        break
+            self.screen.blit(play_btn.image, play_btn.rect.topleft)
+            self.screen.blit(quit_btn.image, quit_btn.rect.topleft)
 
-                    elif quit_btn.glow:
-                        pygame.quit()
-                        sys.exit()
+            play_btn.process()
+            quit_btn.process()
 
-            screen.blit(play_btn.image, play_btn.rect.topleft)
-            screen.blit(quit_btn.image, quit_btn.rect.topleft)
             pygame.display.update()
 
-        return self.main()
-
-    def entry(self, rank):
+    def entry(self):
         """ Save the player's score in the TopTen """
 
-        screen = pygame.display.set_mode((600, 300))
-        enter_btn = Button('ENTER', (195, 200))
-        name = 'Enter your name'
+        self.screen = pygame.display.set_mode((600, 300))
+        enter_btn = Button('ENTER', (195, 200), self.save_score)
+        self.player_name = 'Enter your name'
+
         while True:
             event = pygame.event.wait()
+
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    if len(name) > 0:
-                        name = name[:-1]
-                elif event.key == pygame.K_RETURN:
-                    update_json(rank, name, self.circuit.score)
-                    break
-                else:
-                    if name == 'Enter your name':
-                        name = ''
-                    if len(name) < 18:
-                        name += event.unicode
-            elif event.type == pygame.MOUSEMOTION:
-                mouse_pos = pygame.mouse.get_pos()
-                enter_btn.hover(mouse_pos)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if enter_btn.glow:
-                        update_json(rank, name, self.circuit.score)
-                        break
+                    if len(self.player_name) > 0:
+                        self.player_name = self.player_name[:-1]
 
-            screen.fill((40, 42, 44))
-            txt = str(self.circuit.score) + ' is a new RECORD !'
-            display_txt(txt, 48, (83, 162, 162), screen, 'center', 20)
-            display_txt(name, 40, (170, 60, 60), screen, 'center', 100)
-            screen.blit(enter_btn.image, enter_btn.rect.topleft)
+                elif event.key == pygame.K_RETURN:
+                    update_json(self.rank, self.player_name,
+                                self.game.score)
+                    return self.menu()
+                else:
+                    if self.player_name == 'Enter your name':
+                        self.player_name = ''
+                    if len(self.player_name) < 18:
+                        self.player_name += event.unicode
+
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                enter_btn.click()
+
+            self.screen.fill((40, 42, 44))
+            txt = str(self.game.score) + ' is a new RECORD !'
+            display_txt(txt, 48, (83, 162, 162), self.screen, 'center', 20)
+            display_txt(self.player_name, 40, (170, 60, 60),
+                        self.screen, 'center', 100)
+            self.screen.blit(enter_btn.image, enter_btn.rect.topleft)
+
+            enter_btn.process()
+
             pygame.display.update()
 
+# ## Buttons callbacks ## #
+
+    def play(self):
+        self.game.reset()
+        self.set_up()
+        return self.main()
+
+    def quit(self):
+        pygame.quit()
+        sys.exit()
+
+    def flood_now(self):
+        self.sound.sub.play()
+        pygame.time.set_timer(self.COUNTDOWN, 0)
+        pygame.time.set_timer(self.FLOOD, 15)
+
+    def give_up(self):
+        self.sound.music.stop()
+        pygame.time.set_timer(self.COUNTDOWN, 0)
+        pygame.time.set_timer(self.FLOOD, 0)
+        self.check_record()
+
+    def next_step(self):
+        if self.game.state == 'WIN':
+            self.set_up()
+
+        elif self.game.state == 'LOOSE':
+            self.check_record()
+
+    def check_record(self):
+        self.rank = new_record(self.game.score)
+        if self.rank is not None:
+            return self.entry(self.rank)
+        else:
+            return self.menu()
+
+    def save_score(self):
+        update_json(self.rank, self.player_name, self.game.score)
         return self.menu()
 
 
