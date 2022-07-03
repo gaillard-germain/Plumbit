@@ -1,9 +1,23 @@
-from pygame import font as pgfont
+import os
+import shutil
 import json
+from pygame import font as pgfont
+
+
+def check_topten():
+    """ Check if topten.json exists, if not copy it from a clean file """
+
+    if not os.path.exists('topten.json'):
+        path = os.getcwd()
+        src = '{}/topten_clean.json'.format(path)
+        dst = '{}/topten.json'.format(path)
+
+        shutil.copyfile(src, dst)
 
 
 def display_txt(txt, size, color, surface, x='center', y='center'):
     """ Display text in the middle of a surface """
+
     txt = str(txt)
     font = pgfont.Font('fonts/Amatic-Bold.ttf', size)
     img_txt = font.render(txt, True, color)
@@ -16,6 +30,7 @@ def display_txt(txt, size, color, surface, x='center', y='center'):
 
 def load_json(data_file):
     """ Load a json file """
+
     with open(data_file) as data:
         return json.load(data)
 

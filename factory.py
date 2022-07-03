@@ -13,7 +13,7 @@ class Factory:
                 'name': 'cross',
                 'value': 150,
                 'locked': False,
-                'weight': 40
+                'weight': 30
             },
             {
                 'image': pgimage.load('images/regular_tb.png'),
@@ -22,7 +22,7 @@ class Factory:
                 'name': 'regular',
                 'value': 100,
                 'locked': False,
-                'weight': 60
+                'weight': 50
             },
             {
                 'image': pgimage.load('images/regular_lr.png'),
@@ -31,7 +31,7 @@ class Factory:
                 'name': 'regular',
                 'value': 100,
                 'locked': False,
-                'weight': 60
+                'weight': 50
             },
             {
                 'image': pgimage.load('images/regular_tr.png'),
@@ -40,7 +40,7 @@ class Factory:
                 'name': 'regular',
                 'value': 100,
                 'locked': False,
-                'weight': 30
+                'weight': 40
             },
             {
                 'image': pgimage.load('images/regular_tl.png'),
@@ -49,7 +49,7 @@ class Factory:
                 'name': 'regular',
                 'value': 100,
                 'locked': False,
-                'weight': 30
+                'weight': 40
             },
             {
                 'image': pgimage.load('images/regular_br.png'),
@@ -58,7 +58,7 @@ class Factory:
                 'name': 'regular',
                 'value': 100,
                 'locked': False,
-                'weight': 30
+                'weight': 40
             },
             {
                 'image': pgimage.load('images/regular_bl.png'),
@@ -67,16 +67,16 @@ class Factory:
                 'name': 'regular',
                 'value': 100,
                 'locked': False,
-                'weight': 30
+                'weight': 40
             }
         ]
         self.extra = {
             'valve': {
-                'image': pgimage.load('images/valve_1.png'),
-                'image2': pgimage.load('images/valve_1a.png'),
+                'image': pgimage.load('images/valve_1a.png'),
+                'image2': pgimage.load('images/valve_1.png'),
                 'apertures': [0, 0, 1, 0],
                 'name': 'regular',
-                'value': 100,
+                'value': 0,
                 'locked': True,
             },
             'end': {

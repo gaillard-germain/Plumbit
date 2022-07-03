@@ -2,7 +2,7 @@ import pygame
 import sys
 
 from sound import Sound
-from tools import display_txt, new_record, load_json, update_json
+from tools import display_txt, new_record, load_json, update_json, check_topten
 from button import Button
 from game import Game
 
@@ -21,6 +21,8 @@ class Plumbit(object):
 
         self.COUNTDOWN = pygame.USEREVENT + 1
         self.FLOOD = pygame.USEREVENT + 2
+
+        check_topten()
 
     def set_up(self):
         """ Set_up the game """
@@ -216,7 +218,7 @@ class Plumbit(object):
     def check_record(self):
         self.rank = new_record(self.game.score)
         if self.rank is not None:
-            return self.entry(self.rank)
+            return self.entry()
         else:
             return self.menu()
 
