@@ -31,5 +31,4 @@ class Button:
 
     def click(self):
         if self.glow:
-            print(self.label)
             self.onclick_function()

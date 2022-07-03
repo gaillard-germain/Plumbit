@@ -24,10 +24,12 @@ class Game:
         self.layer1 = pygame.Surface((900, 660), 32)
         self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
         self.layer3 = pygame.Surface((134, 682), pygame.SRCALPHA, 32)
+        self.layer4 = pygame.Surface((60, 60), pygame.SRCALPHA, 32)
 
         self.liquid = self.liquid_image.get_rect()
         self.board = self.layer1.get_rect()
         self.arrow = self.arrow_image.get_rect()
+        self.pipe_score = self.layer4.get_rect()
 
         self.board.topleft = (250, 120)
         self.arrow.topleft = (120, 485)
@@ -69,6 +71,8 @@ class Game:
 
     def process(self):
         self.cursor.process(self.board, self.is_locked)
+        if self.pipe_score.top <= -20:
+            self.layer4.fill((255, 255, 255, 0))
 
     def place_block(self, block):
         """ Prevents a block from being placed in front of
@@ -99,10 +103,13 @@ class Game:
 
         if not self.is_locked(pos):
             pipe = self.box.pop(0)
+            cost = - int(pipe.value / 2)
             pipe.rect.topleft = pos
             self.add(pipe)
             self.box.append(self.factory.get_pipe())
-            self.score -= int(pipe.value / 2)
+            self.score += cost
+
+            self.update_gain(pipe.rect.topleft, cost)
 
             return True
 
@@ -157,17 +164,34 @@ class Game:
             self.liquid = self.liquid.move(int(self.path[0]/60),
                                            int(self.path[1]/60))
             if self.liquid.topleft == self.end.rect.topleft:
-                self.score += self.end.value + self.countdown * 10
+                gain = self.end.value + self.countdown * 10
+                self.score += gain
                 self.lvl += 1
                 self.state = 'WIN'
+
+                self.update_gain(self.end.rect.topleft, gain)
 
             elif self.liquid.topleft == pipe.rect.topleft:
                 pipe.clog(self.path)
                 self.previous = pipe
                 self.score += pipe.value
 
+                self.update_gain(pipe.rect.topleft, pipe.value)
+
         else:
             self.state = 'LOOSE'
+
+    def update_gain(self, pos, value):
+        self.pipe_score.topleft = pos
+        self.layer4.fill((255, 255, 255, 0))
+        if int(value) > 0:
+            txt = '+{} $'.format(value)
+            color = (70, 170, 60)
+        else:
+            txt = '{} $'.format(value)
+            color = (194, 69, 26)
+
+        display_txt(txt, 32, color, self.layer4)
 
     def draw(self, surface):
         surface.blit(self.layer1, self.board.topleft)
@@ -194,3 +218,5 @@ class Game:
                     'center', 5)
         display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
                     'center', 625)
+
+        self.layer1.blit(self.layer4, self.pipe_score.topleft)

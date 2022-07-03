@@ -71,6 +71,8 @@ class Plumbit(object):
                     self.game.valve.anim()
 
                 if event.type == ANIM2:
+                    if self.game.pipe_score.top >= -20:
+                        self.game.pipe_score = self.game.pipe_score.move(0, -2)
                     if self.game.arrow.left > 90:
                         self.game.arrow = self.game.arrow.move(-2, 0)
                     else:
