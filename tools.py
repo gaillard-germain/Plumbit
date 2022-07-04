@@ -19,7 +19,7 @@ def display_txt(txt, size, color, surface, x='center', y='center'):
     """ Display text in the middle of a surface """
 
     txt = str(txt)
-    font = pgfont.Font('fonts/Amatic-Bold.ttf', size)
+    font = pgfont.Font('fonts/TheConfessionRegular-YBpv.ttf', size)
     img_txt = font.render(txt, True, color)
     if x == 'center':
         x = int((surface.get_width() - font.size(txt)[0])/2)

@@ -191,7 +191,7 @@ class Game:
             txt = '{} $'.format(value)
             color = (194, 69, 26)
 
-        display_txt(txt, 32, color, self.layer4)
+        display_txt(txt, 26, color, self.layer4)
 
     def draw(self, surface, continue_btn):
         surface.blit(self.layer1, self.board.topleft)
@@ -215,9 +215,9 @@ class Game:
         self.layer3.blit(self.back, (0, 0))
 
         display_txt(self.score, 40, (83, 162, 162), self.layer3,
-                    'center', 5)
+                    'center', 8)
         display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
-                    'center', 625)
+                    'center', 632)
 
         self.layer1.blit(self.layer4, self.pipe_score.topleft)
 

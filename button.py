@@ -8,9 +8,9 @@ class Button:
     def __init__(self, label, pos, onclick_function=None):
         self.label = label
         self.image_1 = pgimage.load('images/button.png')
-        display_txt(label, 40, (64, 68, 70), self.image_1, 100, 'center')
+        display_txt(label, 32, (64, 68, 70), self.image_1, 100, 'center')
         self.image_2 = pgimage.load('images/button2.png')
-        display_txt(label, 40, (194, 68, 25), self.image_2, 100, 'center')
+        display_txt(label, 32, (194, 68, 25), self.image_2, 100, 'center')
         self.image = self.image_1
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
