@@ -41,10 +41,10 @@ class Game:
 
     def reset(self):
         """ Reset score and level """
-        self.score = 0
+        self.score = 102546
         self.lvl = 0
         self.countdown = 60
-        self.state = 'WAITING'
+        self.set_up()
 
     def set_up(self):
         """ Set_up the circuit """
@@ -73,6 +73,8 @@ class Game:
         self.path = (0, 0)
         self.countdown = 60 - self.lvl
         self.state = 'WAITING'
+
+        pygame.mixer.music.play(loops=-1)
 
     def process(self):
         self.flood_btn.process()

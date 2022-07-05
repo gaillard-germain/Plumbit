@@ -11,10 +11,13 @@ class Plumbit(object):
     """ Plumbit """
 
     def __init__(self):
+        pygame.mixer.pre_init(buffer=2048)
+        pygame.mixer.init()
         pygame.init()
         pygame.display.set_caption("Plumb'it")
 
         self.player_name = 'Plumber'
+        self.place = 'MENU'
 
         self.screen = None
 
@@ -33,12 +36,6 @@ class Plumbit(object):
 
         check_topten()
 
-    def set_up(self):
-        """ Set_up the game """
-
-        self.game.set_up()
-        pygame.mixer.music.play(loops=-1)
-
     def main(self):
         """ main game """
 
@@ -50,7 +47,7 @@ class Plumbit(object):
 
         clock = pygame.time.Clock()
 
-        while True:
+        while self.place == 'GAME':
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.quit()
@@ -107,6 +104,8 @@ class Plumbit(object):
             pygame.display.update()
             clock.tick(60)
 
+        self.check_record()
+
     def menu(self):
         """ The menu with the TopTen """
 
@@ -120,7 +119,7 @@ class Plumbit(object):
                         170 + i * 50)
             display_txt(player["score"], 40, (50, 162, 162), self.screen, 380,
                         170 + i * 50)
-        while True:
+        while self.place == 'MENU':
             event = pygame.event.wait()
 
             if event.type == pygame.QUIT:
@@ -138,6 +137,8 @@ class Plumbit(object):
 
             pygame.display.update()
 
+        return self.main()
+
     def entry(self):
         """ Save the player's score in the TopTen """
 
@@ -145,7 +146,7 @@ class Plumbit(object):
 
         self.player_name = 'Enter your name'
 
-        while True:
+        while self.place == 'ENTRY':
             event = pygame.event.wait()
 
             if event.type == pygame.QUIT:
@@ -180,14 +181,26 @@ class Plumbit(object):
 
             pygame.display.update()
 
+        return self.menu()
+
+    def check_record(self):
+        """ Checks if score may enter the TopTen """
+
+        self.rank = new_record(self.game.score)
+        if self.rank is not None:
+            self.place = 'ENTRY'
+            return self.entry()
+        else:
+            self.place = 'MENU'
+            return self.menu()
+
 # ## Buttons callbacks ## #
 
     def play(self):
         """ Play Button callback """
 
         self.game.reset()
-        self.set_up()
-        return self.main()
+        self.place = 'GAME'
 
     def quit(self):
         """ Quit Button callback """
@@ -208,30 +221,21 @@ class Plumbit(object):
         pygame.mixer.music.stop()
         pygame.time.set_timer(self.COUNTDOWN, 0)
         pygame.time.set_timer(self.FLOOD, 0)
-        self.check_record()
+        self.place = 'ENTRY'
 
     def next_step(self):
         """ Continue Button callback """
         if self.game.state == 'WIN':
-            self.set_up()
+            self.game.set_up()
 
         elif self.game.state == 'LOOSE':
-            self.check_record()
-
-    def check_record(self):
-        """ Checks if score may enter the TopTen """
-
-        self.rank = new_record(self.game.score)
-        if self.rank is not None:
-            return self.entry()
-        else:
-            return self.menu()
+            self.place = 'ENTRY'
 
     def save_score(self):
         """ Enter Button callback """
 
         update_json(self.rank, self.player_name, self.game.score)
-        return self.menu()
+        self.place = 'MENU'
 
 
 if __name__ == '__main__':

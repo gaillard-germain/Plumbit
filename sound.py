@@ -3,9 +3,6 @@ from pygame import mixer
 
 class Sound:
     def __init__(self):
-        mixer.pre_init(44100, -16, 2, 2048)
-        mixer.init()
-
         mixer.music.load('son/music.ogg')
 
         self.put = mixer.Sound('son/put.ogg')
