@@ -41,7 +41,7 @@ class Game:
 
     def reset(self):
         """ Reset score and level """
-        self.score = 102546
+        self.score = 0
         self.lvl = 0
         self.countdown = 60
         self.set_up()
