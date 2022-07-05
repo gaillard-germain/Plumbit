@@ -15,9 +15,14 @@ It is developed in python3 and uses the Pygame library.
 - Pygame 2.1.2
 
 ## Install
-Fork it, clone it, and create a python3 virtual environement.
+Fork it, clone it, and create a python3 virtual environement: `python3 -m venv <your venv name>`
 Install the requirements with PIP: `pip install -r requirements.txt`
 `python plumbit.py` to run.
+
+## Credit
+- Code by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
+- Art by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
+- Music: "Solve The Puzzle" by patrick DEARTEAGA [patrickdearteaga.com](https://patrickdearteaga.com)
 
 ## License
 Plumb'it is under MIT license.
