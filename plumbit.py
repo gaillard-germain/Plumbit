@@ -37,7 +37,7 @@ class Plumbit(object):
         """ Set_up the game """
 
         self.game.set_up()
-        self.sound.music.play(loops=-1)
+        pygame.mixer.music.play(loops=-1)
 
     def main(self):
         """ main game """
@@ -90,12 +90,12 @@ class Plumbit(object):
 
                     if self.game.state == 'WIN':
                         pygame.time.set_timer(self.FLOOD, 0)
-                        self.sound.music.stop()
+                        pygame.mixer.music.stop()
                         self.sound.win.play()
 
                     elif self.game.state == 'LOOSE':
                         pygame.time.set_timer(self.FLOOD, 0)
-                        self.sound.music.stop()
+                        pygame.mixer.music.stop()
                         self.sound.loose.play()
 
             self.screen.fill((66, 63, 56))
@@ -205,7 +205,7 @@ class Plumbit(object):
     def give_up(self):
         """ Give-up Button callback """
 
-        self.sound.music.stop()
+        pygame.mixer.music.stop()
         pygame.time.set_timer(self.COUNTDOWN, 0)
         pygame.time.set_timer(self.FLOOD, 0)
         self.check_record()
