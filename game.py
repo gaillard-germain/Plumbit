@@ -7,9 +7,14 @@ from tools import display_txt
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, flood_btn, giveup_btn, continue_btn):
         self.factory = Factory()
         self.cursor = Cursor()
+
+        self.flood_btn = flood_btn
+        self.giveup_btn = giveup_btn
+        self.continue_btn = continue_btn
+
         self.circuit = []
         self.box = []
         self.score = 0
@@ -70,7 +75,12 @@ class Game:
         self.state = 'WAITING'
 
     def process(self):
+        self.flood_btn.process()
+        self.giveup_btn.process()
+        self.continue_btn.process()
+
         self.cursor.process(self.board, self.is_locked)
+
         if self.pipe_score.top <= -20:
             self.layer4.fill((255, 255, 255, 0))
 
@@ -193,7 +203,7 @@ class Game:
 
         display_txt(txt, 26, color, self.layer4)
 
-    def draw(self, surface, continue_btn):
+    def draw(self, surface):
         surface.blit(self.layer1, self.board.topleft)
         surface.blit(self.layer2, self.board.topleft)
         surface.blit(self.dashboard, (0, 0))
@@ -219,6 +229,9 @@ class Game:
         display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
                     'center', 632)
 
+        surface.blit(self.flood_btn.image, self.flood_btn.rect.topleft)
+        surface.blit(self.giveup_btn.image, self.giveup_btn.rect.topleft)
+
         self.layer1.blit(self.layer4, self.pipe_score.topleft)
 
         if self.state == 'WIN' or self.state == 'LOOSE':
@@ -227,7 +240,8 @@ class Game:
             txt = 'Click CONTINUE Button'
             display_txt(txt, 40, (194, 69, 26), surface,
                         'center', 800)
-            surface.blit(continue_btn.image, continue_btn.rect.topleft)
+            surface.blit(self.continue_btn.image,
+                         self.continue_btn.rect.topleft)
 
     def anim(self):
         if self.pipe_score.top >= -20:
