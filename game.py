@@ -3,6 +3,7 @@ from random import randint
 
 from factory import Factory
 from cursor import Cursor
+from liquid import Liquid
 from tools import display_txt
 
 
@@ -10,6 +11,7 @@ class Game:
     def __init__(self, flood_btn, giveup_btn, continue_btn):
         self.factory = Factory()
         self.cursor = Cursor()
+        self.liquid = Liquid()
 
         self.flood_btn = flood_btn
         self.giveup_btn = giveup_btn
@@ -21,7 +23,6 @@ class Game:
         self.lvl = 1
         self.state = 'WAITING'
 
-        self.liquid_image = pygame.image.load('images/liquid.png')
         self.dashboard = pygame.image.load('images/dashboard.png')
         self.back = pygame.image.load('images/dashboard_back.png')
         self.arrow_image = pygame.image.load('images/arrow.png')
@@ -31,7 +32,6 @@ class Game:
         self.layer3 = pygame.Surface((134, 682), pygame.SRCALPHA, 32)
         self.layer4 = pygame.Surface((60, 60), pygame.SRCALPHA, 32)
 
-        self.liquid = self.liquid_image.get_rect()
         self.board = self.layer1.get_rect()
         self.arrow = self.arrow_image.get_rect()
         self.pipe_score = self.layer4.get_rect()
@@ -68,9 +68,7 @@ class Game:
         for i in range(randint(int(self.lvl / 2), self.lvl)):
             self.place_block(self.factory.get_extra('block'))
 
-        self.previous = self.valve
-        self.liquid.topleft = self.valve.rect.topleft
-        self.path = (0, 0)
+        self.liquid.set_up(self.valve)
         self.countdown = 60 - self.lvl
         self.state = 'WAITING'
 
@@ -134,23 +132,6 @@ class Game:
 
         self.circuit.append(current)
 
-    def check(self):
-        """ Returns the next floodable pipe """
-        eligibles = []
-        elected = None
-        for pipe in self.circuit:
-            if (pipe.rect.topleft in self.previous.open_to()
-                    and self.previous.rect.topleft in pipe.open_to()):
-                eligibles.append(pipe)
-        for pipe in eligibles:
-            if self.previous.name == 'regular':
-                elected = pipe
-            elif self.previous.name == 'cross':
-                if pipe.rect.topleft == (self.previous.rect.left+self.path[0],
-                                         self.previous.rect.top+self.path[1]):
-                    elected = pipe
-        return elected
-
     def get_locked(self):
         """ Get the list of the locked pipes """
 
@@ -169,29 +150,19 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        pipe = self.check()
+        self.state, pipe = self.liquid.flood(self.circuit, self.end)
+
         if pipe:
-            self.path = (pipe.rect.left - self.previous.rect.left,
-                         pipe.rect.top - self.previous.rect.top)
-            self.liquid = self.liquid.move(int(self.path[0]/60),
-                                           int(self.path[1]/60))
-            if self.liquid.topleft == self.end.rect.topleft:
-                gain = self.end.value + self.countdown * 10
-                self.score += gain
+            if self.state == 'WIN':
+                gain = pipe.value + self.countdown * 10
                 self.lvl += 1
-                self.state = 'WIN'
 
-                self.update_gain(self.end.rect.topleft, gain)
+            elif self.state == 'RUNNING':
+                if pipe:
+                    gain = pipe.value
 
-            elif self.liquid.topleft == pipe.rect.topleft:
-                pipe.clog(self.path)
-                self.previous = pipe
-                self.score += pipe.value
-
-                self.update_gain(pipe.rect.topleft, pipe.value)
-
-        else:
-            self.state = 'LOOSE'
+            self.score += gain
+            self.update_gain(pipe.rect.topleft, gain)
 
     def update_gain(self, pos, value):
         self.pipe_score.topleft = pos
@@ -221,8 +192,7 @@ class Game:
             self.layer1.blit(pipe.image, pipe.rect.topleft)
 
         self.cursor.draw(self.layer1)
-
-        self.layer2.blit(self.liquid_image, self.liquid.topleft)
+        self.liquid.draw(self.layer2)
 
         self.layer3.blit(self.back, (0, 0))
 
@@ -248,6 +218,7 @@ class Game:
     def anim(self):
         if self.pipe_score.top >= -20:
             self.pipe_score = self.pipe_score.move(0, -2)
+
         if self.arrow.left > 90:
             self.arrow = self.arrow.move(-1, 0)
         else:

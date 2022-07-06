@@ -33,6 +33,7 @@ class Plumbit(object):
 
         self.COUNTDOWN = pygame.USEREVENT + 1
         self.FLOOD = pygame.USEREVENT + 2
+        self.ANIM = pygame.USEREVENT + 3
 
         check_topten()
 
@@ -41,9 +42,7 @@ class Plumbit(object):
 
         self.screen = pygame.display.set_mode((1440, 900))
 
-        ANIM = pygame.USEREVENT + 3
-
-        pygame.time.set_timer(ANIM, 15)
+        pygame.time.set_timer(self.ANIM, 15)
 
         clock = pygame.time.Clock()
 
@@ -70,7 +69,7 @@ class Plumbit(object):
                         ) and self.game.drop_and_pickup()):
                             self.sound.put.play()
 
-                if event.type == ANIM:
+                if event.type == self.ANIM:
                     self.game.anim()
 
                 if event.type == self.COUNTDOWN:
@@ -221,6 +220,7 @@ class Plumbit(object):
         pygame.mixer.music.stop()
         pygame.time.set_timer(self.COUNTDOWN, 0)
         pygame.time.set_timer(self.FLOOD, 0)
+        pygame.time.set_timer(self.ANIM, 0)
         self.place = 'ENTRY'
 
     def next_step(self):
@@ -229,7 +229,7 @@ class Plumbit(object):
             self.game.set_up()
 
         elif self.game.state == 'LOOSE':
-            self.place = 'ENTRY'
+            self.give_up()
 
     def save_score(self):
         """ Enter Button callback """
