@@ -52,7 +52,6 @@ class Plumbit(object):
                     self.quit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-
                     if self.game.state == 'LOOSE' or self.game.state == 'WIN':
                         self.continue_btn.click()
 
@@ -93,8 +92,6 @@ class Plumbit(object):
                         pygame.time.set_timer(self.FLOOD, 0)
                         pygame.mixer.music.stop()
                         self.sound.loose.play()
-
-            self.screen.fill((66, 63, 56))
 
             self.game.draw(self.screen)
 

@@ -31,7 +31,7 @@ class Liquid:
                     elected = pipe
         return elected
 
-    def flood(self, circuit, end):
+    def flood(self, circuit, end, update_gain):
         """ Floods the circuit """
 
         pipe = self.check(circuit)
@@ -43,18 +43,16 @@ class Liquid:
                                        int(self.path[1]/60))
 
             if self.rect.topleft == end.rect.topleft:
-                return ('WIN', end)
+                update_gain(end.rect.topleft, end.value)
+                return 'WIN'
 
             elif self.rect.topleft == pipe.rect.topleft:
                 pipe.clog(self.path)
                 self.previous = pipe
-                return ('RUNNING', pipe)
-
-            else:
-                return ('RUNNING', None)
+                update_gain(pipe.rect.topleft, pipe.value)
 
         else:
-            return ('LOOSE', None)
+            return 'LOOSE'
 
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)

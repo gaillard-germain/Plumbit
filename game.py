@@ -117,7 +117,6 @@ class Game:
             pipe.rect.topleft = pos
             self.add(pipe)
             self.box.append(self.factory.get_pipe())
-            self.score += cost
 
             self.update_gain(pipe.rect.topleft, cost)
 
@@ -150,21 +149,12 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        self.state, pipe = self.liquid.flood(self.circuit, self.end)
-
-        if pipe:
-            if self.state == 'WIN':
-                gain = pipe.value + self.countdown * 10
-                self.lvl += 1
-
-            elif self.state == 'RUNNING':
-                if pipe:
-                    gain = pipe.value
-
-            self.score += gain
-            self.update_gain(pipe.rect.topleft, gain)
+        state = self.liquid.flood(self.circuit, self.end, self.update_gain)
+        if state:
+            self.state = state
 
     def update_gain(self, pos, value):
+        self.score += value
         self.pipe_score.topleft = pos
         self.layer4.fill((255, 255, 255, 0))
         if int(value) > 0:
@@ -177,6 +167,8 @@ class Game:
         display_txt(txt, 26, color, self.layer4)
 
     def draw(self, surface):
+        surface.fill((66, 63, 56))
+
         surface.blit(self.layer1, self.board.topleft)
         surface.blit(self.layer2, self.board.topleft)
         surface.blit(self.dashboard, (0, 0))
