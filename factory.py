@@ -19,7 +19,7 @@ class Factory:
                 'image': pgimage.load('images/regular_tb.png'),
                 'image2': None,
                 'apertures': [0, 1, 0, 1],
-                'name': 'regular',
+                'name': 'straight',
                 'value': 100,
                 'locked': False,
                 'weight': 50
@@ -28,7 +28,7 @@ class Factory:
                 'image': pgimage.load('images/regular_lr.png'),
                 'image2': None,
                 'apertures': [1, 0, 1, 0],
-                'name': 'regular',
+                'name': 'straight',
                 'value': 100,
                 'locked': False,
                 'weight': 50
@@ -37,7 +37,7 @@ class Factory:
                 'image': pgimage.load('images/regular_tr.png'),
                 'image2': None,
                 'apertures': [0, 1, 1, 0],
-                'name': 'regular',
+                'name': 'elbow',
                 'value': 100,
                 'locked': False,
                 'weight': 40
@@ -46,7 +46,7 @@ class Factory:
                 'image': pgimage.load('images/regular_tl.png'),
                 'image2': None,
                 'apertures': [1, 1, 0, 0],
-                'name': 'regular',
+                'name': 'elbow',
                 'value': 100,
                 'locked': False,
                 'weight': 40
@@ -55,7 +55,7 @@ class Factory:
                 'image': pgimage.load('images/regular_br.png'),
                 'image2': None,
                 'apertures': [0, 0, 1, 1],
-                'name': 'regular',
+                'name': 'elbow',
                 'value': 100,
                 'locked': False,
                 'weight': 40
@@ -64,7 +64,7 @@ class Factory:
                 'image': pgimage.load('images/regular_bl.png'),
                 'image2': None,
                 'apertures': [1, 0, 0, 1],
-                'name': 'regular',
+                'name': 'elbow',
                 'value': 100,
                 'locked': False,
                 'weight': 40
@@ -75,7 +75,7 @@ class Factory:
                 'image': pgimage.load('images/valve_1a.png'),
                 'image2': pgimage.load('images/valve_1.png'),
                 'apertures': [0, 0, 1, 0],
-                'name': 'regular',
+                'name': 'valve',
                 'value': 0,
                 'locked': True,
             },

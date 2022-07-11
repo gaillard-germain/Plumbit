@@ -33,7 +33,7 @@ class Liquid:
         else:
             return None
 
-    def flood(self, circuit):
+    def flood(self, circuit, bonus):
         """ Floods the circuit """
 
         pipe = self.check(circuit)
@@ -45,7 +45,8 @@ class Liquid:
                                        int(self.path[1]/60))
 
             if self.rect.topleft == self.end.rect.topleft:
-                self.update_gain(self.end.rect.topleft, self.end.value)
+                gain = self.end.value + bonus * 10
+                self.update_gain(self.end.rect.topleft, gain)
                 return 'WIN'
 
             elif self.rect.topleft == pipe.rect.topleft:

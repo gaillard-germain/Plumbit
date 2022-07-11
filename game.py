@@ -155,7 +155,7 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        state = self.liquid.flood(self.circuit)
+        state = self.liquid.flood(self.circuit, self.countdown)
         if state:
             self.state = state
 

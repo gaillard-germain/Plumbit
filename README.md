@@ -11,13 +11,15 @@ It's one of my firsts python project.
 It is developed in python3 and uses the Pygame library.
 
 ## Requirements
-- Python 3.8
+- Python >= 3.6
 - Pygame 2.1.2
 
 ## Install
-Fork it, clone it, and create a python3 virtual environement: `python3 -m venv <your venv name>`
-Install the requirements with PIP: `pip install -r requirements.txt`
-`python plumbit.py` to run.
+- Fork it, clone it...
+- Create a python3 virtual environement: `python3 -m venv <your venv name>`
+- Activate your venv `source <your venv name>/bin/activate`
+- Install the requirements with PIP: `pip install -r requirements.txt`
+- `python plumbit.py` to run.
 
 ## Credit
 - Code by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
