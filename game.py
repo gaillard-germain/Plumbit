@@ -19,11 +19,11 @@ class Game:
         self.circuit = []
         self.box = []
         self.score = 0
-        self.lvl = 1
+        self.lvl = 0
+        self.time = 60
         self.state = 'WAITING'
 
         self.dashboard = pygame.image.load('images/dashboard.png')
-        self.back = pygame.image.load('images/dashboard_back.png')
         self.arrow_image = pygame.image.load('images/arrow.png')
 
         self.layer1 = pygame.Surface((900, 660), 32)
@@ -39,10 +39,10 @@ class Game:
         self.arrow.topleft = (120, 485)
 
     def reset(self):
-        """ Reset score and level """
+        """ Reset score, level and time """
         self.score = 0
         self.lvl = 0
-        self.countdown = 60
+        self.time = 60
         self.set_up()
 
     def set_up(self):
@@ -63,16 +63,20 @@ class Game:
 
         self.circuit.append(self.valve)
         self.circuit.append(self.end)
+        self.place_block()
 
-        for i in range(randint(int(self.lvl / 2), self.lvl)):
-            self.place_block(self.factory.get_extra('block'))
-
-        self.countdown = 60 - self.lvl
+        self.lvl += 1
+        self.set_time()
+        self.countdown = self.time
         self.state = 'WAITING'
 
         self.liquid = Liquid(self.valve, self.end, self.update_gain)
 
         pygame.mixer.music.play(loops=-1)
+
+    def set_time(self):
+        if not self.lvl % 5 and self.time > 5:
+            self.time -= 5
 
     def process(self):
         self.flood_btn.process()
@@ -84,18 +88,20 @@ class Game:
         if self.pipe_score.top <= -20:
             self.layer4.fill((255, 255, 255, 0))
 
-    def place_block(self, block):
-        """ Prevents a block from being placed in front of
-            the entrance or the exit """
+    def place_block(self):
+        """ Place several blocks in the circuit """
 
-        pos = (randint(0, 14) * 60, randint(0, 9) * 60)
-        if (pos in self.valve.open_to()
-                or pos in self.end.open_to()
-                or self.is_locked(pos)):
-            return
-        else:
-            block.rect.topleft = pos
-            self.circuit.append(block)
+        for i in range(randint(self.lvl, self.lvl+1)):
+            block = self.factory.get_extra('block')
+
+            pos = (randint(0, 14) * 60, randint(0, 9) * 60)
+            if (pos in self.valve.open_to()
+                    or pos in self.end.open_to()
+                    or self.is_locked(pos)):
+                continue
+            else:
+                block.rect.topleft = pos
+                self.circuit.append(block)
 
     def fill_box(self):
         """ Refill the pipe's box """
@@ -179,14 +185,13 @@ class Game:
             surface.blit(pipe.image, (150, 470 + i * 70))
 
         self.layer1.fill((96, 93, 86))
+        self.layer3.fill((255, 255, 255, 0))
 
         for pipe in self.circuit:
             self.layer1.blit(pipe.image, pipe.rect.topleft)
 
         self.cursor.draw(self.layer1)
         self.liquid.draw(self.layer2)
-
-        self.layer3.blit(self.back, (0, 0))
 
         display_txt(self.score, 40, (83, 162, 162), self.layer3,
                     'center', 8)

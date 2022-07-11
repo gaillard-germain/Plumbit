@@ -15,19 +15,23 @@ class Liquid:
         """ Returns the next floodable pipe """
 
         eligibles = []
-        elected = None
+
         for pipe in circuit:
             if (pipe.rect.topleft in self.previous.open_to()
                     and self.previous.rect.topleft in pipe.open_to()):
                 eligibles.append(pipe)
-        for pipe in eligibles:
-            if self.previous.name == 'regular':
-                elected = pipe
-            elif self.previous.name == 'cross':
+
+        if len(eligibles) > 1:
+            for pipe in eligibles:
                 if pipe.rect.topleft == (self.previous.rect.left+self.path[0],
                                          self.previous.rect.top+self.path[1]):
-                    elected = pipe
-        return elected
+                    return pipe
+
+        elif len(eligibles) == 1:
+            return eligibles[0]
+
+        else:
+            return None
 
     def flood(self, circuit):
         """ Floods the circuit """
