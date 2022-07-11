@@ -11,7 +11,6 @@ class Game:
     def __init__(self, flood_btn, giveup_btn, continue_btn):
         self.factory = Factory()
         self.cursor = Cursor()
-        self.liquid = Liquid()
 
         self.flood_btn = flood_btn
         self.giveup_btn = giveup_btn
@@ -68,9 +67,10 @@ class Game:
         for i in range(randint(int(self.lvl / 2), self.lvl)):
             self.place_block(self.factory.get_extra('block'))
 
-        self.liquid.set_up(self.valve)
         self.countdown = 60 - self.lvl
         self.state = 'WAITING'
+
+        self.liquid = Liquid(self.valve, self.end, self.update_gain)
 
         pygame.mixer.music.play(loops=-1)
 
@@ -149,7 +149,7 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        state = self.liquid.flood(self.circuit, self.end, self.update_gain)
+        state = self.liquid.flood(self.circuit)
         if state:
             self.state = state
 

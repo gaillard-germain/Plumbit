@@ -16,20 +16,25 @@ class Plumbit(object):
         pygame.init()
         pygame.display.set_caption("Plumb'it")
 
+        self.sound = Sound()
+
         self.player_name = 'Plumber'
         self.place = 'MENU'
 
         self.screen = None
 
-        self.flood_btn = Button('FLOOD', (20, 50), self.flood_now)
-        self.giveup_btn = Button('GIVE-UP', (20, 150), self.give_up)
-        self.continue_btn = Button('CONTINUE', (20, 250), self.next_step)
-        self.play_btn = Button('PLAY', (180, 700), self.play)
-        self.quit_btn = Button('QUIT', (180, 800), self.quit)
-        self.enter_btn = Button('ENTER', (195, 200), self.save_score)
+        self.flood_btn = Button(
+            'FLOOD', self.sound.click, (20, 50), self.flood_now)
+        self.giveup_btn = Button(
+            'GIVE-UP', self.sound.click, (20, 150), self.give_up)
+        self.continue_btn = Button(
+            'CONTINUE', self.sound.click, (20, 250), self.next_step)
+        self.play_btn = Button('PLAY', self.sound.click, (180, 700), self.play)
+        self.quit_btn = Button('QUIT', self.sound.click, (180, 800), self.quit)
+        self.enter_btn = Button('ENTER', self.sound.click,
+                                (195, 200), self.save_score)
 
         self.game = Game(self.flood_btn, self.giveup_btn, self.continue_btn)
-        self.sound = Sound()
 
         self.COUNTDOWN = pygame.USEREVENT + 1
         self.FLOOD = pygame.USEREVENT + 2

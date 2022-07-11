@@ -2,16 +2,14 @@ from pygame import image as pgimage
 
 
 class Liquid:
-    def __init__(self):
+    def __init__(self, valve, end, update_gain):
         self.image = pgimage.load('images/liquid.png')
         self.rect = self.image.get_rect()
-        self.previous = None
-        self.path = (0, 0)
-
-    def set_up(self, valve):
-        self.previous = valve
         self.rect.topleft = valve.rect.topleft
+        self.previous = valve
+        self.end = end
         self.path = (0, 0)
+        self.update_gain = update_gain
 
     def check(self, circuit):
         """ Returns the next floodable pipe """
@@ -31,7 +29,7 @@ class Liquid:
                     elected = pipe
         return elected
 
-    def flood(self, circuit, end, update_gain):
+    def flood(self, circuit):
         """ Floods the circuit """
 
         pipe = self.check(circuit)
@@ -42,14 +40,14 @@ class Liquid:
             self.rect = self.rect.move(int(self.path[0]/60),
                                        int(self.path[1]/60))
 
-            if self.rect.topleft == end.rect.topleft:
-                update_gain(end.rect.topleft, end.value)
+            if self.rect.topleft == self.end.rect.topleft:
+                self.update_gain(self.end.rect.topleft, self.end.value)
                 return 'WIN'
 
             elif self.rect.topleft == pipe.rect.topleft:
                 pipe.clog(self.path)
                 self.previous = pipe
-                update_gain(pipe.rect.topleft, pipe.value)
+                self.update_gain(pipe.rect.topleft, pipe.value)
 
         else:
             return 'LOOSE'

@@ -5,8 +5,9 @@ from tools import display_txt
 class Button:
     """A menu button"""
 
-    def __init__(self, label, pos, onclick_function=None):
+    def __init__(self, label, sound, pos, onclick_function=None):
         self.label = label
+        self.sound = sound
         self.image_1 = pgimage.load('images/button.png')
         display_txt(label, 32, (64, 68, 70), self.image_1, 100, 'center')
         self.image_2 = pgimage.load('images/button2.png')
@@ -31,4 +32,5 @@ class Button:
 
     def click(self):
         if self.glow:
+            self.sound.play()
             self.onclick_function()
