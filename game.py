@@ -119,12 +119,11 @@ class Game:
 
         if not self.is_locked(pos):
             pipe = self.box.pop(0)
-            cost = - int(pipe.value / 2)
             pipe.rect.topleft = pos
             self.add(pipe)
             self.box.append(self.factory.get_pipe())
 
-            self.update_gain(pipe.rect.topleft, cost)
+            self.update_gain(pipe.rect.topleft, pipe.cost)
 
             return True
 

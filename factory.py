@@ -11,7 +11,8 @@ class Factory:
                 'image2': None,
                 'apertures': [1, 1, 1, 1],
                 'name': 'cross',
-                'value': 150,
+                'cost': -75,
+                'gain': 100,
                 'locked': False,
                 'weight': 30
             },
@@ -20,7 +21,8 @@ class Factory:
                 'image2': None,
                 'apertures': [0, 1, 0, 1],
                 'name': 'straight',
-                'value': 100,
+                'cost': -50,
+                'gain': 100,
                 'locked': False,
                 'weight': 50
             },
@@ -29,7 +31,8 @@ class Factory:
                 'image2': None,
                 'apertures': [1, 0, 1, 0],
                 'name': 'straight',
-                'value': 100,
+                'cost': -50,
+                'gain': 100,
                 'locked': False,
                 'weight': 50
             },
@@ -38,7 +41,8 @@ class Factory:
                 'image2': None,
                 'apertures': [0, 1, 1, 0],
                 'name': 'elbow',
-                'value': 100,
+                'cost': -50,
+                'gain': 100,
                 'locked': False,
                 'weight': 40
             },
@@ -47,7 +51,8 @@ class Factory:
                 'image2': None,
                 'apertures': [1, 1, 0, 0],
                 'name': 'elbow',
-                'value': 100,
+                'cost': -50,
+                'gain': 100,
                 'locked': False,
                 'weight': 40
             },
@@ -56,7 +61,8 @@ class Factory:
                 'image2': None,
                 'apertures': [0, 0, 1, 1],
                 'name': 'elbow',
-                'value': 100,
+                'cost': -50,
+                'gain': 100,
                 'locked': False,
                 'weight': 40
             },
@@ -65,7 +71,8 @@ class Factory:
                 'image2': None,
                 'apertures': [1, 0, 0, 1],
                 'name': 'elbow',
-                'value': 100,
+                'cost': -50,
+                'gain': 100,
                 'locked': False,
                 'weight': 40
             }
@@ -76,7 +83,8 @@ class Factory:
                 'image2': pgimage.load('images/valve_1.png'),
                 'apertures': [0, 0, 1, 0],
                 'name': 'valve',
-                'value': 0,
+                'cost': 0,
+                'gain': 0,
                 'locked': True,
             },
             'end': {
@@ -84,7 +92,8 @@ class Factory:
                 'image2': None,
                 'apertures': [0, 0, 1, 0],
                 'name': 'end',
-                'value': 300,
+                'cost': 0,
+                'gain': 300,
                 'locked': True,
             },
             'block': {
@@ -92,13 +101,15 @@ class Factory:
                 'image2': None,
                 'apertures': [0, 0, 0, 0],
                 'name': 'block',
-                'value': 0,
+                'cost': 0,
+                'gain': 0,
                 'locked': True,
             }
         }
 
     def get_extra(self, name):
         """ Return a special pipe """
+
         return Pipe(self.extra[name])
 
     def get_pipe(self):

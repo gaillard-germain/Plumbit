@@ -227,6 +227,7 @@ class Plumbit(object):
 
     def next_step(self):
         """ Continue Button callback """
+
         if self.game.state == 'WIN':
             self.game.set_up()
 

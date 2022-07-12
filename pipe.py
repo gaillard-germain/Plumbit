@@ -10,7 +10,8 @@ class Pipe:
         self.image_2 = data['image2']
         self.apertures = data['apertures'].copy()
         self.name = data['name']
-        self.value = data['value']
+        self.cost = data['cost']
+        self.gain = data['gain']
         self.locked = data['locked']
         self.rect = self.image.get_rect()
 
@@ -56,9 +57,11 @@ class Pipe:
 
     def lock(self):
         """ Locks the pipe """
+
         self.locked = True
 
     def anim(self):
         """ Animates the starting valve """
+
         if self.image_2:
             self.image, self.image_2 = (self.image_2, self.image)

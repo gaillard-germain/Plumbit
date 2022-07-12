@@ -45,14 +45,16 @@ class Liquid:
                                        int(self.path[1]/60))
 
             if self.rect.topleft == self.end.rect.topleft:
-                gain = self.end.value + bonus * 10
+                gain = self.end.gain + bonus * 10
                 self.update_gain(self.end.rect.topleft, gain)
                 return 'WIN'
 
             elif self.rect.topleft == pipe.rect.topleft:
                 pipe.clog(self.path)
                 self.previous = pipe
-                self.update_gain(pipe.rect.topleft, pipe.value)
+                if pipe.name == 'cross' and pipe.locked:
+                    pipe.gain = 200
+                self.update_gain(pipe.rect.topleft, pipe.gain)
 
         else:
             return 'LOOSE'
