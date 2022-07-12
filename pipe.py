@@ -14,6 +14,7 @@ class Pipe:
         self.gain = data['gain']
         self.locked = data['locked']
         self.rect = self.image.get_rect()
+        self.flooded = False
 
     def rotate(self):
         """ Rotate the pipe (anti-clockwise)"""

@@ -52,8 +52,9 @@ class Liquid:
             elif self.rect.topleft == pipe.rect.topleft:
                 pipe.clog(self.path)
                 self.previous = pipe
-                if pipe.name == 'cross' and pipe.locked:
+                if pipe.name == 'cross' and pipe.flooded:
                     pipe.gain = 200
+                pipe.flooded = True
                 self.update_gain(pipe.rect.topleft, pipe.gain)
 
         else:
