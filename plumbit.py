@@ -29,7 +29,9 @@ class Plumbit:
     def display_game(self):
         """ The game """
 
-        self.screen = pygame.display.set_mode((1440, 900))
+        self.screen = pygame.display.set_mode(
+            (self.game.dashboard.get_width(), self.game.dashboard.get_height())
+        )
 
         clock = pygame.time.Clock()
 

@@ -34,9 +34,9 @@ class Pipe:
         for index, aperture in enumerate(self.apertures):
             if aperture:
                 if index == 0:
-                    yield ((self.rect.left - 60), self.rect.top)
+                    yield ((self.rect.left - self.rect.width), self.rect.top)
                 if index == 1:
-                    yield (self.rect.left, (self.rect.top - 60))
+                    yield (self.rect.left, (self.rect.top - self.rect.height))
                 if index == 2:
                     yield (self.rect.right, self.rect.top)
                 if index == 3:

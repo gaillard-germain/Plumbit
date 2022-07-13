@@ -65,8 +65,14 @@ class Game:
         self.valve = self.factory.get_extra('valve').rotate()
         self.end = self.factory.get_extra('end').rotate()
 
-        self.valve.rect.topleft = (randint(1, 5) * 60, randint(1, 9) * 60)
-        self.end.rect.topleft = (randint(9, 13) * 60, randint(1, 9) * 60)
+        self.valve.rect.topleft = (
+            randint(1, 5) * self.valve.rect.width,
+            randint(1, 9) * self.valve.rect.height
+        )
+        self.end.rect.topleft = (
+            randint(9, 13) * self.end.rect.width,
+            randint(1, 9) * self.end.rect.height
+        )
 
         self.circuit.append(self.valve)
         self.circuit.append(self.end)
@@ -103,7 +109,10 @@ class Game:
         for i in range(randint(self.lvl, self.lvl+1)):
             block = self.factory.get_extra('block')
 
-            pos = (randint(0, 14) * 60, randint(0, 9) * 60)
+            pos = (
+                randint(0, 14) * block.rect.width,
+                randint(0, 9) * block.rect.height
+            )
             if (pos in self.valve.open_to()
                     or pos in self.end.open_to()
                     or self.is_locked(pos)):

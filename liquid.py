@@ -38,15 +38,15 @@ class Liquid:
         if pipe:
             self.path = (pipe.rect.left - self.previous.rect.left,
                          pipe.rect.top - self.previous.rect.top)
-            self.rect = self.rect.move(int(self.path[0]/60),
-                                       int(self.path[1]/60))
+            self.rect.move_ip(int(self.path[0]/pipe.rect.width),
+                              int(self.path[1]/pipe.rect.height))
 
             if self.end.rect.contains(self.rect):
                 gain = self.end.gain + bonus * 10
                 self.update_gain(self.end.rect.topleft, gain)
                 return 'WIN'
 
-            elif self.rect.topleft == pipe.rect.topleft:
+            elif pipe.rect.contains(self.rect):
                 pipe.clog(self.path)
                 self.previous = pipe
                 if pipe.name == 'cross' and pipe.flooded:
