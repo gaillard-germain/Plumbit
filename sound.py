@@ -10,6 +10,5 @@ class Sound:
         self.sub = mixer.Sound('sounds/sub.ogg')
         self.loose = mixer.Sound('sounds/loose.ogg')
         self.win = mixer.Sound('sounds/win.ogg')
-        self.click = mixer.Sound('sounds/click.wav')
 
         mixer.music.set_volume(0.4)

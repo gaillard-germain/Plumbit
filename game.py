@@ -3,22 +3,29 @@ from random import randint
 
 from factory import Factory
 from cursor import Cursor
+from button import Button
 from liquid import Liquid
-from tools import display_txt
+from sound import Sound
+from tools import display_txt, center
 
 
 class Game:
-    def __init__(self, flood_btn, giveup_btn, continue_btn):
+    def __init__(self):
         self.factory = Factory()
         self.cursor = Cursor()
+        self.sound = Sound()
 
-        self.flood_btn = flood_btn
-        self.giveup_btn = giveup_btn
-        self.continue_btn = continue_btn
+        self.flood_btn = Button('FLOOD', (20, 50), self.flood_now)
+        self.giveup_btn = Button('GIVE-UP', (20, 150), self.give_up)
+        self.continue_btn = Button('CONTINUE', (20, 250), self.next_step)
+
+        self.COUNTDOWN = pygame.USEREVENT + 1
+        self.FLOOD = pygame.USEREVENT + 2
+        self.ANIM = pygame.USEREVENT + 3
 
         self.circuit = []
         self.box = []
-        self.score = 0
+        self.score = 22000
         self.lvl = 0
         self.time = 60
         self.state = 'WAITING'
@@ -26,21 +33,21 @@ class Game:
         self.dashboard = pygame.image.load('images/dashboard.png')
         self.arrow_image = pygame.image.load('images/arrow.png')
 
-        self.layer1 = pygame.Surface((900, 660), 32)
+        self.layer1 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
         self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
-        self.layer3 = pygame.Surface((134, 682), pygame.SRCALPHA, 32)
+        self.layer3 = pygame.Surface((134, 900), pygame.SRCALPHA, 32)
         self.layer4 = pygame.Surface((60, 60), pygame.SRCALPHA, 32)
 
         self.board = self.layer1.get_rect()
         self.arrow = self.arrow_image.get_rect()
         self.pipe_score = self.layer4.get_rect()
 
-        self.board.topleft = (250, 120)
+        self.board.topleft = (0, 0)
         self.arrow.topleft = (120, 485)
 
     def reset(self):
         """ Reset score, level and time """
-        self.score = 0
+        self.score = 22000
         self.lvl = 0
         self.time = 60
         self.set_up()
@@ -71,6 +78,8 @@ class Game:
         self.state = 'WAITING'
 
         self.liquid = Liquid(self.valve, self.end, self.update_gain)
+
+        pygame.time.set_timer(self.ANIM, 15)
 
         pygame.mixer.music.play(loops=-1)
 
@@ -112,20 +121,16 @@ class Game:
         for _ in range(4):
             self.box.append(self.factory.get_pipe())
 
-    def drop_and_pickup(self):
+    def drop_and_pickup(self, pos):
         """ Place the current pipe and replace another in the pile """
 
-        pos = self.cursor.rect.topleft
+        self.sound.put.play()
+        pipe = self.box.pop(0)
+        pipe.rect.topleft = pos
+        self.add(pipe)
+        self.box.append(self.factory.get_pipe())
 
-        if not self.is_locked(pos):
-            pipe = self.box.pop(0)
-            pipe.rect.topleft = pos
-            self.add(pipe)
-            self.box.append(self.factory.get_pipe())
-
-            self.update_gain(pipe.rect.topleft, pipe.cost)
-
-            return True
+        self.update_gain(pipe.rect.topleft, pipe.cost)
 
     def add(self, current):
         """ Adds the current pipe to the circuit """
@@ -151,12 +156,51 @@ class Game:
         else:
             return False
 
+    def on_mouse_click(self):
+        if self.state == 'LOOSE' or self.state == 'WIN':
+            emit = self.continue_btn.click()
+
+        else:
+            pos = self.cursor.rect.topleft
+
+            emit = self.flood_btn.click()
+            emit = self.giveup_btn.click()
+
+            if self.state == 'WAITING':
+                self.state = 'RUNNING'
+                pygame.time.set_timer(self.COUNTDOWN, 1000)
+
+            if (self.board.contains(self.cursor.rect)
+                    and not self.is_locked(pos)):
+                self.drop_and_pickup(pos)
+
+        return emit
+
+    def tic(self):
+        self.sound.tic.play()
+        self.countdown -= 1
+        self.valve.anim()
+        if self.countdown <= 0:
+            pygame.time.set_timer(self.COUNTDOWN, 0)
+            pygame.time.set_timer(self.FLOOD, 30)
+            self.sound.sub.play()
+
     def flood(self):
         """ Floods the circuit """
 
         state = self.liquid.flood(self.circuit, self.countdown)
         if state:
             self.state = state
+
+        if self.state == 'WIN':
+            pygame.time.set_timer(self.FLOOD, 0)
+            pygame.mixer.music.stop()
+            self.sound.win.play()
+
+        elif self.state == 'LOOSE':
+            pygame.time.set_timer(self.FLOOD, 0)
+            pygame.mixer.music.stop()
+            self.sound.loose.play()
 
     def update_gain(self, pos, value):
         self.score += value
@@ -172,12 +216,14 @@ class Game:
         display_txt(txt, 26, color, self.layer4)
 
     def draw(self, surface):
+
         surface.fill((66, 63, 56))
 
-        surface.blit(self.layer1, self.board.topleft)
-        surface.blit(self.layer2, self.board.topleft)
-        surface.blit(self.dashboard, (0, 0))
-        surface.blit(self.layer3, (1167, 115))
+        surface.blit(self.layer1, center(surface, self.layer1))
+        surface.blit(self.layer2, center(surface, self.layer1))
+
+        surface.blit(self.dashboard, center(surface, self.dashboard))
+        surface.blit(self.layer3, (1167, 0))
         surface.blit(self.arrow_image, self.arrow.topleft)
 
         for i, pipe in enumerate(self.box):
@@ -193,9 +239,9 @@ class Game:
         self.liquid.draw(self.layer2)
 
         display_txt(self.score, 40, (83, 162, 162), self.layer3,
-                    'center', 8)
+                    'center', 124)
         display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
-                    'center', 632)
+                    'center', 747)
 
         surface.blit(self.flood_btn.image, self.flood_btn.rect.topleft)
         surface.blit(self.giveup_btn.image, self.giveup_btn.rect.topleft)
@@ -213,9 +259,37 @@ class Game:
 
     def anim(self):
         if self.pipe_score.top >= -20:
-            self.pipe_score = self.pipe_score.move(0, -2)
+            self.pipe_score.move_ip(0, -2)
 
         if self.arrow.left > 90:
-            self.arrow = self.arrow.move(-1, 0)
+            self.arrow.move_ip(-1, 0)
         else:
             self.arrow.left = 120
+
+    # ## Buttons callbacks ## #
+
+    def flood_now(self):
+        """ Flood Button callback """
+
+        self.sound.sub.play()
+        pygame.time.set_timer(self.COUNTDOWN, 0)
+        pygame.time.set_timer(self.FLOOD, 15)
+
+    def give_up(self):
+        """ Give-up Button callback """
+
+        pygame.mixer.music.stop()
+        pygame.time.set_timer(self.COUNTDOWN, 0)
+        pygame.time.set_timer(self.FLOOD, 0)
+        pygame.time.set_timer(self.ANIM, 0)
+
+        return 'LOOSE'
+
+    def next_step(self):
+        """ Continue Button callback """
+
+        if self.state == 'WIN':
+            self.set_up()
+
+        elif self.state == 'LOOSE':
+            return self.give_up()

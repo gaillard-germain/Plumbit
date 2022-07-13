@@ -11,26 +11,14 @@ class Cursor:
         self.image = self.pointer_image
         self.rect = self.image.get_rect()
 
-    def process(self, area, is_locked):
-        """ Keep the cursor in the defined area """
+    def process(self, board, is_locked):
+        """ Move the cursor in the board """
 
         mouse_pos = mouse.get_pos()
 
-        x = mouse_pos[0] - area.left
-        y = mouse_pos[1] - area.top
+        x = mouse_pos[0] - 250
+        y = mouse_pos[1] - 120
         self.rect.topleft = (x-x % 60, y-y % 60)
-
-        if self.rect.left < 0:
-            self.rect.left = 0
-
-        elif self.rect.right > area.width:
-            self.rect.right = area.width
-
-        if self.rect.top < 0:
-            self.rect.top = 0
-
-        elif self.rect.bottom > area.height:
-            self.rect.bottom = area.height
 
         if is_locked(self.rect.topleft):
             self.image = self.locked_image

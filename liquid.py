@@ -19,19 +19,16 @@ class Liquid:
         for pipe in circuit:
             if (pipe.rect.topleft in self.previous.open_to()
                     and self.previous.rect.topleft in pipe.open_to()):
-                eligibles.append(pipe)
-
-        if len(eligibles) > 1:
-            for pipe in eligibles:
-                if pipe.rect.topleft == (self.previous.rect.left+self.path[0],
-                                         self.previous.rect.top+self.path[1]):
+                if self.previous.name != 'cross':
                     return pipe
 
-        elif len(eligibles) == 1:
-            return eligibles[0]
+                else:
+                    eligibles.append(pipe)
 
-        else:
-            return None
+        for pipe in eligibles:
+            if pipe.rect.topleft == (self.previous.rect.left+self.path[0],
+                                     self.previous.rect.top+self.path[1]):
+                return pipe
 
     def flood(self, circuit, bonus):
         """ Floods the circuit """
@@ -44,7 +41,7 @@ class Liquid:
             self.rect = self.rect.move(int(self.path[0]/60),
                                        int(self.path[1]/60))
 
-            if self.rect.topleft == self.end.rect.topleft:
+            if self.end.rect.contains(self.rect):
                 gain = self.end.gain + bonus * 10
                 self.update_gain(self.end.rect.topleft, gain)
                 return 'WIN'

@@ -4,6 +4,13 @@ import json
 from pygame import font as pgfont
 
 
+def center(surface1, surface2):
+    return (
+        int((surface1.get_width() - surface2.get_width())/2),
+        int((surface1.get_height() - surface2.get_height())/2)
+    )
+
+
 def check_topten():
     """ Check if topten.json exists, if not copy it from a clean file """
 
