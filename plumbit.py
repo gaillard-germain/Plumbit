@@ -7,7 +7,7 @@ from record import Record
 from tools import check_topten
 
 
-class Plumbit(object):
+class Plumbit:
     """ Plumbit """
 
     def __init__(self):
@@ -125,10 +125,8 @@ class Plumbit(object):
 
         return self.display_menu()
 
-# ## Buttons callbacks ## #
-
     def quit(self):
-        """ Quit Button callback """
+        """ Quit function """
 
         pygame.quit()
         sys.exit()

@@ -25,7 +25,7 @@ class Game:
 
         self.circuit = []
         self.box = []
-        self.score = 22000
+        self.score = 0
         self.lvl = 0
         self.time = 60
         self.state = 'WAITING'
@@ -47,7 +47,7 @@ class Game:
 
     def reset(self):
         """ Reset score, level and time """
-        self.score = 22000
+        self.score = 0
         self.lvl = 0
         self.time = 60
         self.set_up()
