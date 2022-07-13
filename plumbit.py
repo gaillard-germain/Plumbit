@@ -109,6 +109,7 @@ class Plumbit:
 
                 elif event.key == pygame.K_RETURN:
                     self.record.save_score()
+                    self.place = 'MENU'
 
                 else:
                     self.record.enter_name(event)
