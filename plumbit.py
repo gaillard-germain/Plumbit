@@ -8,7 +8,7 @@ from tools import check_topten
 
 
 class Plumbit:
-    """ Plumbit """
+    """ Plumbit (the game loops) """
 
     def __init__(self):
         pygame.mixer.pre_init(buffer=2048)

@@ -122,7 +122,8 @@ class Game:
             )
 
             if (self.end.rect.topleft not in self.valve.open_to()
-                    and self.valve.rect.topleft not in self.end.open_to()):
+                    and self.valve.rect.topleft not in self.end.open_to()
+                    and self.valve.rect.topleft != self.end.rect.topleft):
                 break
 
         self.circuit.append(self.end)

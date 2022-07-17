@@ -18,7 +18,6 @@ class Button:
         self.rect.midtop = pos
         self.glow = False
         self.onclick_function = onclick_function
-        self.clicked = False
 
     def process(self):
         if self.rect.collidepoint(mouse.get_pos()):
