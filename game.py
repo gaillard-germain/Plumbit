@@ -6,18 +6,21 @@ from cursor import Cursor
 from button import Button
 from liquid import Liquid
 from sound import Sound
-from tools import display_txt, center
+from tools import display_txt
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, screen):
+        self.tile_size = 64
+        self.tile_x = 17
+        self.tile_y = 12
+        self.screen = screen
         self.factory = Factory()
-        self.cursor = Cursor()
         self.sound = Sound()
 
-        self.flood_btn = Button('FLOOD', (20, 50), self.flood_now)
-        self.giveup_btn = Button('GIVE-UP', (20, 150), self.give_up)
-        self.continue_btn = Button('CONTINUE', (20, 250), self.next_step)
+        self.flood_btn = Button('FLOOD', (140, 50), self.flood_now)
+        self.giveup_btn = Button('GIVE-UP', (140, 150), self.give_up)
+        self.continue_btn = Button('CONTINUE', (140, 250), self.next_step)
 
         self.COUNTDOWN = pygame.USEREVENT + 1
         self.FLOOD = pygame.USEREVENT + 2
@@ -30,20 +33,35 @@ class Game:
         self.time = 60
         self.state = 'WAITING'
 
-        self.dashboard = pygame.image.load('images/dashboard.png')
+        self.dashboard_left = pygame.image.load('images/dashboard_left.png')
+        self.dashboard_right = pygame.image.load('images/dashboard_right.png')
         self.arrow_image = pygame.image.load('images/arrow.png')
 
-        self.layer1 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
-        self.layer2 = pygame.Surface((900, 660), pygame.SRCALPHA, 32)
-        self.layer3 = pygame.Surface((134, 900), pygame.SRCALPHA, 32)
-        self.layer4 = pygame.Surface((60, 60), pygame.SRCALPHA, 32)
+        self.layer1 = pygame.Surface(
+            (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
+            pygame.SRCALPHA,
+            32
+        )
+        self.layer2 = pygame.Surface(
+            (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
+            pygame.SRCALPHA,
+            32
+        )
+        self.layer3 = pygame.Surface(
+            (self.tile_size, self.tile_size), pygame.SRCALPHA, 32)
 
         self.board = self.layer1.get_rect()
         self.arrow = self.arrow_image.get_rect()
-        self.pipe_score = self.layer4.get_rect()
+        self.pipe_score = self.layer3.get_rect()
 
         self.board.topleft = (0, 0)
-        self.arrow.topleft = (120, 485)
+        self.arrow.topright = (240, 498)
+
+        self.board_offset = (
+            (self.screen.get_width() - self.board.width)/2,
+            (self.screen.get_height() - self.board.height)/2
+        )
+        self.cursor = Cursor(self.board_offset)
 
     def reset(self):
         """ Reset score, level and time """
@@ -65,18 +83,7 @@ class Game:
         self.valve = self.factory.get_extra('valve').rotate()
         self.end = self.factory.get_extra('end').rotate()
 
-        self.valve.rect.topleft = (
-            randint(1, 5) * self.valve.rect.width,
-            randint(1, 9) * self.valve.rect.height
-        )
-        self.end.rect.topleft = (
-            randint(9, 13) * self.end.rect.width,
-            randint(1, 9) * self.end.rect.height
-        )
-
-        self.circuit.append(self.valve)
-        self.circuit.append(self.end)
-        self.place_block()
+        self.strew()
 
         self.lvl += 1
         self.set_time()
@@ -93,25 +100,39 @@ class Game:
         if not self.lvl % 5 and self.time > 5:
             self.time -= 5
 
-    def process(self):
-        self.flood_btn.process()
-        self.giveup_btn.process()
-        self.continue_btn.process()
+    def strew(self):
+        """ Place valve, end and several blocks in the circuit """
 
-        self.cursor.process(self.board, self.is_locked)
+        self.valve.rect.topleft = (
+            randint(1, self.tile_x-2) * self.valve.rect.width,
+            randint(1, self.tile_y-2) * self.valve.rect.height
+        )
 
-        if self.pipe_score.top <= -20:
-            self.layer4.fill((255, 255, 255, 0))
+        self.circuit.append(self.valve)
 
-    def place_block(self):
-        """ Place several blocks in the circuit """
+        self.end.rect.topleft = (
+            randint(1, self.tile_x-2) * self.end.rect.width,
+            randint(1, self.tile_y-2) * self.end.rect.height
+        )
+
+        while True:
+            self.end.rect.topleft = (
+                randint(1, self.tile_x-2) * self.end.rect.width,
+                randint(1, self.tile_y-2) * self.end.rect.height
+            )
+
+            if (self.end.rect.topleft not in self.valve.open_to()
+                    and self.valve.rect.topleft not in self.end.open_to()):
+                break
+
+        self.circuit.append(self.end)
 
         for i in range(randint(self.lvl, self.lvl+1)):
             block = self.factory.get_extra('block')
 
             pos = (
-                randint(0, 14) * block.rect.width,
-                randint(0, 9) * block.rect.height
+                randint(0, self.tile_x-1) * block.rect.width,
+                randint(0, self.tile_y-1) * block.rect.height
             )
             if (pos in self.valve.open_to()
                     or pos in self.end.open_to()
@@ -165,6 +186,18 @@ class Game:
         else:
             return False
 
+    def process(self):
+        self.flood_btn.process()
+        self.giveup_btn.process()
+        self.continue_btn.process()
+
+        self.cursor.process(self.is_locked)
+
+        if self.pipe_score.top <= -20:
+            self.layer3.fill((255, 255, 255, 0))
+
+        self.draw()
+
     def on_mouse_click(self):
         if self.state == 'LOOSE' or self.state == 'WIN':
             emit = self.continue_btn.click()
@@ -214,7 +247,7 @@ class Game:
     def update_gain(self, pos, value):
         self.score += value
         self.pipe_score.topleft = pos
-        self.layer4.fill((255, 255, 255, 0))
+        self.layer3.fill((255, 255, 255, 0))
         if int(value) > 0:
             txt = '+{} $'.format(value)
             color = (70, 170, 60)
@@ -222,24 +255,32 @@ class Game:
             txt = '{} $'.format(value)
             color = (194, 69, 26)
 
-        display_txt(txt, 26, color, self.layer4)
+        display_txt(txt, 26, color, self.layer3)
 
-    def draw(self, surface):
+    def draw(self):
 
-        surface.fill((66, 63, 56))
+        self.screen.fill((66, 63, 56))
 
-        surface.blit(self.layer1, center(surface, self.layer1))
-        surface.blit(self.layer2, center(surface, self.layer1))
+        self.screen.blit(self.layer1, self.board_offset)
+        self.screen.blit(self.layer2, self.board_offset)
 
-        surface.blit(self.dashboard, center(surface, self.dashboard))
-        surface.blit(self.layer3, (1167, 0))
-        surface.blit(self.arrow_image, self.arrow.topleft)
+        self.screen.blit(self.dashboard_left, (0, 0))
+        self.screen.blit(
+            self.dashboard_right,
+            (self.screen.get_width() - self.dashboard_right.get_width(), 0)
+        )
+
+        display_txt(self.score, 40, (83, 162, 162), self.screen,
+                    1678, 177)
+        display_txt(self.countdown, 40, (70, 170, 60), self.screen,
+                    1680, 900)
+
+        self.screen.blit(self.arrow_image, self.arrow.topleft)
 
         for i, pipe in enumerate(self.box):
-            surface.blit(pipe.image, (150, 470 + i * 70))
+            self.screen.blit(pipe.image, (250, 480 + i * 80))
 
         self.layer1.fill((96, 93, 86))
-        self.layer3.fill((255, 255, 255, 0))
 
         for pipe in self.circuit:
             self.layer1.blit(pipe.image, pipe.rect.topleft)
@@ -247,33 +288,27 @@ class Game:
         self.cursor.draw(self.layer1)
         self.liquid.draw(self.layer2)
 
-        display_txt(self.score, 40, (83, 162, 162), self.layer3,
-                    'center', 124)
-        display_txt(self.countdown, 40, (70, 170, 60), self.layer3,
-                    'center', 747)
+        self.flood_btn.draw(self.screen)
+        self.giveup_btn.draw(self.screen)
 
-        surface.blit(self.flood_btn.image, self.flood_btn.rect.topleft)
-        surface.blit(self.giveup_btn.image, self.giveup_btn.rect.topleft)
-
-        self.layer1.blit(self.layer4, self.pipe_score.topleft)
+        self.layer1.blit(self.layer3, self.pipe_score.topleft)
 
         if self.state == 'WIN' or self.state == 'LOOSE':
-            display_txt('YOU {}'.format(self.state), 72,
-                        (194, 69, 26), surface, 'center', 20)
+            display_txt('YOU {}'.format(self.state), 72, (194, 69, 26),
+                        self.screen, None, 60)
             txt = 'Click CONTINUE Button'
-            display_txt(txt, 40, (194, 69, 26), surface,
-                        'center', 800)
-            surface.blit(self.continue_btn.image,
-                         self.continue_btn.rect.topleft)
+            display_txt(txt, 40, (194, 69, 26), self.screen, None,
+                        self.screen.get_height()-60)
+            self.continue_btn.draw(self.screen)
 
     def anim(self):
         if self.pipe_score.top >= -20:
             self.pipe_score.move_ip(0, -2)
 
-        if self.arrow.left > 90:
+        if self.arrow.right > 210:
             self.arrow.move_ip(-1, 0)
         else:
-            self.arrow.left = 120
+            self.arrow.right = 240
 
     # ## Buttons callbacks ## #
 

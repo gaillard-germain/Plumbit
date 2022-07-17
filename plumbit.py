@@ -18,20 +18,16 @@ class Plumbit:
 
         self.place = 'MENU'
 
-        self.screen = None
+        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
-        self.game = Game()
-        self.menu = Menu(self.quit)
-        self.record = Record()
+        self.game = Game(self.screen)
+        self.menu = Menu(self.quit, self.screen)
+        self.record = Record(self.screen)
 
         check_topten()
 
     def display_game(self):
         """ The game """
-
-        self.screen = pygame.display.set_mode(
-            (self.game.dashboard.get_width(), self.game.dashboard.get_height())
-        )
 
         clock = pygame.time.Clock()
 
@@ -53,8 +49,6 @@ class Plumbit:
                 if event.type == self.game.FLOOD:
                     self.game.flood()
 
-            self.game.draw(self.screen)
-
             self.game.process()
 
             pygame.display.update()
@@ -71,8 +65,6 @@ class Plumbit:
     def display_menu(self):
         """ The menu with the TopTen """
 
-        self.screen = pygame.display.set_mode((600, 900))
-
         while self.place == 'MENU':
             event = pygame.event.wait()
 
@@ -86,16 +78,12 @@ class Plumbit:
 
             self.menu.process()
 
-            self.menu.draw(self.screen)
-
             pygame.display.update()
 
         return self.display_game()
 
     def display_record(self):
         """ Save the player's score in the TopTen """
-
-        self.screen = pygame.display.set_mode((600, 300))
 
         self.record.player_name = 'Enter your name'
 
@@ -119,8 +107,6 @@ class Plumbit:
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.record.on_mouse_click() == 'MENU':
                     self.place = 'MENU'
-
-            self.record.draw(self.screen)
 
             self.record.process()
 

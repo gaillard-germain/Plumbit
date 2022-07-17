@@ -3,14 +3,21 @@ from tools import display_txt, update_json, new_record
 
 
 class Record:
-    def __init__(self):
+    def __init__(self, screen):
+        self.screen = screen
         self.score = 0
         self.rank = 0
         self.player_name = 'Plumber'
-        self.enter_btn = Button('ENTER', (195, 200), self.save_score)
+        self.enter_btn = Button(
+            'ENTER',
+            (self.screen.get_width()/2, self.screen.get_height()/2 + 100),
+            self.save_score
+        )
 
     def process(self):
         self.enter_btn.process()
+
+        self.draw()
 
     def on_mouse_click(self):
         emit = self.enter_btn.click()
@@ -27,13 +34,13 @@ class Record:
         if len(self.player_name) < 12:
             self.player_name += event.unicode
 
-    def draw(self, surface):
-        surface.fill((40, 42, 44))
+    def draw(self):
+        self.screen.fill((40, 42, 44))
         txt = str(self.score) + ' is a new RECORD !'
-        display_txt(txt, 48, (83, 162, 162), surface, 'center', 20)
-        display_txt(self.player_name, 40, (170, 60, 60),
-                    surface, 'center', 100)
-        surface.blit(self.enter_btn.image, self.enter_btn.rect.topleft)
+        display_txt(txt, 48, (83, 162, 162), self.screen, None,
+                    self.screen.get_height()/2 - 100)
+        display_txt(self.player_name, 40, (170, 60, 60), self.screen)
+        self.enter_btn.draw(self.screen)
 
     def check(self, score):
         """ Checks if score may enter the TopTen """

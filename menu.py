@@ -3,14 +3,19 @@ from tools import display_txt, load_json
 
 
 class Menu:
-    def __init__(self, function_quit):
+    def __init__(self, function_quit, screen):
+        self.screen = screen
         self.quit = function_quit
-        self.play_btn = Button('PLAY', (180, 700), self.play)
-        self.quit_btn = Button('QUIT', (180, 800), self.quit)
+        self.play_btn = Button(
+            'PLAY', (self.screen.get_width()/2, 700), self.play)
+        self.quit_btn = Button(
+            'QUIT', (self.screen.get_width()/2, 800), self.quit)
 
     def process(self):
         self.play_btn.process()
         self.quit_btn.process()
+
+        self.draw()
 
     def on_mouse_click(self):
         emit = self.play_btn.click()
@@ -18,19 +23,20 @@ class Menu:
 
         return emit
 
-    def draw(self, surface):
-        surface.fill((40, 42, 44))
+    def draw(self):
+        self.screen.fill((40, 42, 44))
 
-        display_txt("PLUMB'IT", 72, (170, 60, 60), surface, 'center', 50)
+        display_txt("PLUMB'IT", 72, (170, 60, 60), self.screen, None, 50)
 
         for i, player in enumerate(load_json('topten.json')):
-            display_txt(player["name"], 40, (50, 162, 162), surface, 140,
-                        170 + i * 50)
-            display_txt(player["score"], 40, (50, 162, 162), surface, 380,
-                        170 + i * 50)
+            display_txt(player["name"], 40, (50, 162, 162), self.screen,
+                        self.screen.get_width()/2 - 200, 170 + i * 50, 'left')
+            display_txt(player["score"], 40, (50, 162, 162), self.screen,
+                        self.screen.get_width()/2 + 200,
+                        170 + i * 50, 'right')
 
-        surface.blit(self.play_btn.image, self.play_btn.rect.topleft)
-        surface.blit(self.quit_btn.image, self.quit_btn.rect.topleft)
+        self.play_btn.draw(self.screen)
+        self.quit_btn.draw(self.screen)
 
     # ## Buttons callbacks # ##
 
