@@ -66,15 +66,15 @@ class Plumbit:
         """ The menu with the TopTen """
 
         while self.place == 'MENU':
-            event = pygame.event.wait()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.quit()
 
-            if event.type == pygame.QUIT:
-                self.quit()
-
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if self.menu.on_mouse_click() == 'GAME':
-                    self.game.set_up()
-                    self.place = 'GAME'
+                elif (event.type == pygame.MOUSEBUTTONDOWN
+                        and event.button == 1):
+                    if self.menu.on_mouse_click() == 'GAME':
+                        self.game.set_up()
+                        self.place = 'GAME'
 
             self.menu.process()
 
@@ -88,25 +88,25 @@ class Plumbit:
         self.record.player_name = 'Enter your name'
 
         while self.place == 'RECORD':
-            event = pygame.event.wait()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.quit()
 
-            if event.type == pygame.QUIT:
-                self.quit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        self.record.backspace()
 
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
-                    self.record.backspace()
+                    elif event.key == pygame.K_RETURN:
+                        self.record.save_score()
+                        self.place = 'MENU'
 
-                elif event.key == pygame.K_RETURN:
-                    self.record.save_score()
-                    self.place = 'MENU'
+                    else:
+                        self.record.enter_name(event)
 
-                else:
-                    self.record.enter_name(event)
-
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if self.record.on_mouse_click() == 'MENU':
-                    self.place = 'MENU'
+                elif (event.type == pygame.MOUSEBUTTONDOWN
+                        and event.button == 1):
+                    if self.record.on_mouse_click() == 'MENU':
+                        self.place = 'MENU'
 
             self.record.process()
 
