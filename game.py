@@ -20,7 +20,7 @@ class Game:
 
         self.flood_btn = Button('FLOOD', (140, 50), self.flood_now)
         self.giveup_btn = Button('GIVE-UP', (140, 150), self.give_up)
-        self.continue_btn = Button('CONTINUE', (140, 250), self.next_step)
+        self.continue_btn = Button('CONTINUE', (140, 50), self.next_step)
 
         self.COUNTDOWN = pygame.USEREVENT + 1
         self.FLOOD = pygame.USEREVENT + 2
@@ -289,8 +289,8 @@ class Game:
         self.cursor.draw(self.layer1)
         self.liquid.draw(self.layer2)
 
-        self.flood_btn.draw(self.screen)
-        self.giveup_btn.draw(self.screen)
+        # self.flood_btn.draw(self.screen)
+        # self.giveup_btn.draw(self.screen)
 
         self.layer1.blit(self.layer3, self.pipe_score.topleft)
 
@@ -301,6 +301,10 @@ class Game:
             display_txt(txt, 40, (194, 69, 26), self.screen, None,
                         self.screen.get_height()-60)
             self.continue_btn.draw(self.screen)
+
+        else:
+            self.flood_btn.draw(self.screen)
+            self.giveup_btn.draw(self.screen)
 
     def anim(self):
         if self.pipe_score.top >= -20:
