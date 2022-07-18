@@ -225,7 +225,7 @@ class Game:
         self.valve.anim()
         if self.countdown <= 0:
             pygame.time.set_timer(self.COUNTDOWN, 0)
-            pygame.time.set_timer(self.FLOOD, 30)
+            pygame.time.set_timer(self.FLOOD, 50)
             self.sound.sub.play()
 
     def flood(self):
@@ -261,6 +261,15 @@ class Game:
     def draw(self):
 
         self.screen.fill((66, 63, 56))
+        self.layer1.fill((96, 93, 86))
+
+        for pipe in self.circuit:
+            self.layer1.blit(pipe.image, pipe.rect.topleft)
+
+        self.layer1.blit(self.layer3, self.pipe_score.topleft)
+
+        self.cursor.draw(self.layer1)
+        self.liquid.draw(self.layer2)
 
         self.screen.blit(self.layer1, self.board_offset)
         self.screen.blit(self.layer2, self.board_offset)
@@ -280,19 +289,6 @@ class Game:
 
         for i, pipe in enumerate(self.box):
             self.screen.blit(pipe.image, (250, 480 + i * 80))
-
-        self.layer1.fill((96, 93, 86))
-
-        for pipe in self.circuit:
-            self.layer1.blit(pipe.image, pipe.rect.topleft)
-
-        self.cursor.draw(self.layer1)
-        self.liquid.draw(self.layer2)
-
-        # self.flood_btn.draw(self.screen)
-        # self.giveup_btn.draw(self.screen)
-
-        self.layer1.blit(self.layer3, self.pipe_score.topleft)
 
         if self.state == 'WIN' or self.state == 'LOOSE':
             display_txt('YOU {}'.format(self.state), 72, (194, 69, 26),
@@ -322,7 +318,7 @@ class Game:
 
         self.sound.sub.play()
         pygame.time.set_timer(self.COUNTDOWN, 0)
-        pygame.time.set_timer(self.FLOOD, 15)
+        pygame.time.set_timer(self.FLOOD, 20)
 
     def give_up(self):
         """ Give-up Button callback """

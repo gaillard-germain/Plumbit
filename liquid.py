@@ -38,8 +38,8 @@ class Liquid:
         if pipe:
             self.path = (pipe.rect.left - self.previous.rect.left,
                          pipe.rect.top - self.previous.rect.top)
-            self.rect.move_ip(int(self.path[0]/pipe.rect.width),
-                              int(self.path[1]/pipe.rect.height))
+            self.rect.move_ip(int(self.path[0]/pipe.rect.width)*2,
+                              int(self.path[1]/pipe.rect.height)*2)
 
             if self.end.rect.contains(self.rect):
                 gain = self.end.gain + bonus * 10
