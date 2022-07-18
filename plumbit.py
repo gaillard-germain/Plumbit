@@ -29,6 +29,9 @@ class Plumbit:
     def display_game(self):
         """ The game """
 
+        self.game.reset()
+        self.game.set_up()
+
         clock = pygame.time.Clock()
 
         while self.place == 'GAME':
@@ -73,7 +76,6 @@ class Plumbit:
                 elif (event.type == pygame.MOUSEBUTTONDOWN
                         and event.button == 1):
                     if self.menu.on_mouse_click() == 'GAME':
-                        self.game.set_up()
                         self.place = 'GAME'
 
             self.menu.process()
