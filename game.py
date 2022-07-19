@@ -89,9 +89,12 @@ class Game:
         self.fill_box()
 
         self.valve = self.factory.get_extra('valve').rotate()
+        self.strew(self.valve, margin=1)
         self.end = self.factory.get_extra('end').rotate()
+        self.strew(self.end, margin=1)
 
-        self.strew()
+        for i in range(randint(self.lvl, self.lvl+1)):
+                self.strew(self.factory.get_extra('block'))
 
         self.lvl += 1
         self.set_time()
@@ -108,48 +111,28 @@ class Game:
         if not self.lvl % 5 and self.time > 5:
             self.time -= 5
 
-    def strew(self):
-        """ Place valve, end and several blocks in the circuit """
+    def is_free(self, pipe):
+        if self.circuit[pipe.rect.topleft]:
+            return False
+        else:
+            for pos in pipe.open_to():
+                if self.circuit[pos]:
+                    return False
+        return True
 
-        free = [pos for pos in self.circuit.keys() if not pos]
-
-        self.valve.rect.topleft = (
-            randint(1, self.tile_x-2) * self.valve.rect.width,
-            randint(1, self.tile_y-2) * self.valve.rect.height
-        )
-
-        self.circuit[self.valve.rect.topleft] = self.valve
-        free.remove(self.valve.rect.topleft)
-        free.remove(self.valve.open_to()[0])
+    def strew(self, pipe, margin=0):
+        """ Randomly place pipe in the circuit """
 
         while True:
-            self.end.rect.topleft = (
-                randint(1, self.tile_x-2) * self.end.rect.width,
-                randint(1, self.tile_y-2) * self.end.rect.height
+            pipe.rect.topleft = (
+                randint(0+margin, self.tile_x-(1+margin)) * pipe.rect.width,
+                randint(0+margin, self.tile_y-(1+margin)) * pipe.rect.height
             )
 
-            if (self.end.rect.topleft in free
-                    and self.end.open_to()[0] in free):
+            if self.is_free(pipe):
                 break
 
-        self.circuit[self.end.rect.topleft] = self.end
-        free.remove(self.end.rect.topleft)
-        free.remove(self.end.open_to()[0])
-
-        for i in range(randint(self.lvl, self.lvl+1)):
-            block = self.factory.get_extra('block')
-
-            pos = (
-                randint(0, self.tile_x-1) * block.rect.width,
-                randint(0, self.tile_y-1) * block.rect.height
-            )
-            if (pos in self.valve.open_to()
-                    or pos in self.end.open_to()
-                    or self.is_locked(pos)):
-                continue
-            else:
-                block.rect.topleft = pos
-                self.circuit[block.rect.topleft] = block
+        self.circuit[pipe.rect.topleft] = pipe
 
     def fill_box(self):
         """ Refill the pipe's box """
