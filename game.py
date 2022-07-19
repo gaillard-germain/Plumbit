@@ -26,7 +26,12 @@ class Game:
         self.FLOOD = pygame.USEREVENT + 2
         self.ANIM = pygame.USEREVENT + 3
 
-        self.circuit = []
+        self.circuit = {}
+
+        for y in range(self.tile_y):
+            for x in range(self.tile_x):
+                self.circuit[(x*self.tile_size, y*self.tile_size)] = None
+
         self.box = []
         self.score = 0
         self.lvl = 0
@@ -70,13 +75,16 @@ class Game:
         self.time = 60
         self.set_up()
 
+    def clear_circuit(self):
+        for pos in self.circuit.keys():
+            self.circuit[pos] = None
+
     def set_up(self):
         """ Set_up the circuit """
 
         self.layer2.fill((255, 255, 255, 0))
 
-        if self.circuit:
-            self.circuit.clear()
+        self.clear_circuit()
 
         self.fill_box()
 
@@ -108,7 +116,10 @@ class Game:
             randint(1, self.tile_y-2) * self.valve.rect.height
         )
 
-        self.circuit.append(self.valve)
+        self.circuit[self.valve.rect.topleft] = self.valve
+
+        free = [pos for pos in self.circuit.keys() if not pos]
+        free.remove(self.valve.open_to()[0])
 
         self.end.rect.topleft = (
             randint(1, self.tile_x-2) * self.end.rect.width,
@@ -123,10 +134,10 @@ class Game:
 
             if (self.end.rect.topleft not in self.valve.open_to()
                     and self.valve.rect.topleft not in self.end.open_to()
-                    and self.valve.rect.topleft != self.end.rect.topleft):
+                    and not self.is_locked(self.end.rect.topleft)):
                 break
 
-        self.circuit.append(self.end)
+        self.circuit[self.end.rect.topleft] = self.end
 
         for i in range(randint(self.lvl, self.lvl+1)):
             block = self.factory.get_extra('block')
@@ -141,7 +152,7 @@ class Game:
                 continue
             else:
                 block.rect.topleft = pos
-                self.circuit.append(block)
+                self.circuit[block.rect.topleft] = block
 
     def fill_box(self):
         """ Refill the pipe's box """
@@ -158,25 +169,16 @@ class Game:
         self.sound.put.play()
         pipe = self.box.pop(0)
         pipe.rect.topleft = pos
-        self.add(pipe)
+        self.circuit[pipe.rect.topleft] = pipe
         self.box.append(self.factory.get_pipe())
 
         self.update_gain(pipe.rect.topleft, pipe.cost)
 
-    def add(self, current):
-        """ Adds the current pipe to the circuit """
-
-        for pipe in self.circuit:
-            if pipe.rect.topleft == current.rect.topleft:
-                self.circuit.remove(pipe)
-
-        self.circuit.append(current)
-
     def get_locked(self):
         """ Get the list of the locked pipes """
 
-        for pipe in self.circuit:
-            if pipe.locked:
+        for pipe in self.circuit.values():
+            if pipe and pipe.locked:
                 yield pipe.rect.topleft
 
     def is_locked(self, pos):
@@ -263,8 +265,9 @@ class Game:
         self.screen.fill((66, 63, 56))
         self.layer1.fill((96, 93, 86))
 
-        for pipe in self.circuit:
-            self.layer1.blit(pipe.image, pipe.rect.topleft)
+        for pipe in self.circuit.values():
+            if pipe:
+                self.layer1.blit(pipe.image, pipe.rect.topleft)
 
         self.layer1.blit(self.layer3, self.pipe_score.topleft)
 

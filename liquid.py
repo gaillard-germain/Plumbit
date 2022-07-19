@@ -16,9 +16,9 @@ class Liquid:
 
         eligibles = []
 
-        for pipe in circuit:
-            if (pipe.rect.topleft in self.previous.open_to()
-                    and self.previous.rect.topleft in pipe.open_to()):
+        for pos in self.previous.open_to():
+            pipe = circuit[pos]
+            if pipe and self.previous.rect.topleft in pipe.open_to():
                 if self.previous.name != 'cross':
                     return pipe
 
