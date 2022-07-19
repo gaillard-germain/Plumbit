@@ -111,20 +111,16 @@ class Game:
     def strew(self):
         """ Place valve, end and several blocks in the circuit """
 
+        free = [pos for pos in self.circuit.keys() if not pos]
+
         self.valve.rect.topleft = (
             randint(1, self.tile_x-2) * self.valve.rect.width,
             randint(1, self.tile_y-2) * self.valve.rect.height
         )
 
         self.circuit[self.valve.rect.topleft] = self.valve
-
-        free = [pos for pos in self.circuit.keys() if not pos]
+        free.remove(self.valve.rect.topleft)
         free.remove(self.valve.open_to()[0])
-
-        self.end.rect.topleft = (
-            randint(1, self.tile_x-2) * self.end.rect.width,
-            randint(1, self.tile_y-2) * self.end.rect.height
-        )
 
         while True:
             self.end.rect.topleft = (
@@ -132,12 +128,13 @@ class Game:
                 randint(1, self.tile_y-2) * self.end.rect.height
             )
 
-            if (self.end.rect.topleft not in self.valve.open_to()
-                    and self.valve.rect.topleft not in self.end.open_to()
-                    and not self.is_locked(self.end.rect.topleft)):
+            if (self.end.rect.topleft in free
+                    and self.end.open_to()[0] in free):
                 break
 
         self.circuit[self.end.rect.topleft] = self.end
+        free.remove(self.end.rect.topleft)
+        free.remove(self.end.open_to()[0])
 
         for i in range(randint(self.lvl, self.lvl+1)):
             block = self.factory.get_extra('block')
