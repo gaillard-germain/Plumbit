@@ -6,6 +6,8 @@ from cursor import Cursor
 from button import Button
 from liquid import Liquid
 from sound import Sound
+from bubble import Bubble
+from arrow import Arrow
 from tools import display_txt
 
 
@@ -40,7 +42,6 @@ class Game:
 
         self.dashboard_left = pygame.image.load('images/dashboard_left.png')
         self.dashboard_right = pygame.image.load('images/dashboard_right.png')
-        self.arrow_image = pygame.image.load('images/arrow.png')
 
         self.layer1 = pygame.Surface(
             (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
@@ -52,21 +53,18 @@ class Game:
             pygame.SRCALPHA,
             32
         )
-        self.layer3 = pygame.Surface(
-            (self.tile_size, self.tile_size), pygame.SRCALPHA, 32)
 
         self.board = self.layer1.get_rect()
-        self.arrow = self.arrow_image.get_rect()
-        self.pipe_score = self.layer3.get_rect()
 
         self.board.topleft = (0, 0)
-        self.arrow.topright = (240, 498)
 
         self.board_offset = (
             (self.screen.get_width() - self.board.width)/2,
             (self.screen.get_height() - self.board.height)/2
         )
         self.cursor = Cursor(self.board_offset)
+        self.bubble = Bubble(self.tile_size)
+        self.arrow = Arrow()
 
     def reset(self):
         """ Reset score, level and time """
@@ -175,9 +173,7 @@ class Game:
         self.continue_btn.process()
 
         self.cursor.process(self.is_locked)
-
-        if self.pipe_score.top <= -20:
-            self.layer3.fill((255, 255, 255, 0))
+        self.bubble.process()
 
         self.draw()
 
@@ -229,16 +225,7 @@ class Game:
 
     def update_gain(self, pos, value):
         self.score += value
-        self.pipe_score.topleft = pos
-        self.layer3.fill((255, 255, 255, 0))
-        if int(value) > 0:
-            txt = '+{} $'.format(value)
-            color = (70, 170, 60)
-        else:
-            txt = '{} $'.format(value)
-            color = (194, 69, 26)
-
-        display_txt(txt, 26, color, self.layer3)
+        self.bubble.update(pos, value)
 
     def draw(self):
 
@@ -249,8 +236,7 @@ class Game:
             if pipe:
                 self.layer1.blit(pipe.image, pipe.rect.topleft)
 
-        self.layer1.blit(self.layer3, self.pipe_score.topleft)
-
+        self.bubble.draw(self.layer1)
         self.cursor.draw(self.layer1)
         self.liquid.draw(self.layer2)
 
@@ -268,7 +254,7 @@ class Game:
         display_txt(self.countdown, 40, (70, 170, 60), self.screen,
                     1680, 900)
 
-        self.screen.blit(self.arrow_image, self.arrow.topleft)
+        self.arrow.draw(self.screen)
 
         for i, pipe in enumerate(self.box):
             self.screen.blit(pipe.image, (250, 480 + i * 80))
@@ -286,13 +272,8 @@ class Game:
             self.giveup_btn.draw(self.screen)
 
     def anim(self):
-        if self.pipe_score.top >= -20:
-            self.pipe_score.move_ip(0, -2)
-
-        if self.arrow.right > 210:
-            self.arrow.move_ip(-1, 0)
-        else:
-            self.arrow.right = 240
+        self.bubble.anim()
+        self.arrow.anim()
 
     # ## Buttons callbacks ## #
 
