@@ -21,18 +21,18 @@ def display_txt(txt, size, color, surface, x=None, y=None, justify='center'):
     txt = str(txt)
     font = pgfont.Font('fonts/TheConfessionRegular-YBpv.ttf', size)
     img_txt = font.render(txt, True, color)
-    size = font.size(txt)
+    txt_size = font.size(txt)
     if not x:
         x = surface.get_width()/2
     if not y:
         y = surface.get_height()/2
 
     if justify == 'center':
-        pos = (x - size[0]/2, y - size[1]/2)
+        pos = (x - txt_size[0]/2, y - txt_size[1]/2)
     elif justify == 'left':
-        pos = (x, y - size[1]/2)
+        pos = (x, y - txt_size[1]/2)
     elif justify == 'right':
-        pos = (x - size[0], y - size[1]/2)
+        pos = (x - txt_size[0], y - txt_size[1]/2)
 
     return surface.blit(img_txt, pos)
 

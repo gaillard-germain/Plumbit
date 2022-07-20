@@ -16,10 +16,11 @@ class Pipe:
         self.rect = self.image.get_rect()
         self.flooded = False
 
-    def rotate(self):
+    def rotate(self, coef=0):
         """ Rotate the pipe (anti-clockwise)"""
 
-        coef = randint(0, 3)
+        if not coef:
+            coef = randint(0, 3)
         for i in range(coef):
             self.apertures.append(self.apertures.pop(0))
             self.image = transform.rotate(self.image, 90)

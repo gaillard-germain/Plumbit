@@ -88,13 +88,13 @@ class Game:
 
         self.fill_box()
 
+        for i in range(randint(self.lvl, self.lvl+1)):
+            self.strew(self.factory.get_extra('block'))
+
         self.valve = self.factory.get_extra('valve').rotate()
         self.strew(self.valve, margin=1)
         self.end = self.factory.get_extra('end').rotate()
         self.strew(self.end, margin=1)
-
-        for i in range(randint(self.lvl, self.lvl+1)):
-                self.strew(self.factory.get_extra('block'))
 
         self.lvl += 1
         self.set_time()

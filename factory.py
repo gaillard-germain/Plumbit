@@ -99,7 +99,7 @@ class Factory:
             'block': {
                 'image': pgimage.load('images/block.png'),
                 'image2': None,
-                'apertures': [0, 0, 0, 0],
+                'apertures': [],
                 'name': 'block',
                 'cost': 0,
                 'gain': 0,
