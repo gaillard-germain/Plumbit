@@ -5,7 +5,7 @@ class Arrow:
     def __init__(self):
         self.image = pgimage.load('./images/arrow.png')
         self.rect = self.image.get_rect()
-        self.rect.topright = (240, 498)
+        self.rect.topright = (240, 478)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)

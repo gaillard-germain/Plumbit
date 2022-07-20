@@ -139,7 +139,7 @@ class Game:
         if self.box:
             self.box.clear()
 
-        for _ in range(4):
+        for _ in range(5):
             self.box.append(self.factory.get_pipe())
 
     def drop_and_pickup(self, pos):
@@ -258,7 +258,7 @@ class Game:
         self.arrow.draw(self.screen)
 
         for i, pipe in enumerate(self.box):
-            self.screen.blit(pipe.image, (250, 480 + i * 80))
+            self.screen.blit(pipe.image, (250, 460 + i * 80))
 
         if self.state == 'WIN' or self.state == 'LOOSE':
             display_txt('YOU {}'.format(self.state), 72, (194, 69, 26),
