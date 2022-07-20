@@ -9,12 +9,15 @@ class Button:
     def __init__(self, label, pos, onclick_function=None):
         self.label = label
         self.sound = mixer.Sound('./sounds/click.wav')
-        self.image_1 = pgimage.load('./images/button.png')
-        self.image_2 = pgimage.load('./images/button2.png')
-        display_txt(label, 32, (64, 68, 70), self.image_1, 100, None, 'left')
-        display_txt(label, 32, (194, 68, 25), self.image_2, 100, None, 'left')
-        self.image = self.image_1
-        self.rect = self.image.get_rect()
+        self.images = [
+            pgimage.load('./images/button.png'),
+            pgimage.load('./images/button2.png')
+        ]
+        self.pin = 0
+        display_txt(label, 32, (64, 68, 70), self.images[0], 100, None, 'left')
+        display_txt(label, 32, (194, 68, 25),
+                    self.images[1], 100, None, 'left')
+        self.rect = self.images[0].get_rect()
         self.rect.midtop = pos
         self.glow = False
         self.onclick_function = onclick_function
@@ -22,12 +25,12 @@ class Button:
     def process(self):
         if self.rect.collidepoint(mouse.get_pos()):
             if not self.glow:
-                self.image = self.image_2
+                self.pin = 1
                 self.glow = True
 
         else:
             if self.glow:
-                self.image = self.image_1
+                self.pin = 0
                 self.glow = False
 
     def click(self):
@@ -36,4 +39,4 @@ class Button:
             return self.onclick_function()
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect.topleft)
+        surface.blit(self.images[self.pin], self.rect.topleft)

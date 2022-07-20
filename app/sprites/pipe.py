@@ -1,4 +1,4 @@
-from pygame import transform
+from pygame import transform, Rect
 from random import randint
 
 
@@ -6,14 +6,15 @@ class Pipe:
     """ A Pipe """
 
     def __init__(self, data):
-        self.image = data['image']
-        self.image_2 = data['image2']
+        self.size = 64
+        self.images = data['images'].copy()
+        self.pin = 0
         self.apertures = data['apertures'].copy()
         self.name = data['name']
         self.cost = data['cost']
         self.gain = data['gain']
         self.locked = data['locked']
-        self.rect = self.image.get_rect()
+        self.rect = Rect(0, 0, self.size, self.size)
         self.flooded = False
 
     def rotate(self, coef=0):
@@ -21,13 +22,11 @@ class Pipe:
 
         if not coef:
             coef = randint(0, 3)
+
         for i in range(coef):
             self.apertures.append(self.apertures.pop(0))
-            self.image = transform.rotate(self.image, 90)
-            if self.image_2:
-                self.image_2 = transform.rotate(self.image_2, 90)
-
-        return self
+            for i, image in enumerate(self.images):
+                self.images[i] = transform.rotate(image, 90)
 
     def open_to(self):
         """ Get the coordinates which where the pipe is open to """
@@ -62,8 +61,15 @@ class Pipe:
 
         self.locked = True
 
-    def anim(self):
-        """ Animates the starting valve """
+    def draw(self, surface):
+        surface.blit(self.images[self.pin], self.rect.topleft)
 
-        if self.image_2:
-            self.image, self.image_2 = (self.image_2, self.image)
+    def anim(self):
+        length = len(self.images)
+        if self.pin == length-1:
+            self.pin = 0
+        else:
+            self.pin += 1
+
+    def randomize_image(self):
+        self.pin = randint(0, len(self.images)-1)

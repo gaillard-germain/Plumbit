@@ -7,8 +7,7 @@ class Factory:
     def __init__(self):
         self.stock = [
             {
-                'image': pgimage.load('./images/cross.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/cross.png')],
                 'apertures': [1, 1, 1, 1],
                 'name': 'cross',
                 'cost': -75,
@@ -17,8 +16,7 @@ class Factory:
                 'weight': 30
             },
             {
-                'image': pgimage.load('./images/regular_tb.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/regular_tb.png')],
                 'apertures': [0, 1, 0, 1],
                 'name': 'straight',
                 'cost': -50,
@@ -27,8 +25,7 @@ class Factory:
                 'weight': 50
             },
             {
-                'image': pgimage.load('./images/regular_lr.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/regular_lr.png')],
                 'apertures': [1, 0, 1, 0],
                 'name': 'straight',
                 'cost': -50,
@@ -37,8 +34,7 @@ class Factory:
                 'weight': 50
             },
             {
-                'image': pgimage.load('./images/regular_tr.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/regular_tr.png')],
                 'apertures': [0, 1, 1, 0],
                 'name': 'elbow',
                 'cost': -50,
@@ -47,8 +43,7 @@ class Factory:
                 'weight': 40
             },
             {
-                'image': pgimage.load('./images/regular_tl.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/regular_tl.png')],
                 'apertures': [1, 1, 0, 0],
                 'name': 'elbow',
                 'cost': -50,
@@ -57,8 +52,7 @@ class Factory:
                 'weight': 40
             },
             {
-                'image': pgimage.load('./images/regular_br.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/regular_br.png')],
                 'apertures': [0, 0, 1, 1],
                 'name': 'elbow',
                 'cost': -50,
@@ -67,8 +61,7 @@ class Factory:
                 'weight': 40
             },
             {
-                'image': pgimage.load('./images/regular_bl.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/regular_bl.png')],
                 'apertures': [1, 0, 0, 1],
                 'name': 'elbow',
                 'cost': -50,
@@ -79,8 +72,10 @@ class Factory:
         ]
         self.extra = {
             'valve': {
-                'image': pgimage.load('./images/valve_1a.png'),
-                'image2': pgimage.load('./images/valve_1.png'),
+                'images': [
+                    pgimage.load('./images/valve_1.png'),
+                    pgimage.load('./images/valve_1a.png')
+                ],
                 'apertures': [0, 0, 1, 0],
                 'name': 'valve',
                 'cost': 0,
@@ -88,8 +83,7 @@ class Factory:
                 'locked': True,
             },
             'end': {
-                'image': pgimage.load('./images/valve_2.png'),
-                'image2': None,
+                'images': [pgimage.load('./images/valve_2.png')],
                 'apertures': [0, 0, 1, 0],
                 'name': 'end',
                 'cost': 0,
@@ -97,8 +91,10 @@ class Factory:
                 'locked': True,
             },
             'block': {
-                'image': pgimage.load('./images/block.png'),
-                'image2': None,
+                'images': [
+                    pgimage.load('./images/block.png'),
+                    pgimage.load('./images/block2.png')
+                ],
                 'apertures': [],
                 'name': 'block',
                 'cost': 0,

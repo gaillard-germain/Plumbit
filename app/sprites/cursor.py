@@ -5,11 +5,12 @@ class Cursor:
     """ A Cursor """
 
     def __init__(self, offset):
-        self.pointer_image = pgimage.load('./images/pointer.png')
-        self.locked_image = pgimage.load('./images/locked.png')
-
-        self.image = self.pointer_image
-        self.rect = self.image.get_rect()
+        self.images = [
+            pgimage.load('./images/pointer.png'),
+            pgimage.load('./images/locked.png')
+        ]
+        self.pin = 0
+        self.rect = self.images[0].get_rect()
 
         self.offset = offset
 
@@ -23,10 +24,10 @@ class Cursor:
         self.rect.topleft = (x-x % self.rect.width, y-y % self.rect.height)
 
         if is_locked(self.rect.topleft):
-            self.image = self.locked_image
+            self.pin = 1
         else:
-            self.image = self.pointer_image
+            self.pin = 0
 
     def draw(self, surface):
         """ Blit the cursor on a surface """
-        surface.blit(self.image, self.rect.topleft)
+        surface.blit(self.images[self.pin], self.rect.topleft)

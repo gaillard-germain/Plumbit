@@ -88,11 +88,16 @@ class Game:
         self.fill_box()
 
         for i in range(randint(self.lvl, self.lvl+1)):
-            self.strew(self.factory.get_extra('block'))
+            block = self.factory.get_extra('block')
+            block.randomize_image()
+            self.strew(block)
 
-        self.valve = self.factory.get_extra('valve').rotate()
+        self.valve = self.factory.get_extra('valve')
+        self.valve.rotate()
         self.strew(self.valve, margin=1)
-        self.end = self.factory.get_extra('end').rotate()
+
+        self.end = self.factory.get_extra('end')
+        self.end.rotate()
         self.strew(self.end, margin=1)
 
         self.lvl += 1
@@ -139,17 +144,26 @@ class Game:
         if self.box:
             self.box.clear()
 
-        for _ in range(5):
-            self.box.append(self.factory.get_pipe())
+        for i in range(5):
+            pipe = self.factory.get_pipe()
+            pipe.rect.topleft = (250, 460 + i * 80)
+            self.box.append(pipe)
+
+    def pickup(self):
+        picked = self.box.pop(0)
+        self.box.append(self.factory.get_pipe())
+        for i, pipe in enumerate(self.box):
+            pipe.rect.topleft = (250, 460 + i * 80)
+
+        return picked
 
     def drop_and_pickup(self, pos):
         """ Place the current pipe and replace another in the pile """
 
         self.sound.put.play()
-        pipe = self.box.pop(0)
+        pipe = self.pickup()
         pipe.rect.topleft = pos
         self.circuit[pipe.rect.topleft] = pipe
-        self.box.append(self.factory.get_pipe())
 
         self.update_gain(pipe.rect.topleft, pipe.cost)
 
@@ -200,8 +214,8 @@ class Game:
 
     def tic(self):
         self.sound.tic.play()
-        self.countdown -= 1
         self.valve.anim()
+        self.countdown -= 1
         if self.countdown <= 0:
             pygame.time.set_timer(self.COUNTDOWN, 0)
             pygame.time.set_timer(self.FLOOD, 50)
@@ -235,7 +249,7 @@ class Game:
 
         for pipe in self.circuit.values():
             if pipe:
-                self.layer1.blit(pipe.image, pipe.rect.topleft)
+                pipe.draw(self.layer1)
 
         self.bubble.draw(self.layer1)
         self.cursor.draw(self.layer1)
@@ -257,8 +271,8 @@ class Game:
 
         self.arrow.draw(self.screen)
 
-        for i, pipe in enumerate(self.box):
-            self.screen.blit(pipe.image, (250, 460 + i * 80))
+        for pipe in self.box:
+            pipe.draw(self.screen)
 
         if self.state == 'WIN' or self.state == 'LOOSE':
             display_txt('YOU {}'.format(self.state), 72, (194, 69, 26),
