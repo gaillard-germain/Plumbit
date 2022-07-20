@@ -2,13 +2,13 @@ import pygame
 from random import randint
 
 from factory import Factory
-from cursor import Cursor
-from button import Button
-from liquid import Liquid
 from sound import Sound
-from bubble import Bubble
-from arrow import Arrow
 from tools import display_txt
+from sprites.cursor import Cursor
+from sprites.button import Button
+from sprites.liquid import Liquid
+from sprites.bubble import Bubble
+from sprites.arrow import Arrow
 
 
 class Game:
@@ -40,8 +40,9 @@ class Game:
         self.time = 60
         self.state = 'WAITING'
 
-        self.dashboard_left = pygame.image.load('images/dashboard_left.png')
-        self.dashboard_right = pygame.image.load('images/dashboard_right.png')
+        self.dashboard_left = pygame.image.load('./images/dashboard_left.png')
+        self.dashboard_right = pygame.image.load(
+            './images/dashboard_right.png')
 
         self.layer1 = pygame.Surface(
             (self.tile_size*self.tile_x, self.tile_size*self.tile_y),

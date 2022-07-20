@@ -1,5 +1,5 @@
-from button import Button
-from tools import display_txt, load_json
+from tools import display_txt, load_topten
+from sprites.button import Button
 
 
 class Menu:
@@ -28,7 +28,7 @@ class Menu:
 
         display_txt("PLUMB'IT", 72, (170, 60, 60), self.screen, None, 50)
 
-        for i, player in enumerate(load_json('topten.json')):
+        for i, player in enumerate(load_topten()):
             display_txt(player["name"], 40, (50, 162, 162), self.screen,
                         self.screen.get_width()/2 - 200, 170 + i * 50, 'left')
             display_txt(player["score"], 40, (50, 162, 162), self.screen,

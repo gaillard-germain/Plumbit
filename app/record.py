@@ -1,5 +1,5 @@
-from button import Button
-from tools import display_txt, update_json, new_record
+from tools import display_txt, update_topten, new_record
+from sprites.button import Button
 
 
 class Record:
@@ -57,5 +57,5 @@ class Record:
     def save_score(self):
         """ Enter Button callback """
 
-        update_json(self.rank, self.player_name, self.score)
+        update_topten(self.rank, self.player_name, self.score)
         return 'MENU'

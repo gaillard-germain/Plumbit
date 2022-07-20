@@ -1,13 +1,13 @@
 from pygame import image as pgimage
 from random import choices
-from pipe import Pipe
+from sprites.pipe import Pipe
 
 
 class Factory:
     def __init__(self):
         self.stock = [
             {
-                'image': pgimage.load('images/cross.png'),
+                'image': pgimage.load('./images/cross.png'),
                 'image2': None,
                 'apertures': [1, 1, 1, 1],
                 'name': 'cross',
@@ -17,7 +17,7 @@ class Factory:
                 'weight': 30
             },
             {
-                'image': pgimage.load('images/regular_tb.png'),
+                'image': pgimage.load('./images/regular_tb.png'),
                 'image2': None,
                 'apertures': [0, 1, 0, 1],
                 'name': 'straight',
@@ -27,7 +27,7 @@ class Factory:
                 'weight': 50
             },
             {
-                'image': pgimage.load('images/regular_lr.png'),
+                'image': pgimage.load('./images/regular_lr.png'),
                 'image2': None,
                 'apertures': [1, 0, 1, 0],
                 'name': 'straight',
@@ -37,7 +37,7 @@ class Factory:
                 'weight': 50
             },
             {
-                'image': pgimage.load('images/regular_tr.png'),
+                'image': pgimage.load('./images/regular_tr.png'),
                 'image2': None,
                 'apertures': [0, 1, 1, 0],
                 'name': 'elbow',
@@ -47,7 +47,7 @@ class Factory:
                 'weight': 40
             },
             {
-                'image': pgimage.load('images/regular_tl.png'),
+                'image': pgimage.load('./images/regular_tl.png'),
                 'image2': None,
                 'apertures': [1, 1, 0, 0],
                 'name': 'elbow',
@@ -57,7 +57,7 @@ class Factory:
                 'weight': 40
             },
             {
-                'image': pgimage.load('images/regular_br.png'),
+                'image': pgimage.load('./images/regular_br.png'),
                 'image2': None,
                 'apertures': [0, 0, 1, 1],
                 'name': 'elbow',
@@ -67,7 +67,7 @@ class Factory:
                 'weight': 40
             },
             {
-                'image': pgimage.load('images/regular_bl.png'),
+                'image': pgimage.load('./images/regular_bl.png'),
                 'image2': None,
                 'apertures': [1, 0, 0, 1],
                 'name': 'elbow',
@@ -79,8 +79,8 @@ class Factory:
         ]
         self.extra = {
             'valve': {
-                'image': pgimage.load('images/valve_1a.png'),
-                'image2': pgimage.load('images/valve_1.png'),
+                'image': pgimage.load('./images/valve_1a.png'),
+                'image2': pgimage.load('./images/valve_1.png'),
                 'apertures': [0, 0, 1, 0],
                 'name': 'valve',
                 'cost': 0,
@@ -88,7 +88,7 @@ class Factory:
                 'locked': True,
             },
             'end': {
-                'image': pgimage.load('images/valve_2.png'),
+                'image': pgimage.load('./images/valve_2.png'),
                 'image2': None,
                 'apertures': [0, 0, 1, 0],
                 'name': 'end',
@@ -97,7 +97,7 @@ class Factory:
                 'locked': True,
             },
             'block': {
-                'image': pgimage.load('images/block.png'),
+                'image': pgimage.load('./images/block.png'),
                 'image2': None,
                 'apertures': [],
                 'name': 'block',

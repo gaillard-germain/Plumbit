@@ -19,7 +19,7 @@ def display_txt(txt, size, color, surface, x=None, y=None, justify='center'):
     """ Display text in the middle of a surface """
 
     txt = str(txt)
-    font = pgfont.Font('fonts/TheConfessionRegular-YBpv.ttf', size)
+    font = pgfont.Font('./fonts/TheConfessionRegular-YBpv.ttf', size)
     img_txt = font.render(txt, True, color)
     txt_size = font.size(txt)
     if not x:
@@ -37,27 +37,27 @@ def display_txt(txt, size, color, surface, x=None, y=None, justify='center'):
     return surface.blit(img_txt, pos)
 
 
-def load_json(data_file):
+def load_topten():
     """ Load a json file """
 
-    with open(data_file) as data:
+    with open('./topten.json') as data:
         return json.load(data)
 
 
 def new_record(score):
     """ Check if the score could enter the TopTen """
 
-    topten = load_json('topten.json')
+    topten = load_topten()
     for index, player in enumerate(topten):
         if score > player["score"]:
             return index
     return None
 
 
-def update_json(index, winner, score):
+def update_topten(index, winner, score):
     """ Update the topten.json  file """
 
-    topten = load_json('topten.json')
+    topten = load_topten()
     topten.insert(index, dict(name=winner, score=score))
     if len(topten) > 10:
         del topten[-1]

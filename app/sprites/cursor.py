@@ -5,8 +5,8 @@ class Cursor:
     """ A Cursor """
 
     def __init__(self, offset):
-        self.pointer_image = pgimage.load('images/pointer.png')
-        self.locked_image = pgimage.load('images/locked.png')
+        self.pointer_image = pgimage.load('./images/pointer.png')
+        self.locked_image = pgimage.load('./images/locked.png')
 
         self.image = self.pointer_image
         self.rect = self.image.get_rect()

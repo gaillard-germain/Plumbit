@@ -3,7 +3,7 @@ from pygame import image as pgimage
 
 class Liquid:
     def __init__(self, valve, end, update_gain):
-        self.image = pgimage.load('images/liquid.png')
+        self.image = pgimage.load('./images/liquid.png')
         self.rect = self.image.get_rect()
         self.rect.topleft = valve.rect.topleft
         self.previous = valve
