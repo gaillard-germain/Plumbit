@@ -54,11 +54,6 @@ class Pipe:
         elif path[1] > 0:
             self.apertures[1] = 0
 
-        self.lock()
-
-    def lock(self):
-        """ Locks the pipe """
-
         self.locked = True
 
     def draw(self, surface):
