@@ -4,7 +4,6 @@ import sys
 from game import Game
 from menu import Menu
 from record import Record
-from tools import check_topten
 
 
 class Plumbit:
@@ -21,10 +20,8 @@ class Plumbit:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
         self.game = Game(self.screen)
-        self.menu = Menu(self.quit, self.screen)
         self.record = Record(self.screen)
-
-        check_topten()
+        self.menu = Menu(self.quit, self.screen, self.record.topten)
 
     def display_game(self):
         """ The game """

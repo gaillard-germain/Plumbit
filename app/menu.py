@@ -1,15 +1,16 @@
-from tools import display_txt, load_topten
+from tools import display_txt
 from sprites.button import Button
 
 
 class Menu:
-    def __init__(self, function_quit, screen):
+    def __init__(self, function_quit, screen, topten):
         self.screen = screen
         self.quit = function_quit
         self.play_btn = Button(
             'PLAY', (self.screen.get_width()/2, 700), self.play)
         self.quit_btn = Button(
             'QUIT', (self.screen.get_width()/2, 800), self.quit)
+        self.topten = topten
 
     def process(self):
         self.play_btn.process()
@@ -28,7 +29,7 @@ class Menu:
 
         display_txt("PLUMB'IT", 72, (170, 60, 60), self.screen, None, 50)
 
-        for i, player in enumerate(load_topten()):
+        for i, player in enumerate(self.topten):
             display_txt(player["name"], 40, (50, 162, 162), self.screen,
                         self.screen.get_width()/2 - 200, 170 + i * 50, 'left')
             display_txt(player["score"], 40, (50, 162, 162), self.screen,

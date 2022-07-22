@@ -69,7 +69,7 @@ class Game:
 
     def reset(self):
         """ Reset score, level and time """
-        self.score = 0
+        self.score = 15890
         self.lvl = 0
         self.time = 60
         self.set_up()
