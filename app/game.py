@@ -69,7 +69,7 @@ class Game:
 
     def reset(self):
         """ Reset score, level and time """
-        self.score = 15890
+        self.score = 0
         self.lvl = 0
         self.time = 60
         self.set_up()
@@ -265,9 +265,9 @@ class Game:
         )
 
         display_txt(self.score, 40, (83, 162, 162), self.screen,
-                    1678, 177)
+                    1678, 157)
         display_txt(self.countdown, 40, (70, 170, 60), self.screen,
-                    1680, 900)
+                    1680, 880)
 
         self.arrow.draw(self.screen)
 
