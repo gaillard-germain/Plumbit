@@ -2,9 +2,18 @@ from pygame import font as pgfont
 
 
 class Stamp:
-    def __init__(self, txt, size, color, pos=(0, 0), align='center'):
+    COLORS = {
+        'red': (194, 78, 16),
+        'green': (85, 167, 20),
+        'light-blue': (13, 167, 172),
+        'orange': (200, 125, 31),
+        'dark-grey': (46, 52, 53),
+        'black': (20, 20, 20)
+    }
+
+    def __init__(self, txt, size, color='black', pos=(0, 0), align='center'):
         self.font = pgfont.Font('./fonts/TheConfessionRegular-YBpv.ttf', size)
-        self.color = color
+        self.color = self.COLORS[color]
         self.pos = pos
         self.align = align
 
@@ -15,6 +24,8 @@ class Stamp:
 
         if color == 'default':
             color = self.color
+        else:
+            color = self.COLORS[color]
 
         self.img = self.font.render(self.txt, True, color)
         self.rect = self.img.get_rect()

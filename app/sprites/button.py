@@ -19,10 +19,10 @@ class Button:
         self.glow = False
         self.onclick_function = onclick_function
 
-        stamp = Stamp(label, 32, (64, 68, 70),
+        stamp = Stamp(label, 32, 'dark-grey',
                       (90, self.rect.height/2), 'left')
         stamp.draw(self.images[0])
-        stamp.set_txt(label, (194, 68, 25))
+        stamp.set_txt(label, 'red')
         stamp.draw(self.images[1])
 
     def process(self):

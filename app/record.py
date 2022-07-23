@@ -16,10 +16,10 @@ class Record:
             (self.screen.get_width()/2, self.screen.get_height()/2 + 100),
             self.save_score
         )
-        self.title = Stamp('', 48, (83, 162, 162),
+        self.title = Stamp('', 48, 'light-blue',
                            (self.screen.get_width()/2,
                             self.screen.get_height()/2 - 100))
-        self.name = Stamp('Enter your name', 40, (170, 60, 60),
+        self.name = Stamp('Enter your name', 40, 'red',
                           (self.screen.get_width()/2,
                            self.screen.get_height()/2))
         self.check_file()

@@ -16,9 +16,9 @@ class Menu:
             'QUIT', (self.screen.get_width()/2, 900), self.quit)
         self.topten = topten
 
-        self.title = Stamp("PLUMB'IT", 72, (170, 60, 60),
-                           (self.screen.get_width()/2, 100))
-        self.stamp = Stamp('', 40, (50, 162, 162))
+        self.title = Stamp("PLUMB'IT", 72, 'red',
+                           (self.screen.get_width()/2, 150))
+        self.stamp = Stamp('', 40, 'light-blue')
 
     def process(self):
         self.play_btn.process()

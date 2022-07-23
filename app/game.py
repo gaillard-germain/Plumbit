@@ -62,15 +62,15 @@ class Game:
             (self.screen.get_height() - self.board.height)/2
         )
         self.cursor = Cursor(self.board_offset)
-        self.score = Stamp(0, 40, (70, 170, 60), (1673, 177))
+        self.score = Stamp(0, 40, 'green', (1673, 177))
 
-        self.message_top = Stamp('', 72, (194, 69, 26),
+        self.message_top = Stamp('', 72, 'orange',
                                  (self.screen.get_width()/2, 100))
         self.message_bottom = Stamp(
-            'Click CONTINUE button', 40, (194, 69, 26),
+            'Click CONTINUE button', 40, 'orange',
             (self.screen.get_width()/2, self.screen.get_height()-100))
 
-        self.plop = Stamp('', 32, (70, 170, 60))
+        self.plop = Stamp('', 32)
         self.arrow = Arrow()
 
     def reset(self):
@@ -109,7 +109,7 @@ class Game:
         self.lvl += 1
         self.set_time()
 
-        self.countdown = Stamp(self.time, 40, (70, 170, 60), (1680, 900))
+        self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
 
         self.state = 'WAITING'
 
@@ -253,10 +253,10 @@ class Game:
 
         if int(value) > 0:
             txt = '+{} $'.format(value)
-            color = (70, 170, 60)
+            color = 'green'
         else:
             txt = '{} $'.format(value)
-            color = (194, 69, 26)
+            color = 'red'
 
         self.plop.set_txt(txt, color, pos)
 
