@@ -3,12 +3,11 @@ from random import randint
 
 from factory import Factory
 from sound import Sound
-from tools import display_txt
 from sprites.cursor import Cursor
 from sprites.button import Button
 from sprites.liquid import Liquid
-from sprites.bubble import Bubble
 from sprites.arrow import Arrow
+from sprites.stamp import Stamp
 
 
 class Game:
@@ -35,7 +34,6 @@ class Game:
                 self.circuit[(x*self.tile_size, y*self.tile_size)] = None
 
         self.box = []
-        self.score = 0
         self.lvl = 0
         self.time = 60
         self.state = 'WAITING'
@@ -64,12 +62,20 @@ class Game:
             (self.screen.get_height() - self.board.height)/2
         )
         self.cursor = Cursor(self.board_offset)
-        self.bubble = Bubble(self.tile_size)
+        self.score = Stamp(0, 40, (70, 170, 60), (1673, 177))
+
+        self.message_top = Stamp('', 72, (194, 69, 26),
+                                 (self.screen.get_width()/2, 100))
+        self.message_bottom = Stamp(
+            'Click CONTINUE button', 40, (194, 69, 26),
+            (self.screen.get_width()/2, self.screen.get_height()-100))
+
+        self.plop = Stamp('', 32, (70, 170, 60))
         self.arrow = Arrow()
 
     def reset(self):
         """ Reset score, level and time """
-        self.score = 0
+        self.score.set_txt(0)
         self.lvl = 0
         self.time = 60
         self.set_up()
@@ -102,7 +108,9 @@ class Game:
 
         self.lvl += 1
         self.set_time()
-        self.countdown = self.time
+
+        self.countdown = Stamp(self.time, 40, (70, 170, 60), (1680, 900))
+
         self.state = 'WAITING'
 
         self.liquid = Liquid(self.valve, self.end, self.update_gain)
@@ -165,7 +173,7 @@ class Game:
         pipe.rect.topleft = pos
         self.circuit[pipe.rect.topleft] = pipe
 
-        self.update_gain(pipe.rect.topleft, pipe.cost)
+        self.update_gain(pipe.rect.center, pipe.cost)
 
     def get_locked(self):
         """ Get the list of the locked pipes """
@@ -188,7 +196,6 @@ class Game:
         self.continue_btn.process()
 
         self.cursor.process(self.is_locked)
-        self.bubble.process()
 
         self.draw()
 
@@ -215,8 +222,8 @@ class Game:
     def tic(self):
         self.sound.tic.play()
         self.valve.anim()
-        self.countdown -= 1
-        if self.countdown <= 0:
+        self.countdown.set_txt(int(self.countdown.txt) - 1)
+        if int(self.countdown.txt) <= 0:
             pygame.time.set_timer(self.COUNTDOWN, 0)
             pygame.time.set_timer(self.FLOOD, 50)
             self.sound.sub.play()
@@ -224,7 +231,7 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        state = self.liquid.flood(self.circuit, self.countdown)
+        state = self.liquid.flood(self.circuit, int(self.countdown.txt))
         if state:
             self.state = state
 
@@ -232,15 +239,26 @@ class Game:
             pygame.time.set_timer(self.FLOOD, 0)
             pygame.mixer.music.stop()
             self.sound.win.play()
+            self.message_top.set_txt('YOU WIN')
 
         elif self.state == 'LOOSE':
+            pygame.time.set_timer(self.COUNTDOWN, 0)
             pygame.time.set_timer(self.FLOOD, 0)
             pygame.mixer.music.stop()
             self.sound.loose.play()
+            self.message_top.set_txt('YOU LOOSE')
 
     def update_gain(self, pos, value):
-        self.score += value
-        self.bubble.update(pos, value)
+        self.score.set_txt(int(self.score.txt) + value)
+
+        if int(value) > 0:
+            txt = '+{} $'.format(value)
+            color = (70, 170, 60)
+        else:
+            txt = '{} $'.format(value)
+            color = (194, 69, 26)
+
+        self.plop.set_txt(txt, color, pos)
 
     def draw(self):
 
@@ -251,7 +269,7 @@ class Game:
             if pipe:
                 pipe.draw(self.layer1)
 
-        self.bubble.draw(self.layer1)
+        self.plop.draw(self.layer1)
         self.cursor.draw(self.layer1)
         self.liquid.draw(self.layer2)
 
@@ -264,10 +282,8 @@ class Game:
             (self.screen.get_width() - self.dashboard_right.get_width(), 0)
         )
 
-        display_txt(self.score, 40, (83, 162, 162), self.screen,
-                    1678, 157)
-        display_txt(self.countdown, 40, (70, 170, 60), self.screen,
-                    1680, 880)
+        self.score.draw(self.screen)
+        self.countdown.draw(self.screen)
 
         self.arrow.draw(self.screen)
 
@@ -275,11 +291,8 @@ class Game:
             pipe.draw(self.screen)
 
         if self.state == 'WIN' or self.state == 'LOOSE':
-            display_txt('YOU {}'.format(self.state), 72, (194, 69, 26),
-                        self.screen, None, 60)
-            txt = 'Click CONTINUE Button'
-            display_txt(txt, 40, (194, 69, 26), self.screen, None,
-                        self.screen.get_height()-60)
+            self.message_top.draw(self.screen)
+            self.message_bottom.draw(self.screen)
             self.continue_btn.draw(self.screen)
 
         else:
@@ -287,7 +300,7 @@ class Game:
             self.giveup_btn.draw(self.screen)
 
     def anim(self):
-        self.bubble.anim()
+        self.plop.fly(-20)
         self.arrow.anim()
 
     # ## Buttons callbacks ## #

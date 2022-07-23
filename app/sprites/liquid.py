@@ -54,7 +54,7 @@ class Liquid:
                 if pipe.name == 'cross' and pipe.flooded:
                     pipe.gain = 200
                 pipe.flooded = True
-                self.update_gain(pipe.rect.topleft, pipe.gain)
+                self.update_gain(pipe.rect.center, pipe.gain)
 
         else:
             return 'LOOSE'

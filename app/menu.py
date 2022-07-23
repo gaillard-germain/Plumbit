@@ -1,16 +1,24 @@
-from tools import display_txt
+from pygame import Surface, SRCALPHA
+
 from sprites.button import Button
+from sprites.stamp import Stamp
 
 
 class Menu:
     def __init__(self, function_quit, screen, topten):
         self.screen = screen
+        self.layer = Surface((self.screen.get_width()/3,
+                             self.screen.get_height()/2), SRCALPHA, 32)
         self.quit = function_quit
         self.play_btn = Button(
-            'PLAY', (self.screen.get_width()/2, 700), self.play)
+            'PLAY', (self.screen.get_width()/2, 800), self.play)
         self.quit_btn = Button(
-            'QUIT', (self.screen.get_width()/2, 800), self.quit)
+            'QUIT', (self.screen.get_width()/2, 900), self.quit)
         self.topten = topten
+
+        self.title = Stamp("PLUMB'IT", 72, (170, 60, 60),
+                           (self.screen.get_width()/2, 100))
+        self.stamp = Stamp('', 40, (50, 162, 162))
 
     def process(self):
         self.play_btn.process()
@@ -24,17 +32,26 @@ class Menu:
 
         return emit
 
+    def display_topten(self):
+        self.layer.fill((255, 255, 255, 0))
+        for i, player in enumerate(self.topten):
+            self.stamp.set_txt(player["name"], pos=(
+                0, i * 50 + 20), align='left')
+            self.stamp.draw(self.layer)
+            self.stamp.set_txt(player["score"], pos=(
+                self.layer.get_width(), i * 50 + 20), align='right')
+            self.stamp.draw(self.layer)
+
     def draw(self):
         self.screen.fill((40, 42, 44))
 
-        display_txt("PLUMB'IT", 72, (170, 60, 60), self.screen, None, 50)
+        self.title.draw(self.screen)
 
-        for i, player in enumerate(self.topten):
-            display_txt(player["name"], 40, (50, 162, 162), self.screen,
-                        self.screen.get_width()/2 - 200, 170 + i * 50, 'left')
-            display_txt(player["score"], 40, (50, 162, 162), self.screen,
-                        self.screen.get_width()/2 + 200,
-                        170 + i * 50, 'right')
+        self.screen.blit(
+            self.layer,
+            ((self.screen.get_width() - self.layer.get_width())/2,
+             (self.screen.get_height() - self.layer.get_height())/2)
+        )
 
         self.play_btn.draw(self.screen)
         self.quit_btn.draw(self.screen)

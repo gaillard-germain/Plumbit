@@ -1,8 +1,9 @@
 import os
 import shutil
 import json
-from tools import display_txt
+
 from sprites.button import Button
+from sprites.stamp import Stamp
 
 
 class Record:
@@ -10,12 +11,17 @@ class Record:
         self.screen = screen
         self.score = 0
         self.rank = None
-        self.player_name = 'Plumber'
         self.enter_btn = Button(
             'ENTER',
             (self.screen.get_width()/2, self.screen.get_height()/2 + 100),
             self.save_score
         )
+        self.title = Stamp('', 48, (83, 162, 162),
+                           (self.screen.get_width()/2,
+                            self.screen.get_height()/2 - 100))
+        self.name = Stamp('Enter your name', 40, (170, 60, 60),
+                          (self.screen.get_width()/2,
+                           self.screen.get_height()/2))
         self.check_file()
         self.load_topten()
 
@@ -30,21 +36,19 @@ class Record:
         return emit
 
     def backspace(self):
-        if len(self.player_name) > 0:
-            self.player_name = self.player_name[:-1]
+        if len(self.name.txt) > 0:
+            self.name.set_txt(self.name.txt[:-1])
 
     def enter_name(self, event):
-        if self.player_name == 'Enter your name':
-            self.player_name = ''
-        if len(self.player_name) < 12:
-            self.player_name += event.unicode
+        if self.name.txt == 'Enter your name':
+            self.name.set_txt('')
+        if len(self.name.txt) < 12:
+            self.name.set_txt(self.name.txt + event.unicode)
 
     def draw(self):
         self.screen.fill((40, 42, 44))
-        txt = str(self.score) + ' is a new RECORD !'
-        display_txt(txt, 48, (83, 162, 162), self.screen, None,
-                    self.screen.get_height()/2 - 100)
-        display_txt(self.player_name, 40, (170, 60, 60), self.screen)
+        self.title.draw(self.screen)
+        self.name.draw(self.screen)
         self.enter_btn.draw(self.screen)
 
     def check_file(self):
@@ -69,6 +73,7 @@ class Record:
                 break
 
         if self.rank is not None:
+            self.title.set_txt('{} is a new RECORD!'.format(self.score))
             return 'RECORD'
         else:
             return 'MENU'
@@ -90,7 +95,7 @@ class Record:
     def save_score(self):
         """ Enter Button callback """
 
-        self.topten.insert(self.rank, dict(name=self.player_name,
+        self.topten.insert(self.rank, dict(name=self.name.txt,
                            score=self.score))
         if len(self.topten) > 10:
             del self.topten[-1]

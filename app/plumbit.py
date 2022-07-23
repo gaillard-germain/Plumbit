@@ -54,7 +54,7 @@ class Plumbit:
             pygame.display.update()
             clock.tick(60)
 
-        next = self.record.check(self.game.score)
+        next = self.record.check(int(self.game.score.txt))
         if next == 'MENU':
             self.place = 'MENU'
             return self.display_menu()
@@ -64,6 +64,8 @@ class Plumbit:
 
     def display_menu(self):
         """ The menu with the TopTen """
+
+        self.menu.display_topten()
 
         while self.place == 'MENU':
             for event in pygame.event.get():

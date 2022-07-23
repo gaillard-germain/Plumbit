@@ -1,6 +1,6 @@
 from pygame import image as pgimage, mouse, mixer
 
-from tools import display_txt
+from sprites.stamp import Stamp
 
 
 class Button:
@@ -14,13 +14,16 @@ class Button:
             pgimage.load('./images/button2.png')
         ]
         self.pin = 0
-        display_txt(label, 32, (64, 68, 70), self.images[0], 100, None, 'left')
-        display_txt(label, 32, (194, 68, 25),
-                    self.images[1], 100, None, 'left')
         self.rect = self.images[0].get_rect()
         self.rect.midtop = pos
         self.glow = False
         self.onclick_function = onclick_function
+
+        stamp = Stamp(label, 32, (64, 68, 70),
+                      (90, self.rect.height/2), 'left')
+        stamp.draw(self.images[0])
+        stamp.set_txt(label, (194, 68, 25))
+        stamp.draw(self.images[1])
 
     def process(self):
         if self.rect.collidepoint(mouse.get_pos()):
