@@ -1,5 +1,5 @@
 import pygame
-from random import randint
+from random import randint, choice
 
 from factory import Factory
 from sound import Sound
@@ -73,6 +73,9 @@ class Game:
         self.plop = Stamp('', 32)
         self.arrow = Arrow()
 
+        self.valve = self.factory.get_extra('valve')
+        self.end = self.factory.get_extra('end')
+
     def reset(self):
         """ Reset score, level and time """
         self.score.set_txt(0)
@@ -90,28 +93,14 @@ class Game:
         self.layer2.fill((255, 255, 255, 0))
 
         self.clear_circuit()
-
         self.fill_box()
-
-        for i in range(randint(self.lvl, self.lvl+1)):
-            block = self.factory.get_extra('block')
-            block.randomize_image()
-            self.strew(block)
-
-        self.valve = self.factory.get_extra('valve')
-        self.valve.rotate()
-        self.strew(self.valve, margin=1)
-
-        self.end = self.factory.get_extra('end')
-        self.end.rotate()
-        self.strew(self.end, margin=1)
-
+        self.strew()
         self.lvl += 1
         self.set_time()
 
-        self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
-
         self.state = 'WAITING'
+
+        self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
 
         self.liquid = Liquid(self.valve, self.end, self.update_gain)
 
@@ -123,28 +112,57 @@ class Game:
         if not self.lvl % 5 and self.time > 5:
             self.time -= 5
 
-    def is_free(self, pipe):
-        if self.circuit[pipe.rect.topleft]:
-            return False
-        else:
-            for pos in pipe.open_to():
-                if self.circuit[pos]:
-                    return False
-        return True
+    def get_nexts(self, pos):
+        for i in (-self.tile_size, self.tile_size):
+            x = (pos[0]+i, pos[1])
+            if x in self.circuit.keys() and self.circuit[x] is None:
+                yield x
+            y = (pos[0], pos[1]+i)
+            if y in self.circuit.keys() and self.circuit[y] is None:
+                yield y
 
-    def strew(self, pipe, margin=0):
-        """ Randomly place pipe in the circuit """
+    def strew(self):
+
+        pos = (randint(1, self.tile_x-2) * self.tile_size,
+               randint(1, self.tile_y-2) * self.tile_size)
+        self.valve.rect.topleft = pos
+        self.valve.rotate()
+        self.circuit[pos] = self.valve
+        pos = list(self.valve.open_to())[0]
+        self.circuit[pos] = '!'
 
         while True:
-            pipe.rect.topleft = (
-                randint(0+margin, self.tile_x-(1+margin)) * pipe.rect.width,
-                randint(0+margin, self.tile_y-(1+margin)) * pipe.rect.height
-            )
-
-            if self.is_free(pipe):
+            nexts = list(self.get_nexts(pos))
+            if nexts:
+                pos = choice(nexts)
+                self.circuit[pos] = '#'
+            else:
                 break
 
-        self.circuit[pipe.rect.topleft] = pipe
+        self.end.rect.topleft = pos
+        self.circuit[pos] = self.end
+
+        while True:
+            prev = list(self.end.open_to())[0]
+            if prev in self.circuit.keys() and self.circuit[prev] == '#':
+                break
+            else:
+                self.end.rotate(1)
+
+        for i in range(randint(self.lvl, self.lvl+1)):
+            block = self.factory.get_extra('block')
+            block.randomize_image()
+
+            pos = (randint(0, self.tile_x-1) * self.tile_size,
+                   randint(0, self.tile_y-1) * self.tile_size)
+
+            if self.circuit[pos] is None:
+                block.rect.topleft = pos
+                self.circuit[pos] = block
+
+        for pos, pipe in self.circuit.items():
+            if pipe == '#' or pipe == '!':
+                self.circuit[pos] = None
 
     def fill_box(self):
         """ Refill the pipe's box """
@@ -167,6 +185,10 @@ class Game:
 
     def drop_and_pickup(self, pos):
         """ Place the current pipe and replace another in the pile """
+
+        if self.state == 'WAITING':
+            self.state = 'RUNNING'
+            pygame.time.set_timer(self.COUNTDOWN, 1000)
 
         self.sound.put.play()
         pipe = self.pickup()
@@ -208,10 +230,6 @@ class Game:
 
             emit = self.flood_btn.click()
             emit = self.giveup_btn.click()
-
-            if self.state == 'WAITING':
-                self.state = 'RUNNING'
-                pygame.time.set_timer(self.COUNTDOWN, 1000)
 
             if (self.board.contains(self.cursor.rect)
                     and not self.is_locked(pos)):
