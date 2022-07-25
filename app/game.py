@@ -83,16 +83,11 @@ class Game:
         self.time = 60
         self.set_up()
 
-    def clear_circuit(self):
-        for pos in self.circuit.keys():
-            self.circuit[pos] = None
-
     def set_up(self):
-        """ Set_up the circuit """
+        """ Set_up the game """
 
         self.layer2.fill((255, 255, 255, 0))
 
-        self.clear_circuit()
         self.fill_box()
         self.strew()
         self.lvl += 1
@@ -109,10 +104,20 @@ class Game:
         pygame.mixer.music.play(loops=-1)
 
     def set_time(self):
+        """ Decrease time for each 5 lvl """
+
         if not self.lvl % 5 and self.time > 5:
             self.time -= 5
 
+    def clear_circuit(self):
+        """ Clear the circuit dict """
+
+        for pos in self.circuit.keys():
+            self.circuit[pos] = None
+
     def get_nexts(self, pos):
+        """ Util method for generating a ghost path to the end """
+
         for i in (-self.tile_size, self.tile_size):
             x = (pos[0]+i, pos[1])
             if x in self.circuit.keys() and self.circuit[x] is None:
@@ -122,14 +127,16 @@ class Game:
                 yield y
 
     def strew(self):
+        """ Strew valve, end and several blocks on the game board """
 
-        pos = (randint(1, self.tile_x-2) * self.tile_size,
-               randint(1, self.tile_y-2) * self.tile_size)
-        self.valve.rect.topleft = pos
+        self.clear_circuit()
+
+        self.valve.rect.topleft = (randint(1, self.tile_x-2) * self.tile_size,
+                                   randint(1, self.tile_y-2) * self.tile_size)
+        self.circuit[self.valve.rect.topleft] = self.valve
         self.valve.rotate()
-        self.circuit[pos] = self.valve
         pos = list(self.valve.open_to())[0]
-        self.circuit[pos] = '!'
+        self.circuit[pos] = '#'
 
         while True:
             nexts = list(self.get_nexts(pos))
@@ -161,7 +168,7 @@ class Game:
                 self.circuit[pos] = block
 
         for pos, pipe in self.circuit.items():
-            if pipe == '#' or pipe == '!':
+            if pipe == '#':
                 self.circuit[pos] = None
 
     def fill_box(self):
@@ -176,6 +183,9 @@ class Game:
             self.box.append(pipe)
 
     def pickup(self):
+        """ Pickup the first pipe in the box
+            and add a new random one in the queue """
+
         picked = self.box.pop(0)
         self.box.append(self.factory.get_pipe())
         for i, pipe in enumerate(self.box):
@@ -213,6 +223,8 @@ class Game:
             return False
 
     def process(self):
+        """ Process buttons, cursor and drawing """
+
         self.flood_btn.process()
         self.giveup_btn.process()
         self.continue_btn.process()
@@ -222,6 +234,8 @@ class Game:
         self.draw()
 
     def on_mouse_click(self):
+        """ Handle button click event """
+
         if self.state == 'LOOSE' or self.state == 'WIN':
             emit = self.continue_btn.click()
 
@@ -238,6 +252,8 @@ class Game:
         return emit
 
     def tic(self):
+        """ Decrease countdown every second, and start flooding at 0 """
+
         self.sound.tic.play()
         self.valve.anim()
         self.countdown.set_txt(int(self.countdown.txt) - 1)
@@ -267,6 +283,8 @@ class Game:
             self.message_top.set_txt('YOU LOOSE')
 
     def update_gain(self, pos, value):
+        """ Modify score every time a pipe is flooded or placed """
+
         self.score.set_txt(int(self.score.txt) + value)
 
         if int(value) > 0:
@@ -279,6 +297,7 @@ class Game:
         self.plop.set_txt(txt, color, pos)
 
     def draw(self):
+        """ Draw every game things on screen """
 
         self.screen.fill((66, 63, 56))
         self.layer1.fill((96, 93, 86))
@@ -318,6 +337,8 @@ class Game:
             self.giveup_btn.draw(self.screen)
 
     def anim(self):
+        """ Process some animations """
+
         self.plop.fly(-20)
         self.arrow.anim()
 

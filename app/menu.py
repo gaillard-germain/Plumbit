@@ -21,18 +21,24 @@ class Menu:
         self.stamp = Stamp('', 40, 'light-blue')
 
     def process(self):
+        """ Process buttons and drawing """
+
         self.play_btn.process()
         self.quit_btn.process()
 
         self.draw()
 
     def on_mouse_click(self):
+        """ Handle buttons click """
+
         emit = self.play_btn.click()
         self.quit_btn.click()
 
         return emit
 
     def display_topten(self):
+        """ display the topten """
+
         self.layer.fill((255, 255, 255, 0))
         for i, player in enumerate(self.topten):
             self.stamp.set_txt(player["name"], pos=(
@@ -43,6 +49,8 @@ class Menu:
             self.stamp.draw(self.layer)
 
     def draw(self):
+        """ Draw every menu things on the screen """
+
         self.screen.fill((40, 42, 44))
 
         self.title.draw(self.screen)

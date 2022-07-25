@@ -20,6 +20,8 @@ class Stamp:
         self.set_txt(txt)
 
     def set_txt(self, txt, color='default', pos='default', align='default'):
+        """ Set or reset the stamp text and align it in terms of its bulk """
+
         self.txt = str(txt)
 
         if color == 'default':
@@ -44,9 +46,13 @@ class Stamp:
             self.rect.midright = pos
 
     def draw(self, surface):
+        """ Draw stamp """
+
         surface.blit(self.img, self.rect.topleft)
 
     def fly(self, max_y):
+        """ make the stamp floating up """
+
         if self.rect.top >= max_y:
             self.rect.move_ip(0, -2)
         else:

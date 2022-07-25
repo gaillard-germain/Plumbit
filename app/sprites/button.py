@@ -26,6 +26,8 @@ class Button:
         stamp.draw(self.images[1])
 
     def process(self):
+        """ Handle button behavior """
+
         if self.rect.collidepoint(mouse.get_pos()):
             if not self.glow:
                 self.pin = 1
@@ -37,9 +39,13 @@ class Button:
                 self.glow = False
 
     def click(self):
+        """ Execute button's callback if button is click """
+
         if self.glow:
             self.sound.play()
             return self.onclick_function()
 
     def draw(self, surface):
+        """ Draw the button """
+
         surface.blit(self.images[self.pin], self.rect.topleft)

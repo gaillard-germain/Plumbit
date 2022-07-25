@@ -57,9 +57,13 @@ class Pipe:
         self.locked = True
 
     def draw(self, surface):
+        """ Draw the pipe """
+
         surface.blit(self.images[self.pin], self.rect.topleft)
 
     def anim(self):
+        """ Anim the pipe """
+
         length = len(self.images)
         if self.pin == length-1:
             self.pin = 0
@@ -67,4 +71,6 @@ class Pipe:
             self.pin += 1
 
     def randomize_image(self):
+        """ Select a random image for a pipe """
+
         self.pin = randint(0, len(self.images)-1)

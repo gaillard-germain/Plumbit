@@ -26,26 +26,36 @@ class Record:
         self.load_topten()
 
     def process(self):
+        """ Process buttons and drawing """
+
         self.enter_btn.process()
 
         self.draw()
 
     def on_mouse_click(self):
+        """ Handle buttons click """
+
         emit = self.enter_btn.click()
 
         return emit
 
     def backspace(self):
+        """ User entry correction """
+
         if len(self.name.txt) > 0:
             self.name.set_txt(self.name.txt[:-1])
 
     def enter_name(self, event):
+        """ User entry """
+
         if self.name.txt == 'Enter your name':
             self.name.set_txt('')
         if len(self.name.txt) < 12:
             self.name.set_txt(self.name.txt + event.unicode)
 
     def draw(self):
+        """ Draw every record things on the screen """
+
         self.screen.fill((40, 42, 44))
         self.title.draw(self.screen)
         self.name.draw(self.screen)

@@ -60,4 +60,6 @@ class Liquid:
             return 'LOOSE'
 
     def draw(self, surface):
+        """ draw liquid """
+
         surface.blit(self.image, self.rect.topleft)
