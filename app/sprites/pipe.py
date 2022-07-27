@@ -13,6 +13,7 @@ class Pipe:
         self.name = data['name']
         self.cost = data['cost']
         self.gain = data['gain']
+        self.modifier = data['modifier']
         self.locked = data['locked']
         self.rect = Rect(0, 0, self.size, self.size)
         self.flooded = False

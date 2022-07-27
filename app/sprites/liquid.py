@@ -1,4 +1,4 @@
-from pygame import image as pgimage
+from pygame import image as pgimage, time
 
 
 class Liquid:
@@ -9,6 +9,7 @@ class Liquid:
         self.previous = valve
         self.end = end
         self.path = (0, 0)
+        self.modifier = 1
         self.update_gain = update_gain
 
     def check(self, circuit):
@@ -32,7 +33,7 @@ class Liquid:
                                      self.previous.rect.top+self.path[1]):
                 return pipe
 
-    def flood(self, circuit, bonus):
+    def flood(self, circuit, time_bonus, flood_event):
         """ Floods the circuit """
 
         pipe = self.check(circuit)
@@ -44,7 +45,7 @@ class Liquid:
                               int(self.path[1]/pipe.rect.height)*2)
 
             if self.end.rect.contains(self.rect):
-                gain = self.end.gain + bonus * 10
+                gain = self.end.gain * self.modifier + time_bonus * 10
                 self.update_gain(self.end.rect.topleft, gain)
                 return 'WIN'
 
@@ -54,7 +55,10 @@ class Liquid:
                 if pipe.name == 'cross' and pipe.flooded:
                     pipe.gain = 200
                 pipe.flooded = True
-                self.update_gain(pipe.rect.center, pipe.gain)
+                if pipe.modifier:
+                    time.set_timer(flood_event, 20)
+                    self.modifier *= pipe.modifier
+                self.update_gain(pipe.rect.center, pipe.gain * self.modifier)
 
         else:
             return 'LOOSE'

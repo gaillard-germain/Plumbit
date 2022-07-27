@@ -97,11 +97,11 @@ class Game:
         self.lvl += 1
         self.set_time()
 
+        self.liquid = Liquid(self.valve, self.end, self.update_gain)
+
         self.state = 'WAITING'
 
         self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
-
-        self.liquid = Liquid(self.valve, self.end, self.update_gain)
 
         pygame.time.set_timer(self.ANIM, 15)
 
@@ -175,6 +175,11 @@ class Game:
             if pipe == '#':
                 self.circuit[pos] = None
 
+        if randint(0, 100) < self.lvl:
+            golden = self.factory.get_extra('golden')
+            golden.rect.topleft = (choice(list(self.get_free())))
+            self.circuit[golden.rect.topleft] = golden
+
     def fill_box(self):
         """ Refill the pipe's box """
 
@@ -211,6 +216,13 @@ class Game:
         self.circuit[pipe.rect.topleft] = pipe
 
         self.update_gain(pipe.rect.center, pipe.cost)
+
+    def get_free(self):
+        """ Get the list of free positions """
+
+        for pos, pipe in self.circuit.items():
+            if pipe is None:
+                yield pos
 
     def get_locked(self):
         """ Get the list of the locked pipes """
@@ -271,7 +283,8 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        state = self.liquid.flood(self.circuit, int(self.countdown.txt))
+        state = self.liquid.flood(
+            self.circuit, int(self.countdown.txt), self.FLOOD)
         if state:
             self.state = state
 

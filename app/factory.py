@@ -12,6 +12,7 @@ class Factory:
                 'name': 'cross',
                 'cost': -75,
                 'gain': 100,
+                'modifier': 0,
                 'locked': False,
                 'weight': 30
             },
@@ -21,6 +22,7 @@ class Factory:
                 'name': 'straight',
                 'cost': -50,
                 'gain': 100,
+                'modifier': 0,
                 'locked': False,
                 'weight': 50
             },
@@ -30,6 +32,7 @@ class Factory:
                 'name': 'straight',
                 'cost': -50,
                 'gain': 100,
+                'modifier': 0,
                 'locked': False,
                 'weight': 50
             },
@@ -39,6 +42,7 @@ class Factory:
                 'name': 'elbow',
                 'cost': -50,
                 'gain': 100,
+                'modifier': 0,
                 'locked': False,
                 'weight': 40
             },
@@ -48,6 +52,7 @@ class Factory:
                 'name': 'elbow',
                 'cost': -50,
                 'gain': 100,
+                'modifier': 0,
                 'locked': False,
                 'weight': 40
             },
@@ -57,6 +62,7 @@ class Factory:
                 'name': 'elbow',
                 'cost': -50,
                 'gain': 100,
+                'modifier': 0,
                 'locked': False,
                 'weight': 40
             },
@@ -66,6 +72,7 @@ class Factory:
                 'name': 'elbow',
                 'cost': -50,
                 'gain': 100,
+                'modifier': 0,
                 'locked': False,
                 'weight': 40
             }
@@ -80,6 +87,7 @@ class Factory:
                 'name': 'valve',
                 'cost': 0,
                 'gain': 0,
+                'modifier': 0,
                 'locked': True,
             },
             'end': {
@@ -88,6 +96,7 @@ class Factory:
                 'name': 'end',
                 'cost': 0,
                 'gain': 300,
+                'modifier': 0,
                 'locked': True,
             },
             'block': {
@@ -99,6 +108,18 @@ class Factory:
                 'name': 'block',
                 'cost': 0,
                 'gain': 0,
+                'modifier': 0,
+                'locked': True,
+            },
+            'golden': {
+                'images': [
+                    pgimage.load('./images/golden_cross.png')
+                ],
+                'apertures': [1, 1, 1, 1],
+                'name': 'cross',
+                'cost': 0,
+                'gain': 100,
+                'modifier': 2,
                 'locked': True,
             }
         }
