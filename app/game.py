@@ -66,9 +66,9 @@ class Game:
 
         self.message_top = Stamp('', 72, 'orange',
                                  (self.screen.get_width()/2, 100))
-        self.message_bottom = Stamp(
-            'Click CONTINUE button', 40, 'orange',
-            (self.screen.get_width()/2, self.screen.get_height()-100))
+        self.message_bottom = Stamp('', 40, 'orange',
+                                    (self.screen.get_width()/2,
+                                     self.screen.get_height()-100))
 
         self.plop = Stamp('', 32)
         self.arrow = Arrow()
@@ -87,6 +87,10 @@ class Game:
         """ Set_up the game """
 
         self.layer2.fill((255, 255, 255, 0))
+
+        self.message_top.set_txt('Level {}'.format(self.lvl))
+        self.message_bottom.set_txt(
+            'Countdown start when you place your first pipe')
 
         self.fill_box()
         self.strew()
@@ -199,6 +203,7 @@ class Game:
         if self.state == 'WAITING':
             self.state = 'RUNNING'
             pygame.time.set_timer(self.COUNTDOWN, 1000)
+            self.message_bottom.set_txt('Incoming fluid...')
 
         self.sound.put.play()
         pipe = self.pickup()
@@ -261,6 +266,7 @@ class Game:
             pygame.time.set_timer(self.COUNTDOWN, 0)
             pygame.time.set_timer(self.FLOOD, 50)
             self.sound.sub.play()
+            self.message_bottom.set_txt('HURRY !!!')
 
     def flood(self):
         """ Floods the circuit """
@@ -274,6 +280,7 @@ class Game:
             pygame.mixer.music.stop()
             self.sound.win.play()
             self.message_top.set_txt('YOU WIN')
+            self.message_bottom.set_txt('Click CONTINUE button')
 
         elif self.state == 'LOOSE':
             pygame.time.set_timer(self.COUNTDOWN, 0)
@@ -281,6 +288,7 @@ class Game:
             pygame.mixer.music.stop()
             self.sound.loose.play()
             self.message_top.set_txt('YOU LOOSE')
+            self.message_bottom.set_txt('Click CONTINUE button')
 
     def update_gain(self, pos, value):
         """ Modify score every time a pipe is flooded or placed """
@@ -327,9 +335,10 @@ class Game:
         for pipe in self.box:
             pipe.draw(self.screen)
 
+        self.message_top.draw(self.screen)
+        self.message_bottom.draw(self.screen)
+
         if self.state == 'WIN' or self.state == 'LOOSE':
-            self.message_top.draw(self.screen)
-            self.message_bottom.draw(self.screen)
             self.continue_btn.draw(self.screen)
 
         else:
@@ -350,6 +359,7 @@ class Game:
         self.sound.sub.play()
         pygame.time.set_timer(self.COUNTDOWN, 0)
         pygame.time.set_timer(self.FLOOD, 20)
+        self.message_bottom.set_txt('HURRY !!!')
 
     def give_up(self):
         """ Give-up Button callback """
