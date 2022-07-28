@@ -2,25 +2,27 @@ from pygame import image as pgimage, time
 
 
 class Liquid:
-    def __init__(self, valve, end, update_gain):
+    def __init__(self, valve, end, circuit, update_gain, flood_event):
         self.image = pgimage.load('./images/liquid.png')
         self.rect = self.image.get_rect()
         self.rect.topleft = valve.rect.topleft
         self.previous = valve
         self.end = end
+        self.circuit = circuit
         self.path = (0, 0)
         self.modifier = 1
         self.update_gain = update_gain
+        self.FLOOD = flood_event
 
-    def check(self, circuit):
+    def check(self):
         """ Returns the next floodable pipe """
 
         eligibles = []
 
         for pos in self.previous.open_to():
-            if pos not in circuit.keys():
+            if pos not in self.circuit.keys():
                 continue
-            pipe = circuit[pos]
+            pipe = self.circuit[pos]
             if pipe and self.previous.rect.topleft in pipe.open_to():
                 if self.previous.name != 'cross':
                     return pipe
@@ -33,10 +35,10 @@ class Liquid:
                                      self.previous.rect.top+self.path[1]):
                 return pipe
 
-    def flood(self, circuit, time_bonus, flood_event):
+    def flood(self, time_bonus):
         """ Floods the circuit """
 
-        pipe = self.check(circuit)
+        pipe = self.check()
 
         if pipe:
             self.path = (pipe.rect.left - self.previous.rect.left,
@@ -56,7 +58,7 @@ class Liquid:
                     pipe.gain = 200
                 pipe.flooded = True
                 if pipe.modifier:
-                    time.set_timer(flood_event, 20)
+                    time.set_timer(self.FLOOD, 20)
                     self.modifier *= pipe.modifier
                 self.update_gain(pipe.rect.center, pipe.gain * self.modifier)
 

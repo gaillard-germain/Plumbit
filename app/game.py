@@ -97,7 +97,8 @@ class Game:
         self.lvl += 1
         self.set_time()
 
-        self.liquid = Liquid(self.valve, self.end, self.update_gain)
+        self.liquid = Liquid(self.valve, self.end, self.circuit,
+                             self.update_gain, self.FLOOD)
 
         self.state = 'WAITING'
 
@@ -283,8 +284,7 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        state = self.liquid.flood(
-            self.circuit, int(self.countdown.txt), self.FLOOD)
+        state = self.liquid.flood(int(self.countdown.txt))
         if state:
             self.state = state
 
