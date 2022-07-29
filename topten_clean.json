@@ -1,42 +1,52 @@
 [
     {
         "name": "Plumber",
+        "level": 20,
         "score": 20000
     },
     {
         "name": "Plumber",
+        "level": 18,
         "score": 18000
     },
     {
         "name": "Plumber",
+        "level": 16,
         "score": 16000
     },
     {
         "name": "Plumber",
+        "level": 14,
         "score": 14000
     },
     {
         "name": "Plumber",
+        "level": 12,
         "score": 12000
     },
     {
         "name": "Plumber",
+        "level": 10,
         "score": 10000
     },
     {
         "name": "Plumber",
+        "level": 8,
         "score": 8000
     },
     {
         "name": "Plumber",
+        "level": 6,
         "score": 6000
     },
     {
         "name": "Plumber",
+        "level": 4,
         "score": 4000
     },
     {
         "name": "Plumber",
+        "level": 2,
         "score": 2000
     }
 ]

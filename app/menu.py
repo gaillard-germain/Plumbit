@@ -44,6 +44,9 @@ class Menu:
             self.stamp.set_txt(player["name"], pos=(
                 0, i * 50 + 20), align='left')
             self.stamp.draw(self.layer)
+            self.stamp.set_txt('lvl. {}'.format(player["level"]), pos=(
+                self.layer.get_width()/2, i * 50 + 20))
+            self.stamp.draw(self.layer)
             self.stamp.set_txt(player["score"], pos=(
                 self.layer.get_width(), i * 50 + 20), align='right')
             self.stamp.draw(self.layer)

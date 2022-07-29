@@ -71,10 +71,11 @@ class Record:
 
             shutil.copyfile(src, dst)
 
-    def check(self, score):
+    def check(self, score, lvl):
         """ Checks if score may enter the TopTen """
 
         self.score = score
+        self.lvl = lvl
         self.rank = None
 
         for index, player in enumerate(self.topten):
@@ -106,6 +107,7 @@ class Record:
         """ Enter Button callback """
 
         self.topten.insert(self.rank, dict(name=self.name.txt,
+                           level=self.lvl,
                            score=self.score))
         if len(self.topten) > 10:
             del self.topten[-1]

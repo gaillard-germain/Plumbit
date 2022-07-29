@@ -54,7 +54,7 @@ class Plumbit:
             pygame.display.update()
             clock.tick(60)
 
-        next = self.record.check(int(self.game.score.txt))
+        next = self.record.check(int(self.game.score.txt), self.game.lvl)
         if next == 'MENU':
             self.place = 'MENU'
             return self.display_menu()
