@@ -81,6 +81,8 @@ class Game:
         self.score.set_txt(0)
         self.lvl = 0
         self.time = 60
+
+        pygame.time.set_timer(self.ANIM, 15)
         self.set_up()
 
     def set_up(self):
@@ -103,8 +105,6 @@ class Game:
         self.state = 'WAITING'
 
         self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
-
-        pygame.time.set_timer(self.ANIM, 15)
 
         pygame.mixer.music.play(loops=-1)
 
