@@ -15,7 +15,7 @@ class Cursor:
         self.offset = offset
 
     def process(self, is_locked):
-        """ Move the cursor in the board """
+        """ Move the cursor on the board """
 
         mouse_pos = mouse.get_pos()
 

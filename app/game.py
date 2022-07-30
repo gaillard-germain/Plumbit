@@ -12,11 +12,11 @@ from sprites.stamp import Stamp
 
 class Game:
     INFO = [
-        'Countdown start when you place the first pipe.',
-        'The golden cross double your gain but speed up the liquid.',
-        'the chance to have a golden cross increase with the level.',
-        'when the liquid crosses a cross it goes straight.',
-        'time is decrease by 5 seconds every 5 levels.'
+        'Countdown starts when you place the first pipe.',
+        'The golden cross doubles your gain but speeds up the liquid.',
+        'The chance to have a golden cross increases with the level.',
+        'When the liquid crosses a cross it goes straight.',
+        'Time decreases by 5 seconds every 5 levels.'
     ]
 
     def __init__(self, screen):
@@ -26,10 +26,11 @@ class Game:
         self.screen = screen
         self.factory = Factory()
         self.sound = Sound()
+        self.music = True
 
-        self.flood_btn = Button('FLOOD', (140, 50), self.flood_now)
-        self.giveup_btn = Button('GIVE-UP', (140, 150), self.give_up)
-        self.continue_btn = Button('CONTINUE', (140, 50), self.next_step)
+        self.flood_btn = Button(['FLOOD'], (140, 50), self.flood_now)
+        self.giveup_btn = Button(['GIVE-UP'], (140, 150), self.give_up)
+        self.continue_btn = Button(['CONTINUE'], (140, 50), self.next_step)
 
         self.COUNTDOWN = pygame.USEREVENT + 1
         self.FLOOD = pygame.USEREVENT + 2
@@ -114,7 +115,8 @@ class Game:
 
         self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
 
-        pygame.mixer.music.play(loops=-1)
+        if self.music:
+            pygame.mixer.music.play(loops=-1)
 
     def set_time(self):
         """ Decrease time for each 5 lvl """
@@ -327,6 +329,9 @@ class Game:
             color = 'red'
 
         self.plop.set_txt(txt, color, pos)
+
+    def switch_music(self):
+        self.music = not self.music
 
     def draw(self):
         """ Draw every game things on screen """

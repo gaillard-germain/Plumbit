@@ -12,7 +12,7 @@ class Record:
         self.score = 0
         self.rank = None
         self.enter_btn = Button(
-            'ENTER',
+            ['ENTER'],
             (self.screen.get_width()/2, self.screen.get_height()/2 + 100),
             self.save_score
         )
