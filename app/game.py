@@ -15,7 +15,8 @@ class Game:
         'Countdown start when you place the first pipe.',
         'The golden cross double your gain but speed up the liquid.',
         'the chance to have a golden cross increase with the level.',
-        'when the liquid crosses a cross it goes straight.'
+        'when the liquid crosses a cross it goes straight.',
+        'time is decrease by 5 seconds every 5 levels.'
     ]
 
     def __init__(self, screen):
@@ -98,6 +99,7 @@ class Game:
         self.layer2.fill((255, 255, 255, 0))
 
         self.lvl += 1
+        self.state = 'WAITING'
 
         self.message_top.set_txt('Level {}'.format(self.lvl))
         self.message_bottom.set_txt(
@@ -109,8 +111,6 @@ class Game:
 
         self.liquid = Liquid(self.valve, self.end, self.circuit,
                              self.update_gain, self.FLOOD)
-
-        self.state = 'WAITING'
 
         self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
 
@@ -144,16 +144,18 @@ class Game:
 
         self.clear_circuit()
 
-        self.valve.rect.topleft = (randint(1, self.tile_x-2) * self.tile_size,
-                                   randint(1, self.tile_y-2) * self.tile_size)
-        self.circuit[self.valve.rect.topleft] = self.valve
-        self.valve.rotate()
-        pos = list(self.valve.open_to())[0]
+        pos = (randint(1, self.tile_x-2) * self.tile_size,
+               randint(1, self.tile_y-2) * self.tile_size)
+
         self.circuit[pos] = '#'
+        self.valve.rect.topleft = choice(list(self.get_nexts(pos)))
+        self.circuit[self.valve.rect.topleft] = self.valve
+        self.valve.align(pos)
 
         while True:
             nexts = list(self.get_nexts(pos))
             if nexts:
+                prev = pos
                 pos = choice(nexts)
                 self.circuit[pos] = '#'
             else:
@@ -161,33 +163,41 @@ class Game:
 
         self.end.rect.topleft = pos
         self.circuit[pos] = self.end
-
-        while True:
-            prev = list(self.end.open_to())[0]
-            if prev in self.circuit.keys() and self.circuit[prev] == '#':
-                break
-            else:
-                self.end.rotate(1)
+        self.end.align(prev)
 
         for i in range(randint(self.lvl, self.lvl+1)):
             block = self.factory.get_extra('block')
             block.randomize_image()
 
-            pos = (randint(0, self.tile_x-1) * self.tile_size,
-                   randint(0, self.tile_y-1) * self.tile_size)
+            free = list(self.get_free())
 
-            if self.circuit[pos] is None:
-                block.rect.topleft = pos
-                self.circuit[pos] = block
-
-        for pos, pipe in self.circuit.items():
-            if pipe == '#':
-                self.circuit[pos] = None
+            if free:
+                block.rect.topleft = choice(free)
+                self.circuit[block.rect.topleft] = block
+            else:
+                break
 
         if randint(0, 100) < self.lvl:
             golden = self.factory.get_extra('golden')
-            golden.rect.topleft = (choice(list(self.get_free())))
+            golden.rect.topleft = (choice(list(self.get_path())))
             self.circuit[golden.rect.topleft] = golden
+
+        for pos in self.get_path():
+            self.circuit[pos] = None
+
+    def get_path(self):
+        """ Get the ghost path positions """
+
+        for pos, pipe in self.circuit.items():
+            if pipe == '#':
+                yield pos
+
+    def get_free(self):
+        """ Get the list of free positions """
+
+        for pos, pipe in self.circuit.items():
+            if pipe is None:
+                yield pos
 
     def fill_box(self):
         """ Refill the pipe's box """
@@ -225,13 +235,6 @@ class Game:
         self.circuit[pipe.rect.topleft] = pipe
 
         self.update_gain(pipe.rect.center, pipe.cost)
-
-    def get_free(self):
-        """ Get the list of free positions """
-
-        for pos, pipe in self.circuit.items():
-            if pipe is None:
-                yield pos
 
     def get_locked(self):
         """ Get the list of the locked pipes """

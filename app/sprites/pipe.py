@@ -29,6 +29,14 @@ class Pipe:
             for i, image in enumerate(self.images):
                 self.images[i] = transform.rotate(image, 90)
 
+    def align(self, pos):
+        count = 0
+        while pos not in self.open_to():
+            count += 1
+            self.rotate(1)
+            if count == 3:
+                break
+
     def open_to(self):
         """ Get the coordinates which where the pipe is open to """
 
