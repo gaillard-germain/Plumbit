@@ -11,6 +11,13 @@ from sprites.stamp import Stamp
 
 
 class Game:
+    INFO = [
+        'Countdown start when you place the first pipe.',
+        'The golden cross double your gain but speed up the liquid.',
+        'the chance to have a golden cross increase with the level.',
+        'when the liquid crosses a cross it goes straight.'
+    ]
+
     def __init__(self, screen):
         self.tile_size = 64
         self.tile_x = 17
@@ -90,14 +97,15 @@ class Game:
 
         self.layer2.fill((255, 255, 255, 0))
 
+        self.lvl += 1
+
         self.message_top.set_txt('Level {}'.format(self.lvl))
         self.message_bottom.set_txt(
-            'Countdown start when you place your first pipe')
+            'Info: {}'.format(choice(self.INFO)))
 
         self.fill_box()
-        self.strew()
-        self.lvl += 1
         self.set_time()
+        self.strew()
 
         self.liquid = Liquid(self.valve, self.end, self.circuit,
                              self.update_gain, self.FLOOD)

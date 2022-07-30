@@ -27,7 +27,6 @@ class Plumbit:
         """ The game """
 
         self.game.reset()
-        self.game.set_up()
 
         clock = pygame.time.Clock()
 
