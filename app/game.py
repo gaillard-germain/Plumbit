@@ -2,6 +2,7 @@ import pygame
 from random import randint, choice
 
 from factory import Factory
+from info import info
 from sprites.cursor import Cursor
 from sprites.button import Button
 from sprites.liquid import Liquid
@@ -10,18 +11,6 @@ from sprites.stamp import Stamp
 
 
 class Game:
-    INFO = [
-        'Countdown starts when you place the first pipe.',
-        'The golden-cross doubles your gains but speeds up the liquid.',
-        'The chance to have a golden-cross increases with the level.',
-        'When the liquid crosses a cross it goes straight.',
-        'Time decreases by 5 seconds every 5 levels.',
-        'The Flood button starts the liquid immediately.',
-        'The give-up button brings you back to the menu.',
-        'You cannot replace a flooded pipe.',
-        'The number of obstacles increases with the level.'
-    ]
-
     def __init__(self, screen, function_quit):
         self.tile_size = 64
         self.tile_x = 17
@@ -119,7 +108,7 @@ class Game:
 
         self.message_top.set_txt('Level {}'.format(self.lvl))
         self.message_bottom.set_txt(
-            'Info: {}'.format(choice(self.INFO)))
+            'INFO: {}'.format(choice(info)))
 
         self.fill_box()
         self.set_time()
