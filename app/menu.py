@@ -1,4 +1,4 @@
-from pygame import Surface, SRCALPHA
+import pygame
 
 from sprites.button import Button
 from sprites.stamp import Stamp
@@ -6,9 +6,13 @@ from sprites.stamp import Stamp
 
 class Menu:
     def __init__(self, screen, topten, function_quit, function_music):
+        self.state = 'MENU'
         self.screen = screen
-        self.layer = Surface((self.screen.get_width()/3,
-                             self.screen.get_height()/2), SRCALPHA, 32)
+        self.topten = topten
+        self.quit = function_quit
+        self.layer = pygame.Surface((self.screen.get_width()/3,
+                                    self.screen.get_height()/2),
+                                    pygame.SRCALPHA, 32)
         self.music_btn = Button(
             ['MUSIC ON', 'MUSIC OFF'], (self.screen.get_width()/2, 800),
             function_music)
@@ -16,20 +20,10 @@ class Menu:
             ['PLAY'], (self.screen.get_width()/2, 880), self.play)
         self.quit_btn = Button(
             ['QUIT'], (self.screen.get_width()/2, 960), function_quit)
-        self.topten = topten
 
         self.title = Stamp("PLUMB'IT", 72, 'red',
                            (self.screen.get_width()/2, 150))
         self.stamp = Stamp('', 40, 'light-blue')
-
-    def process(self):
-        """ Process buttons and drawing """
-
-        self.music_btn.process()
-        self.play_btn.process()
-        self.quit_btn.process()
-
-        self.draw()
 
     def on_mouse_click(self):
         """ Handle buttons click """
@@ -72,14 +66,32 @@ class Menu:
         self.play_btn.draw(self.screen)
         self.quit_btn.draw(self.screen)
 
+    def process(self):
+        """ Process Menu """
+
+        self.display_topten()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.quit()
+
+                elif (event.type == pygame.MOUSEBUTTONDOWN
+                        and event.button == 1):
+                    if self.on_mouse_click() == 'GAME':
+                        return
+
+            self.music_btn.process()
+            self.play_btn.process()
+            self.quit_btn.process()
+
+            self.draw()
+
+            pygame.display.update()
+
     # ## Buttons callbacks # ##
 
     def play(self):
         """ Play Button callback """
 
         return 'GAME'
-
-    def music(self):
-        """ Music button callback """
-
-        return 'MUSIC'

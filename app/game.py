@@ -23,11 +23,12 @@ class Game:
         'The number of obstacles increases with the level.'
     ]
 
-    def __init__(self, screen):
+    def __init__(self, screen, function_quit):
         self.tile_size = 64
         self.tile_x = 17
         self.tile_y = 12
         self.screen = screen
+        self.quit = function_quit
         self.factory = Factory()
         self.sound = Sound()
         self.music = True
@@ -257,17 +258,6 @@ class Game:
         else:
             return False
 
-    def process(self):
-        """ Process buttons, cursor and drawing """
-
-        self.flood_btn.process()
-        self.giveup_btn.process()
-        self.continue_btn.process()
-
-        self.cursor.process(self.is_locked)
-
-        self.draw()
-
     def on_mouse_click(self):
         """ Handle button click event """
 
@@ -384,6 +374,42 @@ class Game:
         self.plop.fly(-20)
         self.arrow.anim()
 
+    def process(self):
+        """ Process Game """
+
+        self.reset()
+
+        clock = pygame.time.Clock()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.quit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if self.on_mouse_click() == 'BACK':
+                        return
+
+                if event.type == self.ANIM:
+                    self.anim()
+
+                if event.type == self.COUNTDOWN:
+                    self.tic()
+
+                if event.type == self.FLOOD:
+                    self.flood()
+
+            self.flood_btn.process()
+            self.giveup_btn.process()
+            self.continue_btn.process()
+
+            self.cursor.process(self.is_locked)
+
+            self.draw()
+
+            pygame.display.update()
+            clock.tick(60)
+
     # ## Buttons callbacks ## #
 
     def flood_now(self):
@@ -402,7 +428,7 @@ class Game:
         pygame.time.set_timer(self.FLOOD, 0)
         pygame.time.set_timer(self.ANIM, 0)
 
-        return 'LOOSE'
+        return 'BACK'
 
     def next_step(self):
         """ Continue Button callback """

@@ -1,3 +1,4 @@
+import pygame
 import os
 import shutil
 import json
@@ -7,8 +8,9 @@ from sprites.stamp import Stamp
 
 
 class Record:
-    def __init__(self, screen):
+    def __init__(self, screen, function_quit):
         self.screen = screen
+        self.quit = function_quit
         self.score = 0
         self.rank = None
         self.enter_btn = Button(
@@ -24,13 +26,6 @@ class Record:
                            self.screen.get_height()/2))
         self.check_file()
         self.load_topten()
-
-    def process(self):
-        """ Process buttons and drawing """
-
-        self.enter_btn.process()
-
-        self.draw()
 
     def on_mouse_click(self):
         """ Handle buttons click """
@@ -52,14 +47,6 @@ class Record:
             self.name.set_txt('')
         if len(self.name.txt) < 12:
             self.name.set_txt(self.name.txt + event.unicode)
-
-    def draw(self):
-        """ Draw every record things on the screen """
-
-        self.screen.fill((40, 42, 44))
-        self.title.draw(self.screen)
-        self.name.draw(self.screen)
-        self.enter_btn.draw(self.screen)
 
     def check_file(self):
         """ Check if topten.json exists, if not copy it from a clean file """
@@ -100,6 +87,44 @@ class Record:
 
         with open('./topten.json', 'w') as file:
             json.dump(self.topten, file, indent=4)
+
+    def draw(self):
+        """ Draw every record things on the screen """
+
+        self.screen.fill((40, 42, 44))
+        self.title.draw(self.screen)
+        self.name.draw(self.screen)
+        self.enter_btn.draw(self.screen)
+
+    def process(self):
+        """ Process Record """
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.quit()
+
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        self.backspace()
+
+                    elif event.key == pygame.K_RETURN:
+                        self.save_score()
+                        return
+
+                    else:
+                        self.enter_name(event)
+
+                elif (event.type == pygame.MOUSEBUTTONDOWN
+                        and event.button == 1):
+                    if self.on_mouse_click() == 'MENU':
+                        return
+
+            self.enter_btn.process()
+
+            self.draw()
+
+            pygame.display.update()
 
     # ## Buttons callbacks # ##
 
