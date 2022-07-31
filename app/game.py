@@ -49,6 +49,7 @@ class Game:
         self.box = []
         self.lvl = 0
         self.time = 60
+        self.speed = 62
         self.state = 'WAITING'
 
         self.dashboard_left = pygame.image.load('./images/dashboard_left.png')
@@ -94,6 +95,7 @@ class Game:
         self.score.set_txt(0)
         self.lvl = 0
         self.time = 60
+        self.speed = 62
 
         pygame.time.set_timer(self.ANIM, 15)
         self.set_up()
@@ -112,6 +114,7 @@ class Game:
 
         self.fill_box()
         self.set_time()
+        self.set_speed()
         self.strew()
 
         self.liquid = Liquid(self.valve, self.end, self.circuit,
@@ -127,6 +130,12 @@ class Game:
 
         if not self.lvl % 5 and self.time > 5:
             self.time -= 5
+
+    def set_speed(self):
+        """ Increase flood speed """
+
+        if self.speed > 25:
+            self.speed -= self.lvl*2
 
     def clear_circuit(self):
         """ Clear the circuit dict """
@@ -158,7 +167,7 @@ class Game:
         self.circuit[self.valve.rect.topleft] = self.valve
         self.valve.align(pos)
 
-        while True:
+        for _ in range(5 + self.lvl*2):
             nexts = list(self.get_nexts(pos))
             if nexts:
                 prev = pos
@@ -283,7 +292,7 @@ class Game:
         self.countdown.set_txt(int(self.countdown.txt) - 1)
         if int(self.countdown.txt) <= 0:
             pygame.time.set_timer(self.COUNTDOWN, 0)
-            pygame.time.set_timer(self.FLOOD, 50)
+            pygame.time.set_timer(self.FLOOD, self.speed)
             self.sub.play()
             self.message_bottom.set_txt('HURRY !!!')
 

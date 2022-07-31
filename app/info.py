@@ -7,5 +7,6 @@ info = [
     'The Flood button starts the liquid immediately.',
     'The give-up button brings you back to the menu.',
     'You cannot replace a flooded pipe.',
-    'The number of obstacles increases with the level.'
+    'The number of obstacles increases with the level.',
+    'Flood speed increases with the level'
 ]
