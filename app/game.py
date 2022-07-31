@@ -266,7 +266,7 @@ class Game:
         else:
             pos = self.cursor.rect.topleft
 
-            emit = self.flood_btn.click()
+            self.flood_btn.click()
             emit = self.giveup_btn.click()
 
             if (self.board.contains(self.cursor.rect)
