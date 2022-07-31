@@ -2,7 +2,6 @@ import pygame
 from random import randint, choice
 
 from factory import Factory
-from sound import Sound
 from sprites.cursor import Cursor
 from sprites.button import Button
 from sprites.liquid import Liquid
@@ -29,9 +28,20 @@ class Game:
         self.tile_y = 12
         self.screen = screen
         self.quit = function_quit
-        self.factory = Factory()
-        self.sound = Sound()
+
+        pygame.mixer.music.load('./sounds/music.ogg')
+
+        self.put = pygame.mixer.Sound('./sounds/put.ogg')
+        self.tictac = pygame.mixer.Sound('./sounds/tictac.ogg')
+        self.sub = pygame.mixer.Sound('./sounds/sub.ogg')
+        self.loose = pygame.mixer.Sound('./sounds/loose.ogg')
+        self.win = pygame.mixer.Sound('./sounds/win.ogg')
+
+        pygame.mixer.music.set_volume(0.4)
+
         self.music = True
+
+        self.factory = Factory()
 
         self.flood_btn = Button(['FLOOD'], (140, 50), self.flood_now)
         self.giveup_btn = Button(['GIVE-UP'], (140, 150), self.give_up)
@@ -236,7 +246,7 @@ class Game:
             pygame.time.set_timer(self.COUNTDOWN, 1000)
             self.message_bottom.set_txt('Incoming fluid...')
 
-        self.sound.put.play()
+        self.put.play()
         pipe = self.pickup()
         pipe.rect.topleft = pos
         self.circuit[pipe.rect.topleft] = pipe
@@ -279,13 +289,13 @@ class Game:
     def tic(self):
         """ Decrease countdown every second, and start flooding at 0 """
 
-        self.sound.tic.play()
+        self.tictac.play()
         self.valve.anim()
         self.countdown.set_txt(int(self.countdown.txt) - 1)
         if int(self.countdown.txt) <= 0:
             pygame.time.set_timer(self.COUNTDOWN, 0)
             pygame.time.set_timer(self.FLOOD, 50)
-            self.sound.sub.play()
+            self.sub.play()
             self.message_bottom.set_txt('HURRY !!!')
 
     def flood(self):
@@ -298,7 +308,7 @@ class Game:
         if self.state == 'WIN':
             pygame.time.set_timer(self.FLOOD, 0)
             pygame.mixer.music.stop()
-            self.sound.win.play()
+            self.win.play()
             self.message_top.set_txt('YOU WIN')
             self.message_bottom.set_txt('Click CONTINUE button')
 
@@ -306,7 +316,7 @@ class Game:
             pygame.time.set_timer(self.COUNTDOWN, 0)
             pygame.time.set_timer(self.FLOOD, 0)
             pygame.mixer.music.stop()
-            self.sound.loose.play()
+            self.loose.play()
             self.message_top.set_txt('YOU LOOSE')
             self.message_bottom.set_txt('Click CONTINUE button')
 
@@ -415,7 +425,7 @@ class Game:
     def flood_now(self):
         """ Flood Button callback """
 
-        self.sound.sub.play()
+        self.sub.play()
         pygame.time.set_timer(self.COUNTDOWN, 0)
         pygame.time.set_timer(self.FLOOD, 20)
         self.message_bottom.set_txt('HURRY !!!')
