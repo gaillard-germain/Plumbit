@@ -48,7 +48,7 @@ class Liquid:
 
             if self.end.rect.contains(self.rect):
                 gain = self.end.gain * self.modifier + time_bonus * 10
-                self.update_gain(self.end.rect.topleft, gain)
+                self.update_gain(self.end.rect.center, gain)
                 return 'WIN'
 
             elif pipe.rect.contains(self.rect):

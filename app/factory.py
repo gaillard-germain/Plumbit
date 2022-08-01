@@ -7,6 +7,16 @@ class Factory:
     def __init__(self):
         self.stock = [
             {
+                'images': [pgimage.load('./images/wrench.png')],
+                'apertures': [],
+                'name': 'wrench',
+                'cost': -25,
+                'gain': 0,
+                'modifier': 0,
+                'locked': False,
+                'weight': 15
+            },
+            {
                 'images': [pgimage.load('./images/cross.png')],
                 'apertures': [1, 1, 1, 1],
                 'name': 'cross',

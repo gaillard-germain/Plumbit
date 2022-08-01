@@ -8,7 +8,7 @@ class Button:
 
     def __init__(self, labels, pos, onclick_function=None):
         self.labels = labels
-        self.sound = mixer.Sound('./sounds/click.wav')
+        self.sound = mixer.Sound('./sounds/click.ogg')
         self.images = []
         for i, label in enumerate(labels):
             image1 = pgimage.load('./images/button.png')

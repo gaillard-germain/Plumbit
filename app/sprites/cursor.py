@@ -5,16 +5,17 @@ class Cursor:
     """ A Cursor """
 
     def __init__(self, offset):
-        self.images = [
-            pgimage.load('./images/pointer.png'),
-            pgimage.load('./images/locked.png')
-        ]
-        self.pin = 0
-        self.rect = self.images[0].get_rect()
+        self.images = {
+            'drop': pgimage.load('./images/drop.png'),
+            'locked': pgimage.load('./images/locked.png'),
+            'rotate': pgimage.load('./images/rotate.png')
+        }
+        self.pin = 'drop'
+        self.rect = self.images['drop'].get_rect()
 
         self.offset = offset
 
-    def process(self, is_locked):
+    def process(self, is_locked, pipe):
         """ Move the cursor on the board """
 
         mouse_pos = mouse.get_pos()
@@ -24,9 +25,11 @@ class Cursor:
         self.rect.topleft = (x-x % self.rect.width, y-y % self.rect.height)
 
         if is_locked(self.rect.topleft):
-            self.pin = 1
+            self.pin = 'locked'
+        elif pipe.name == 'wrench':
+            self.pin = 'rotate'
         else:
-            self.pin = 0
+            self.pin = 'drop'
 
     def draw(self, surface):
         """ Blit the cursor on a surface """

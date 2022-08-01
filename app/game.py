@@ -21,6 +21,7 @@ class Game:
         pygame.mixer.music.load('./sounds/music.ogg')
 
         self.put = pygame.mixer.Sound('./sounds/put.ogg')
+        self.switch = pygame.mixer.Sound('./sounds/switch.ogg')
         self.tictac = pygame.mixer.Sound('./sounds/tictac.ogg')
         self.sub = pygame.mixer.Sound('./sounds/sub.ogg')
         self.loose = pygame.mixer.Sound('./sounds/loose.ogg')
@@ -244,10 +245,20 @@ class Game:
             pygame.time.set_timer(self.COUNTDOWN, 1000)
             self.message_bottom.set_txt('Incoming fluid...')
 
-        self.put.play()
         pipe = self.pickup()
-        pipe.rect.topleft = pos
-        self.circuit[pipe.rect.topleft] = pipe
+
+        if pipe.name == 'wrench':
+            if self.circuit[pos]:
+                self.switch.play()
+                pipe.rect.topleft = pos
+                self.circuit[pos].rotate(1)
+            else:
+                return
+
+        else:
+            self.put.play()
+            pipe.rect.topleft = pos
+            self.circuit[pipe.rect.topleft] = pipe
 
         self.update_gain(pipe.rect.center, pipe.cost)
 
@@ -411,7 +422,7 @@ class Game:
             self.giveup_btn.process()
             self.continue_btn.process()
 
-            self.cursor.process(self.is_locked)
+            self.cursor.process(self.is_locked, self.box[0])
 
             self.draw()
 
