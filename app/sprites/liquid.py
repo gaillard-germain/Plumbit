@@ -5,14 +5,20 @@ class Liquid:
     def __init__(self, valve, end, circuit, update_gain, flood_event):
         self.image = pgimage.load('./images/liquid.png')
         self.rect = self.image.get_rect()
-        self.rect.topleft = valve.rect.topleft
-        self.previous = valve
+        self.valve = valve
+        self.previous = None
         self.end = end
         self.circuit = circuit
         self.path = (0, 0)
         self.modifier = 1
         self.update_gain = update_gain
         self.FLOOD = flood_event
+
+    def reset(self):
+        self.previous = self.valve
+        self.rect.topleft = self.valve.rect.topleft
+        self.path = (0, 0)
+        self.modifier = 1
 
     def check(self):
         """ Returns the next floodable pipe """

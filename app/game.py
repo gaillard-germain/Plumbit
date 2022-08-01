@@ -33,12 +33,6 @@ class Game:
 
         self.music = True
 
-        self.factory = Factory()
-
-        self.flood_btn = Button(['FLOOD'], (140, 50), self.flood_now)
-        self.giveup_btn = Button(['GIVE-UP'], (140, 150), self.give_up)
-        self.continue_btn = Button(['CONTINUE'], (140, 50), self.next_step)
-
         self.COUNTDOWN = pygame.USEREVENT + 1
         self.FLOOD = pygame.USEREVENT + 2
         self.ANIM = pygame.USEREVENT + 3
@@ -79,7 +73,14 @@ class Game:
             (self.screen.get_width() - self.board.width)/2,
             (self.screen.get_height() - self.board.height)/2
         )
+
         self.cursor = Cursor(self.board_offset)
+        self.factory = Factory()
+
+        self.flood_btn = Button(['FLOOD'], (140, 50), self.flood_now)
+        self.giveup_btn = Button(['GIVE-UP'], (140, 150), self.give_up)
+        self.continue_btn = Button(['CONTINUE'], (140, 50), self.next_step)
+
         self.score = Stamp(0, 40, 'green', (1673, 177))
 
         self.message_top = Stamp('', 72, 'orange',
@@ -87,12 +88,15 @@ class Game:
         self.message_bottom = Stamp('', 40, 'orange',
                                     (self.screen.get_width()/2,
                                      self.screen.get_height()-100))
-
         self.plop = Stamp('', 32)
+
         self.arrow = Arrow()
 
         self.valve = self.factory.get_extra('valve')
         self.end = self.factory.get_extra('end')
+
+        self.liquid = Liquid(self.valve, self.end, self.circuit,
+                             self.update_gain, self.FLOOD)
 
     def reset(self):
         """ Reset score, level and time """
@@ -121,8 +125,7 @@ class Game:
         self.set_speed()
         self.strew()
 
-        self.liquid = Liquid(self.valve, self.end, self.circuit,
-                             self.update_gain, self.FLOOD)
+        self.liquid.reset()
 
         self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
 
