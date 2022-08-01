@@ -7,6 +7,16 @@ class Factory:
     def __init__(self):
         self.stock = [
             {
+                'images': [pgimage.load('./images/bomb.png')],
+                'apertures': [],
+                'name': 'bomb',
+                'cost': -25,
+                'gain': 0,
+                'modifier': 0,
+                'locked': False,
+                'weight': 10
+            },
+            {
                 'images': [pgimage.load('./images/wrench.png')],
                 'apertures': [],
                 'name': 'wrench',
@@ -14,7 +24,17 @@ class Factory:
                 'gain': 0,
                 'modifier': 0,
                 'locked': False,
-                'weight': 15
+                'weight': 10
+            },
+            {
+                'images': [pgimage.load('./images/golden_cross.png')],
+                'apertures': [1, 1, 1, 1],
+                'name': 'cross',
+                'cost': -75,
+                'gain': 100,
+                'modifier': 2,
+                'locked': True,
+                'weight': 5
             },
             {
                 'images': [pgimage.load('./images/cross.png')],
@@ -119,17 +139,6 @@ class Factory:
                 'cost': 0,
                 'gain': 0,
                 'modifier': 0,
-                'locked': True,
-            },
-            'golden': {
-                'images': [
-                    pgimage.load('./images/golden_cross.png')
-                ],
-                'apertures': [1, 1, 1, 1],
-                'name': 'cross',
-                'cost': 0,
-                'gain': 100,
-                'modifier': 2,
                 'locked': True,
             }
         }

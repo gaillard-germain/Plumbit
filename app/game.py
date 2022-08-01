@@ -22,6 +22,8 @@ class Game:
 
         self.put = pygame.mixer.Sound('./sounds/put.ogg')
         self.switch = pygame.mixer.Sound('./sounds/switch.ogg')
+        self.smash = pygame.mixer.Sound('./sounds/smash.ogg')
+        self.match = pygame.mixer.Sound('./sounds/match.ogg')
         self.tictac = pygame.mixer.Sound('./sounds/tictac.ogg')
         self.sub = pygame.mixer.Sound('./sounds/sub.ogg')
         self.loose = pygame.mixer.Sound('./sounds/loose.ogg')
@@ -193,20 +195,9 @@ class Game:
             else:
                 break
 
-        if randint(0, 100) < self.lvl:
-            golden = self.factory.get_extra('golden')
-            golden.rect.topleft = (choice(list(self.get_path())))
-            self.circuit[golden.rect.topleft] = golden
-
-        for pos in self.get_path():
-            self.circuit[pos] = None
-
-    def get_path(self):
-        """ Get the ghost path positions """
-
         for pos, pipe in self.circuit.items():
             if pipe == '#':
-                yield pos
+                self.circuit[pos] = None
 
     def get_free(self):
         """ Get the list of free positions """
@@ -225,42 +216,6 @@ class Game:
             pipe = self.factory.get_pipe()
             pipe.rect.topleft = (250, 460 + i * 80)
             self.box.append(pipe)
-
-    def pickup(self):
-        """ Pickup the first pipe in the box
-            and add a new random one in the queue """
-
-        picked = self.box.pop(0)
-        self.box.append(self.factory.get_pipe())
-        for i, pipe in enumerate(self.box):
-            pipe.rect.topleft = (250, 460 + i * 80)
-
-        return picked
-
-    def drop_and_pickup(self, pos):
-        """ Place the current pipe and replace another in the pile """
-
-        if self.state == 'WAITING':
-            self.state = 'RUNNING'
-            pygame.time.set_timer(self.COUNTDOWN, 1000)
-            self.message_bottom.set_txt('Incoming fluid...')
-
-        pipe = self.pickup()
-
-        if pipe.name == 'wrench':
-            if self.circuit[pos]:
-                self.switch.play()
-                pipe.rect.topleft = pos
-                self.circuit[pos].rotate(1)
-            else:
-                return
-
-        else:
-            self.put.play()
-            pipe.rect.topleft = pos
-            self.circuit[pipe.rect.topleft] = pipe
-
-        self.update_gain(pipe.rect.center, pipe.cost)
 
     def get_locked(self):
         """ Get the list of the locked pipes """
@@ -289,11 +244,80 @@ class Game:
             self.flood_btn.click()
             emit = self.giveup_btn.click()
 
-            if (self.board.contains(self.cursor.rect)
-                    and not self.is_locked(pos)):
-                self.drop_and_pickup(pos)
+            if (self.board.contains(self.cursor.rect)):
+                locked = self.is_locked(pos)
+
+                if self.box[0].name == 'bomb':
+                    self.drop_bomb(pos, locked)
+                elif self.box[0].name == 'wrench':
+                    self.twist(pos, locked)
+                else:
+                    self.drop_pipe(pos, locked)
 
         return emit
+
+    def pickup(self):
+        """ Pickup the first pipe in the box
+            and add a new random one in the queue """
+
+        picked = self.box.pop(0)
+        self.box.append(self.factory.get_pipe())
+        for i, pipe in enumerate(self.box):
+            pipe.rect.topleft = (250, 460 + i * 80)
+
+        return picked
+
+    def drop_pipe(self, pos, locked):
+        """ Drop the current pipe on the board """
+
+        if locked:
+            return
+
+        if self.state == 'WAITING':
+            self.state = 'RUNNING'
+            pygame.time.set_timer(self.COUNTDOWN, 1000)
+            self.message_bottom.set_txt('Incoming fluid...')
+
+        pipe = self.pickup()
+
+        self.put.play()
+        pipe.rect.topleft = pos
+        self.circuit[pipe.rect.topleft] = pipe
+
+        self.update_gain(pipe.rect.center, pipe.cost)
+
+    def twist(self, pos, locked):
+        """ rotate the selected pipe """
+
+        if locked:
+            return
+
+        pipe = self.pickup()
+
+        if self.circuit[pos]:
+            self.switch.play()
+            pipe.rect.topleft = pos
+            self.circuit[pos].rotate(1)
+
+            self.update_gain(pipe.rect.center, pipe.cost)
+
+    def drop_bomb(self, pos, locked):
+        """ Delete a block """
+
+        pipe = self.pickup()
+
+        if not locked:
+            self.match.play()
+            return
+
+        if self.circuit[pos] and self.circuit[pos].name == 'block':
+            self.smash.play()
+            pipe.rect.topleft = pos
+            self.circuit[pos] = None
+
+            self.update_gain(pipe.rect.center, pipe.cost)
+        else:
+            self.match.play()
 
     def tic(self):
         """ Decrease countdown every second, and start flooding at 0 """

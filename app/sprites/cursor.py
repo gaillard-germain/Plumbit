@@ -8,7 +8,8 @@ class Cursor:
         self.images = {
             'drop': pgimage.load('./images/drop.png'),
             'locked': pgimage.load('./images/locked.png'),
-            'rotate': pgimage.load('./images/rotate.png')
+            'rotate': pgimage.load('./images/rotate.png'),
+            'delete': pgimage.load('./images/delete.png')
         }
         self.pin = 'drop'
         self.rect = self.images['drop'].get_rect()
@@ -24,7 +25,9 @@ class Cursor:
         y = mouse_pos[1] - self.offset[1]
         self.rect.topleft = (x-x % self.rect.width, y-y % self.rect.height)
 
-        if is_locked(self.rect.topleft):
+        if pipe.name == 'bomb':
+            self.pin = 'delete'
+        elif is_locked(self.rect.topleft):
             self.pin = 'locked'
         elif pipe.name == 'wrench':
             self.pin = 'rotate'
