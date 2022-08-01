@@ -14,26 +14,29 @@ class Factory:
                 'gain': 100,
                 'modifier': 2,
                 'locked': True,
+                'flooded': False,
                 'weight': 2
             },
             {
                 'images': [pgimage.load('./images/bomb.png')],
                 'apertures': [],
                 'name': 'bomb',
-                'cost': -25,
+                'cost': 0,
                 'gain': 0,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 10
             },
             {
                 'images': [pgimage.load('./images/wrench.png')],
                 'apertures': [],
                 'name': 'wrench',
-                'cost': -25,
+                'cost': 0,
                 'gain': 0,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 10
             },
             {
@@ -44,6 +47,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 30
             },
             {
@@ -54,6 +58,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 50
             },
             {
@@ -64,6 +69,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 50
             },
             {
@@ -74,6 +80,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 40
             },
             {
@@ -84,6 +91,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 40
             },
             {
@@ -94,6 +102,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 40
             },
             {
@@ -104,6 +113,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
+                'flooded': False,
                 'weight': 40
             }
         ]
@@ -119,6 +129,7 @@ class Factory:
                 'gain': 0,
                 'modifier': 0,
                 'locked': True,
+                'flooded': True
             },
             'end': {
                 'images': [pgimage.load('./images/valve_2.png')],
@@ -128,18 +139,20 @@ class Factory:
                 'gain': 300,
                 'modifier': 0,
                 'locked': True,
+                'flooded': True
             },
             'block': {
                 'images': [
                     pgimage.load('./images/block.png'),
                     pgimage.load('./images/block2.png')
                 ],
-                'apertures': [],
+                'apertures': [0, 0, 0, 0],
                 'name': 'block',
                 'cost': 0,
                 'gain': 0,
                 'modifier': 0,
                 'locked': True,
+                'flooded': False
             }
         }
 

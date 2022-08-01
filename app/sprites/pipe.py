@@ -15,8 +15,8 @@ class Pipe:
         self.gain = data['gain']
         self.modifier = data['modifier']
         self.locked = data['locked']
+        self.flooded = data['flooded']
         self.rect = Rect(0, 0, self.size, self.size)
-        self.flooded = False
 
     def rotate(self, coef=0):
         """ Rotate the pipe (anti-clockwise)"""

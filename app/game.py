@@ -15,6 +15,7 @@ class Game:
         self.tile_size = 64
         self.tile_x = 17
         self.tile_y = 12
+
         self.screen = screen
         self.quit = function_quit
 
@@ -251,10 +252,8 @@ class Game:
             if (self.board.contains(self.cursor.rect)):
                 locked = self.is_locked(pos)
 
-                if self.box[0].name == 'bomb':
-                    self.drop_bomb(pos, locked)
-                elif self.box[0].name == 'wrench':
-                    self.twist(pos, locked)
+                if self.box[0].name == 'bomb' or self.box[0].name == 'wrench':
+                    self.twist_and_bomb(pos, locked, self.box[0].name)
                 else:
                     self.drop_pipe(pos, locked)
 
@@ -290,36 +289,18 @@ class Game:
 
         self.update_gain(pipe.rect.center, pipe.cost)
 
-    def twist(self, pos, locked):
-        """ rotate the selected pipe """
+    def twist_and_bomb(self, pos, locked, name):
+        """ Rotate or delete a block """
 
-        if locked:
-            return
+        self.pickup()
 
-        pipe = self.pickup()
-
-        if self.circuit[pos]:
-            self.switch.play()
-            pipe.rect.topleft = pos
-            self.circuit[pos].rotate(1)
-
-            self.update_gain(pipe.rect.center, pipe.cost)
-
-    def drop_bomb(self, pos, locked):
-        """ Delete a block """
-
-        pipe = self.pickup()
-
-        if not locked:
-            self.match.play()
-            return
-
-        if self.circuit[pos] and self.circuit[pos].name == 'block':
-            self.smash.play()
-            pipe.rect.topleft = pos
-            self.circuit[pos] = None
-
-            self.update_gain(pipe.rect.center, pipe.cost)
+        if self.circuit[pos] and not self.circuit[pos].flooded:
+            if name == 'wrench':
+                self.switch.play()
+                self.circuit[pos].rotate(1)
+            elif name == 'bomb':
+                self.smash.play()
+                self.circuit[pos] = None
         else:
             self.match.play()
 

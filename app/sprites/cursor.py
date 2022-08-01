@@ -27,10 +27,10 @@ class Cursor:
 
         if pipe.name == 'bomb':
             self.pin = 'delete'
-        elif is_locked(self.rect.topleft):
-            self.pin = 'locked'
         elif pipe.name == 'wrench':
             self.pin = 'rotate'
+        elif is_locked(self.rect.topleft):
+            self.pin = 'locked'
         else:
             self.pin = 'drop'
 
