@@ -434,7 +434,7 @@ class Game:
             self.draw()
 
             pygame.display.update()
-            clock.tick(60)
+            clock.tick()
 
     # ## Buttons callbacks ## #
 

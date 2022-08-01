@@ -15,7 +15,7 @@ class Factory:
                 'modifier': 2,
                 'locked': True,
                 'flooded': False,
-                'weight': 2
+                'weight': 1
             },
             {
                 'images': [pgimage.load('./images/bomb.png')],
@@ -26,7 +26,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 10
+                'weight': 12
             },
             {
                 'images': [pgimage.load('./images/wrench.png')],
@@ -37,7 +37,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 10
+                'weight': 15
             },
             {
                 'images': [pgimage.load('./images/cross.png')],
@@ -48,7 +48,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 30
+                'weight': 40
             },
             {
                 'images': [pgimage.load('./images/regular_tb.png')],
@@ -59,7 +59,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 50
+                'weight': 55
             },
             {
                 'images': [pgimage.load('./images/regular_lr.png')],
@@ -70,7 +70,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 50
+                'weight': 55
             },
             {
                 'images': [pgimage.load('./images/regular_tr.png')],
@@ -81,7 +81,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 40
+                'weight': 50
             },
             {
                 'images': [pgimage.load('./images/regular_tl.png')],
@@ -92,7 +92,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 40
+                'weight': 50
             },
             {
                 'images': [pgimage.load('./images/regular_br.png')],
@@ -103,7 +103,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 40
+                'weight': 50
             },
             {
                 'images': [pgimage.load('./images/regular_bl.png')],
@@ -114,7 +114,7 @@ class Factory:
                 'modifier': 0,
                 'locked': False,
                 'flooded': False,
-                'weight': 40
+                'weight': 50
             }
         ]
         self.extra = {
