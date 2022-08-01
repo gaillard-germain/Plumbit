@@ -2,7 +2,7 @@ import pygame
 from random import randint, choice
 
 from factory import Factory
-from info import info
+from misc import info
 from sprites.cursor import Cursor
 from sprites.button import Button
 from sprites.liquid import Liquid
@@ -78,9 +78,11 @@ class Game:
         self.cursor = Cursor(self.board_offset)
         self.factory = Factory()
 
-        self.flood_btn = Button(['FLOOD'], (140, 50), self.flood_now)
-        self.giveup_btn = Button(['GIVE-UP'], (140, 150), self.give_up)
-        self.continue_btn = Button(['CONTINUE'], (140, 50), self.next_step)
+        self.flood_btn = Button(['FLOOD'], (140, 50), 'light-blue',
+                                self.flood_now)
+        self.giveup_btn = Button(['GIVE-UP'], (140, 150), 'red', self.give_up)
+        self.continue_btn = Button(['CONTINUE'], (140, 50), 'green',
+                                   self.next_step)
 
         self.score = Stamp(0, 40, 'green', (1673, 177))
 

@@ -16,7 +16,7 @@ class Record:
         self.enter_btn = Button(
             ['ENTER'],
             (self.screen.get_width()/2, self.screen.get_height()/2 + 100),
-            self.save_score
+            'green', self.save_score
         )
         self.title = Stamp('', 48, 'light-blue',
                            (self.screen.get_width()/2,

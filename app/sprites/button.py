@@ -1,23 +1,26 @@
-from pygame import image as pgimage, mouse, mixer
+from pygame import image as pgimage, mouse, mixer, draw as pgdraw
 
+from misc import colors
 from sprites.stamp import Stamp
 
 
 class Button:
     """A menu button"""
 
-    def __init__(self, labels, pos, onclick_function=None):
+    def __init__(self, labels, pos, color, onclick_function=None):
         self.labels = labels
         self.sound = mixer.Sound('./sounds/click.ogg')
         self.images = []
         for i, label in enumerate(labels):
             image1 = pgimage.load('./images/button.png')
-            image2 = pgimage.load('./images/button2.png')
+            image2 = pgimage.load('./images/button.png')
+            pgdraw.circle(image2, colors[color], (40, image1.get_height()/2),
+                          24)
 
             stamp = Stamp(label, 32, 'dark-grey',
                           (90, image1.get_height()/2), 'left')
             stamp.draw(image1)
-            stamp.set_txt(label, 'red')
+            stamp.set_txt(label, color)
             stamp.draw(image2)
 
             self.images.append(image1)

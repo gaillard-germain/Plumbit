@@ -15,11 +15,11 @@ class Menu:
                                     pygame.SRCALPHA, 32)
         self.music_btn = Button(
             ['MUSIC ON', 'MUSIC OFF'], (self.screen.get_width()/2, 800),
-            function_music)
+            'light-blue', function_music)
         self.play_btn = Button(
-            ['PLAY'], (self.screen.get_width()/2, 880), self.play)
+            ['PLAY'], (self.screen.get_width()/2, 880), 'green', self.play)
         self.quit_btn = Button(
-            ['QUIT'], (self.screen.get_width()/2, 960), function_quit)
+            ['QUIT'], (self.screen.get_width()/2, 960), 'red', function_quit)
 
         self.title = Stamp("PLUMB'IT", 72, 'red',
                            (self.screen.get_width()/2, 150))

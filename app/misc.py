@@ -11,3 +11,12 @@ info = [
     'The wrench rotate a pipe once.',
     'The bomb is useful to clear obstacles.'
 ]
+
+colors = {
+    'red': (194, 78, 16),
+    'green': (85, 167, 20),
+    'light-blue': (13, 167, 172),
+    'orange': (200, 125, 31),
+    'dark-grey': (46, 52, 53),
+    'black': (20, 20, 20)
+}
