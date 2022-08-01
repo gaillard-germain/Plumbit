@@ -61,18 +61,19 @@ class Game:
 
         self.layer1 = pygame.Surface(
             (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
-            pygame.SRCALPHA,
-            32
         )
         self.layer2 = pygame.Surface(
             (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
             pygame.SRCALPHA,
             32
         )
+        self.layer3 = pygame.Surface(
+            (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
+            pygame.SRCALPHA,
+            32
+        )
 
         self.board = self.layer1.get_rect()
-
-        self.board.topleft = (0, 0)
 
         self.board_offset = (
             (self.screen.get_width() - self.board.width)/2,
@@ -375,27 +376,25 @@ class Game:
 
         self.screen.fill((66, 63, 56))
         self.layer1.fill((96, 93, 86))
+        self.layer3.fill((255, 255, 255, 0))
 
         for pipe in self.circuit.values():
             if pipe:
                 pipe.draw(self.layer1)
 
         self.plop.draw(self.layer1)
-        self.cursor.draw(self.layer1)
         self.liquid.draw(self.layer2)
-
+        self.cursor.draw(self.layer3)
         self.screen.blit(self.layer1, self.board_offset)
         self.screen.blit(self.layer2, self.board_offset)
-
+        self.screen.blit(self.layer3, self.board_offset)
         self.screen.blit(self.dashboard_left, (0, 0))
         self.screen.blit(
             self.dashboard_right,
             (self.screen.get_width() - self.dashboard_right.get_width(), 0)
         )
-
         self.score.draw(self.screen)
         self.countdown.draw(self.screen)
-
         self.arrow.draw(self.screen)
 
         for pipe in self.box:
