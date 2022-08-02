@@ -246,18 +246,15 @@ class Game:
             emit = self.continue_btn.click()
 
         else:
-            pos = self.cursor.rect.topleft
-
             self.flood_btn.click()
             emit = self.giveup_btn.click()
 
             if (self.board.contains(self.cursor.rect)):
-                locked = self.is_locked(pos)
-
                 if self.box[0].name == 'bomb' or self.box[0].name == 'wrench':
-                    self.twist_and_bomb(pos, locked, self.box[0].name)
+                    self.twist_and_bomb(self.cursor.rect.topleft,
+                                        self.box[0].name)
                 else:
-                    self.drop_pipe(pos, locked)
+                    self.drop_pipe(self.cursor.rect.topleft)
 
         return emit
 
@@ -272,10 +269,10 @@ class Game:
 
         return picked
 
-    def drop_pipe(self, pos, locked):
+    def drop_pipe(self, pos):
         """ Drop the current pipe on the board """
 
-        if locked:
+        if self.is_locked(pos):
             return
 
         if self.state == 'WAITING':
@@ -291,7 +288,7 @@ class Game:
 
         self.update_gain(pipe.rect.center, pipe.cost)
 
-    def twist_and_bomb(self, pos, locked, name):
+    def twist_and_bomb(self, pos, name):
         """ Rotate or delete a block """
 
         self.pickup()
