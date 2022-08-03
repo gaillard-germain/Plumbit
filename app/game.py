@@ -343,6 +343,7 @@ class Game:
                 self.message_bottom.set_txt('Click CONTINUE button')
 
             self.update_gain(pipe.rect.center, gain)
+            return
 
         else:
             self.state = 'LOOSE'

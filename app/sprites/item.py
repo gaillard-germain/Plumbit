@@ -1,7 +1,7 @@
-from pygame import sprite, Rect
+from pygame import Rect
 
 
-class Item(sprite.Sprite):
+class Item:
     """ An item """
 
     def __init__(self, data):
