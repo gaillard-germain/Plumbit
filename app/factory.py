@@ -10,11 +10,11 @@ class Factory:
                 'images': [pgimage.load('./images/golden_cross.png')],
                 'apertures': [1, 1, 1, 1],
                 'name': 'cross',
-                'cost': -75,
-                'gain': 100,
+                'cost': -200,
+                'gain': 50,
                 'modifier': 2,
-                'locked': True,
-                'flooded': False,
+                'locked': False,
+                'immutable': False,
                 'weight': 1
             },
             {
@@ -25,7 +25,7 @@ class Factory:
                 'gain': 0,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 12
             },
             {
@@ -36,7 +36,7 @@ class Factory:
                 'gain': 0,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 15
             },
             {
@@ -47,7 +47,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 40
             },
             {
@@ -58,7 +58,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 55
             },
             {
@@ -69,7 +69,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 55
             },
             {
@@ -80,7 +80,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 50
             },
             {
@@ -91,7 +91,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 50
             },
             {
@@ -102,7 +102,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 50
             },
             {
@@ -113,7 +113,7 @@ class Factory:
                 'gain': 100,
                 'modifier': 0,
                 'locked': False,
-                'flooded': False,
+                'immutable': False,
                 'weight': 50
             }
         ]
@@ -129,7 +129,7 @@ class Factory:
                 'gain': 0,
                 'modifier': 0,
                 'locked': True,
-                'flooded': True
+                'immutable': True
             },
             'end': {
                 'images': [pgimage.load('./images/valve_2.png')],
@@ -139,7 +139,7 @@ class Factory:
                 'gain': 300,
                 'modifier': 0,
                 'locked': True,
-                'flooded': True
+                'immutable': True
             },
             'block': {
                 'images': [
@@ -152,7 +152,7 @@ class Factory:
                 'gain': 0,
                 'modifier': 0,
                 'locked': True,
-                'flooded': False
+                'immutable': False
             }
         }
 

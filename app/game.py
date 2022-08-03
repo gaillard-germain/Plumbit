@@ -95,11 +95,7 @@ class Game:
 
         self.arrow = Arrow()
 
-        self.valve = self.factory.get_extra('valve')
-        self.end = self.factory.get_extra('end')
-
-        self.liquid = Liquid(self.valve, self.end, self.circuit,
-                             self.update_gain, self.FLOOD)
+        self.liquid = Liquid()
 
     def reset(self):
         """ Reset score, level and time """
@@ -128,7 +124,7 @@ class Game:
         self.set_speed()
         self.strew()
 
-        self.liquid.reset()
+        self.liquid.reset(self.valve)
 
         self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
 
@@ -168,6 +164,9 @@ class Game:
         """ Strew valve, end and several blocks on the game board """
 
         self.clear_circuit()
+
+        self.valve = self.factory.get_extra('valve')
+        self.end = self.factory.get_extra('end')
 
         pos = (randint(1, self.tile_x-2) * self.tile_size,
                randint(1, self.tile_y-2) * self.tile_size)
@@ -293,7 +292,7 @@ class Game:
 
         self.pickup()
 
-        if self.circuit[pos] and not self.circuit[pos].flooded:
+        if self.circuit[pos] and not self.circuit[pos].immutable:
             if name == 'wrench':
                 self.switch.play()
                 self.circuit[pos].rotate(1)
@@ -318,18 +317,27 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        state = self.liquid.flood(int(self.countdown.txt))
-        if state:
-            self.state = state
+        pipe = self.liquid.flood(self.circuit)
 
-        if self.state == 'WIN':
-            pygame.time.set_timer(self.FLOOD, 0)
-            pygame.mixer.music.stop()
-            self.win.play()
-            self.message_top.set_txt('YOU WIN')
-            self.message_bottom.set_txt('Click CONTINUE button')
+        if pipe == 'flooding':
+            return
 
-        elif self.state == 'LOOSE':
+        elif pipe:
+            gain = pipe.gain
+
+            if pipe == self.end:
+                gain += int(self.countdown.txt) * 10
+                self.state = 'WIN'
+                pygame.time.set_timer(self.FLOOD, 0)
+                pygame.mixer.music.stop()
+                self.win.play()
+                self.message_top.set_txt('YOU WIN')
+                self.message_bottom.set_txt('Click CONTINUE button')
+
+            self.update_gain(pipe.rect.center, gain)
+
+        else:
+            self.state = 'LOOSE'
             pygame.time.set_timer(self.COUNTDOWN, 0)
             pygame.time.set_timer(self.FLOOD, 0)
             pygame.mixer.music.stop()

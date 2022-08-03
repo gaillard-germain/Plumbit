@@ -15,7 +15,7 @@ class Pipe:
         self.gain = data['gain']
         self.modifier = data['modifier']
         self.locked = data['locked']
-        self.flooded = data['flooded']
+        self.immutable = data['immutable']
         self.rect = Rect(0, 0, self.size, self.size)
 
     def rotate(self, coef=0):
