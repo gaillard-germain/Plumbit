@@ -1,5 +1,7 @@
 from pygame import image as pgimage
 
+from sprites.pipe import Pipe
+
 
 class Liquid:
     def __init__(self):
@@ -24,7 +26,8 @@ class Liquid:
             if pos not in circuit.keys():
                 continue
             pipe = circuit[pos]
-            if pipe and self.previous.rect.topleft in pipe.open_to():
+            if (isinstance(pipe, Pipe)
+                    and self.previous.rect.topleft in pipe.open_to()):
                 if self.previous.name != 'cross':
                     return pipe
 

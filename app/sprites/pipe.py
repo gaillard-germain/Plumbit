@@ -1,22 +1,20 @@
-from pygame import transform, Rect
+from pygame import transform
 from random import randint
 
+from sprites.item import Item
 
-class Pipe:
+
+class Pipe(Item):
     """ A Pipe """
 
     def __init__(self, data):
-        self.size = 64
-        self.images = data['images'].copy()
-        self.pin = 0
+        super().__init__(data)
         self.apertures = data['apertures'].copy()
-        self.name = data['name']
         self.cost = data['cost']
         self.gain = data['gain']
         self.modifier = data['modifier']
         self.locked = data['locked']
         self.immutable = data['immutable']
-        self.rect = Rect(0, 0, self.size, self.size)
 
     def rotate(self, coef=0):
         """ Rotate the pipe (anti-clockwise)"""
@@ -64,22 +62,3 @@ class Pipe:
             self.apertures[1] = 0
 
         self.locked = True
-
-    def draw(self, surface):
-        """ Draw the pipe """
-
-        surface.blit(self.images[self.pin], self.rect.topleft)
-
-    def anim(self):
-        """ Anim the pipe """
-
-        length = len(self.images)
-        if self.pin == length-1:
-            self.pin = 0
-        else:
-            self.pin += 1
-
-    def randomize_image(self):
-        """ Select a random image for a pipe """
-
-        self.pin = randint(0, len(self.images)-1)

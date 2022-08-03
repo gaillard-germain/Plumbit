@@ -3,6 +3,7 @@ from random import randint, choice
 
 from factory import Factory
 from misc import info
+from sprites.tool import Tool
 from sprites.cursor import Cursor
 from sprites.button import Button
 from sprites.liquid import Liquid
@@ -25,6 +26,7 @@ class Game:
         self.switch = pygame.mixer.Sound('./sounds/switch.ogg')
         self.smash = pygame.mixer.Sound('./sounds/smash.ogg')
         self.match = pygame.mixer.Sound('./sounds/match.ogg')
+        self.bip = pygame.mixer.Sound('./sounds/bip.ogg')
         self.tictac = pygame.mixer.Sound('./sounds/tictac.ogg')
         self.sub = pygame.mixer.Sound('./sounds/sub.ogg')
         self.loose = pygame.mixer.Sound('./sounds/loose.ogg')
@@ -165,8 +167,8 @@ class Game:
 
         self.clear_circuit()
 
-        self.valve = self.factory.get_extra('valve')
-        self.end = self.factory.get_extra('end')
+        self.valve = self.factory.get_valve()
+        self.end = self.factory.get_end()
 
         pos = (randint(1, self.tile_x-2) * self.tile_size,
                randint(1, self.tile_y-2) * self.tile_size)
@@ -190,7 +192,7 @@ class Game:
         self.end.align(prev)
 
         for i in range(randint(self.lvl, self.lvl+1)):
-            block = self.factory.get_extra('block')
+            block = self.factory.get_block()
             block.randomize_image()
 
             free = list(self.get_free())
@@ -219,7 +221,7 @@ class Game:
             self.box.clear()
 
         for i in range(5):
-            pipe = self.factory.get_pipe()
+            pipe = self.factory.get_random()
             pipe.rect.topleft = (250, 460 + i * 80)
             self.box.append(pipe)
 
@@ -249,9 +251,8 @@ class Game:
             emit = self.giveup_btn.click()
 
             if (self.board.contains(self.cursor.rect)):
-                if self.box[0].name == 'bomb' or self.box[0].name == 'wrench':
-                    self.twist_and_bomb(self.cursor.rect.topleft,
-                                        self.box[0].name)
+                if isinstance(self.box[0], Tool):
+                    self.drop_tool(self.cursor.rect.topleft, self.box[0].name)
                 else:
                     self.drop_pipe(self.cursor.rect.topleft)
 
@@ -262,7 +263,7 @@ class Game:
             and add a new random one in the queue """
 
         picked = self.box.pop(0)
-        self.box.append(self.factory.get_pipe())
+        self.box.append(self.factory.get_random())
         for i, pipe in enumerate(self.box):
             pipe.rect.topleft = (250, 460 + i * 80)
 
@@ -287,18 +288,25 @@ class Game:
 
         self.update_gain(pipe.rect.center, pipe.cost)
 
-    def twist_and_bomb(self, pos, name):
-        """ Rotate or delete a block """
+    def drop_tool(self, pos, name):
+        """ Use tool """
 
         self.pickup()
 
-        if self.circuit[pos] and not self.circuit[pos].immutable:
+        if name == 'stopwatch':
+            self.bip.play()
+            pygame.time.set_timer(self.FLOOD, 0)
+            self.countdown.set_txt(int(self.countdown.txt) + 5)
+            pygame.time.set_timer(self.COUNTDOWN, 1000)
+
+        elif self.circuit[pos] and not self.circuit[pos].immutable:
             if name == 'wrench':
                 self.switch.play()
                 self.circuit[pos].rotate(1)
             elif name == 'bomb':
                 self.smash.play()
                 self.circuit[pos] = None
+
         else:
             self.match.play()
 
