@@ -9,7 +9,8 @@ info = [
     'The number of obstacles increases with the level.',
     'Flood speed increases with the level',
     'The wrench rotate a pipe once.',
-    'The bomb is useful to clear obstacles.'
+    'The bomb is useful to clear obstacles.',
+    'Flooding before the countdown finish grants a score bonus.'
 ]
 
 colors = {

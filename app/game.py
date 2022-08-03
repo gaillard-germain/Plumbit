@@ -77,17 +77,16 @@ class Game:
             (self.screen.get_height() - self.board.height)/2
         )
 
-        self.cursor = Cursor(self.board_offset)
         self.factory = Factory()
-
+        self.cursor = Cursor(self.board_offset)
+        self.liquid = Liquid()
+        self.arrow = Arrow()
         self.flood_btn = Button(['FLOOD'], (140, 50), 'light-blue',
                                 self.flood_now)
         self.giveup_btn = Button(['GIVE-UP'], (140, 150), 'red', self.give_up)
         self.continue_btn = Button(['CONTINUE'], (140, 50), 'green',
                                    self.next_step)
-
         self.score = Stamp(0, 40, 'green', (1673, 177))
-
         self.message_top = Stamp('', 72, 'orange',
                                  (self.screen.get_width()/2, 100))
         self.message_bottom = Stamp('', 40, 'orange',
@@ -95,9 +94,8 @@ class Game:
                                      self.screen.get_height()-100))
         self.plop = Stamp('', 32)
 
-        self.arrow = Arrow()
-
-        self.liquid = Liquid()
+        self.valve = self.factory.get_valve()
+        self.end = self.factory.get_end()
 
     def reset(self):
         """ Reset score, level and time """
@@ -166,9 +164,6 @@ class Game:
         """ Strew valve, end and several blocks on the game board """
 
         self.clear_circuit()
-
-        self.valve = self.factory.get_valve()
-        self.end = self.factory.get_end()
 
         pos = (randint(1, self.tile_x-2) * self.tile_size,
                randint(1, self.tile_y-2) * self.tile_size)
@@ -330,7 +325,17 @@ class Game:
         if pipe == 'flooding':
             return
 
-        elif pipe:
+        elif pipe is None:
+            self.state = 'LOOSE'
+            pygame.time.set_timer(self.COUNTDOWN, 0)
+            pygame.time.set_timer(self.FLOOD, 0)
+            pygame.mixer.music.stop()
+            self.loose.play()
+            self.message_top.set_txt('YOU LOOSE')
+            self.message_bottom.set_txt('Click CONTINUE button')
+            pygame.event.clear()
+
+        else:
             gain = pipe.gain
 
             if pipe == self.end:
@@ -341,18 +346,9 @@ class Game:
                 self.win.play()
                 self.message_top.set_txt('YOU WIN')
                 self.message_bottom.set_txt('Click CONTINUE button')
+                pygame.event.clear()
 
             self.update_gain(pipe.rect.center, gain)
-            return
-
-        else:
-            self.state = 'LOOSE'
-            pygame.time.set_timer(self.COUNTDOWN, 0)
-            pygame.time.set_timer(self.FLOOD, 0)
-            pygame.mixer.music.stop()
-            self.loose.play()
-            self.message_top.set_txt('YOU LOOSE')
-            self.message_bottom.set_txt('Click CONTINUE button')
 
     def update_gain(self, pos, value):
         """ Modify score every time a pipe is flooded or placed """
@@ -450,7 +446,7 @@ class Game:
             self.draw()
 
             pygame.display.update()
-            clock.tick()
+            clock.tick(30)
 
     # ## Buttons callbacks ## #
 
