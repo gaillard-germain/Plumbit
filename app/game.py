@@ -98,7 +98,7 @@ class Game:
         self.score.set_txt(0)
         self.lvl = 0
         self.time = 60
-        self.speed = 62
+        self.speed = 60
 
         pygame.time.set_timer(self.ANIM, 15)
         self.set_up()
@@ -137,7 +137,9 @@ class Game:
         """ Increase flood speed """
 
         if self.speed > flood_max_speed:
-            self.speed -= self.lvl*2
+            self.speed -= self.lvl
+        if self.speed < flood_max_speed:
+            self.speed = flood_max_speed
 
     def clear_circuit(self):
         """ Clear the circuit dict """
