@@ -1,5 +1,5 @@
 from pygame import font as pgfont
-from misc import colors
+from config import colors
 
 
 class Stamp:

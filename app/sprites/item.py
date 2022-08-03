@@ -1,15 +1,16 @@
 from pygame import Rect
 
+from config import tile_size
+
 
 class Item:
     """ An item """
 
     def __init__(self, data):
         self.name = data['name']
-        self.size = 64
         self.images = data['images'].copy()
         self.pin = 0
-        self.rect = Rect(0, 0, self.size, self.size)
+        self.rect = Rect(0, 0, tile_size, tile_size)
 
     def draw(self, surface):
         """ Blit the item on the surface """

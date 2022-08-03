@@ -2,7 +2,7 @@ import pygame
 from random import randint, choice
 
 from factory import Factory
-from misc import info
+from config import info, tile_size, board_tile_x, board_tile_y, flood_max_speed
 from sprites.tool import Tool
 from sprites.cursor import Cursor
 from sprites.button import Button
@@ -13,10 +13,6 @@ from sprites.stamp import Stamp
 
 class Game:
     def __init__(self, screen, function_quit):
-        self.tile_size = 64
-        self.tile_x = 17
-        self.tile_y = 12
-
         self.screen = screen
         self.quit = function_quit
 
@@ -42,9 +38,9 @@ class Game:
 
         self.circuit = {}
 
-        for y in range(self.tile_y):
-            for x in range(self.tile_x):
-                self.circuit[(x*self.tile_size, y*self.tile_size)] = None
+        for y in range(board_tile_y):
+            for x in range(board_tile_x):
+                self.circuit[(x*tile_size, y*tile_size)] = None
 
         self.box = []
         self.lvl = 0
@@ -57,15 +53,15 @@ class Game:
             './images/dashboard_right.png')
 
         self.layer1 = pygame.Surface(
-            (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
+            (tile_size*board_tile_x, tile_size*board_tile_y),
         )
         self.layer2 = pygame.Surface(
-            (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
+            (tile_size*board_tile_x, tile_size*board_tile_y),
             pygame.SRCALPHA,
             32
         )
         self.layer3 = pygame.Surface(
-            (self.tile_size*self.tile_x, self.tile_size*self.tile_y),
+            (tile_size*board_tile_x, tile_size*board_tile_y),
             pygame.SRCALPHA,
             32
         )
@@ -140,7 +136,7 @@ class Game:
     def set_speed(self):
         """ Increase flood speed """
 
-        if self.speed > 25:
+        if self.speed > flood_max_speed:
             self.speed -= self.lvl*2
 
     def clear_circuit(self):
@@ -152,7 +148,7 @@ class Game:
     def get_nexts(self, pos):
         """ Util method for generating a ghost path to the end """
 
-        for i in (-self.tile_size, self.tile_size):
+        for i in (-tile_size, tile_size):
             x = (pos[0]+i, pos[1])
             if x in self.circuit.keys() and self.circuit[x] is None:
                 yield x
@@ -165,8 +161,8 @@ class Game:
 
         self.clear_circuit()
 
-        pos = (randint(1, self.tile_x-2) * self.tile_size,
-               randint(1, self.tile_y-2) * self.tile_size)
+        pos = (randint(1, board_tile_x-2) * tile_size,
+               randint(1, board_tile_y-2) * tile_size)
 
         self.circuit[pos] = '#'
         self.valve.rect.topleft = choice(list(self.get_nexts(pos)))
@@ -455,7 +451,7 @@ class Game:
 
         self.sub.play()
         pygame.time.set_timer(self.COUNTDOWN, 0)
-        pygame.time.set_timer(self.FLOOD, 20)
+        pygame.time.set_timer(self.FLOOD, flood_max_speed)
         self.message_bottom.set_txt('HURRY !!!')
 
     def give_up(self):
