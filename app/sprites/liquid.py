@@ -57,7 +57,7 @@ class Liquid:
                     self.modifier *= pipe.modifier
 
                 if pipe.name == 'cross' and pipe.locked:
-                    pipe.gain *= 2
+                    pipe.gain = 200
 
                 if pipe.name != 'end':
                     pipe.clog(self.path)
