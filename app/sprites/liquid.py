@@ -54,14 +54,15 @@ class Liquid:
 
             if pipe.rect.contains(self.rect):
                 if pipe.modifier:
-                    self.modifier *= pipe.modifier
+                    self.modifier += pipe.modifier
 
                 if pipe.name == 'cross' and pipe.locked:
                     pipe.gain = 200
 
                 if pipe.name != 'end':
                     pipe.clog(self.path)
-                pipe.gain *= self.modifier
+                    pipe.gain *= self.modifier
+
                 pipe.immutable = True
                 self.previous = pipe
 

@@ -33,7 +33,7 @@ class Factory:
                 'apertures': [1, 1, 1, 1],
                 'cost': -200,
                 'gain': 50,
-                'modifier': 2,
+                'modifier': 1,
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
