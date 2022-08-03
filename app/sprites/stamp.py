@@ -38,7 +38,7 @@ class Stamp:
             self.rect.midright = pos
 
     def draw(self, surface):
-        """ Draw stamp """
+        """ Draw stamp on the given surface """
 
         surface.blit(self.img, self.rect.topleft)
 

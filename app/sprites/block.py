@@ -13,11 +13,13 @@ class Block(Item):
         self.immutable = data['immutable']
 
     def rotate(self, coef):
+        """ Rotate the block """
+
         for i in range(coef):
             for i, image in enumerate(self.images):
                 self.images[i] = transform.rotate(image, 90)
 
     def randomize_image(self):
-        """ Select a random image for a pipe """
+        """ Select a random image for the block """
 
         self.pin = randint(0, len(self.images)-1)

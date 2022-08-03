@@ -173,7 +173,7 @@ class Factory:
         return Pipe(self.extra['end'])
 
     def get_block(self):
-        """ Return a valve """
+        """ Return a block """
 
         return Block(self.extra['block'])
 

@@ -12,7 +12,7 @@ class Item:
         self.rect = Rect(0, 0, self.size, self.size)
 
     def draw(self, surface):
-        """ Draw the item """
+        """ Blit the item on the surface """
 
         surface.blit(self.images[self.pin], self.rect.topleft)
 

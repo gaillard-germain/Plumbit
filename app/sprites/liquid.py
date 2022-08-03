@@ -12,6 +12,8 @@ class Liquid:
         self.modifier = 1
 
     def reset(self, valve):
+        """ Reser the Liquid position and modifier """
+
         self.previous = valve
         self.rect.topleft = valve.rect.topleft
         self.path = (0, 0)

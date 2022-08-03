@@ -9,9 +9,13 @@ class Arrow:
         self.rect.topleft = self.start_pos
 
     def draw(self, surface):
+        """ Blit the arrow on the surface """
+
         surface.blit(self.image, self.rect.topleft)
 
     def anim(self):
+        """ Anim the arrow """
+
         if self.rect.left > 180:
             self.rect.move_ip(-1, 0)
         else:
