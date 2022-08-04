@@ -1,7 +1,8 @@
 import pygame
-from random import randint, choice
+from random import choice
 
 from factory import Factory
+from circuit import Circuit
 from config import info, tile_size, board_tile_x, board_tile_y, flood_max_speed
 from sprites.tool import Tool
 from sprites.cursor import Cursor
@@ -36,12 +37,6 @@ class Game:
         self.FLOOD = pygame.USEREVENT + 2
         self.ANIM = pygame.USEREVENT + 3
 
-        self.circuit = {}
-
-        for y in range(board_tile_y):
-            for x in range(board_tile_x):
-                self.circuit[(x*tile_size, y*tile_size)] = None
-
         self.box = []
         self.lvl = 0
         self.time = 60
@@ -74,7 +69,8 @@ class Game:
         )
 
         self.factory = Factory()
-        self.cursor = Cursor(self.board_offset)
+        self.circuit = Circuit(self.factory)
+        self.cursor = Cursor(self.board_offset, self.circuit.is_locked)
         self.liquid = Liquid()
         self.arrow = Arrow()
         self.flood_btn = Button(['FLOOD'], (140, 50), 'light-blue',
@@ -83,6 +79,7 @@ class Game:
         self.continue_btn = Button(['CONTINUE'], (140, 50), 'green',
                                    self.next_step)
         self.score = Stamp(0, 40, 'green', (1673, 177))
+        self.countdown = Stamp('', 40, 'light-blue', (1680, 900))
         self.message_top = Stamp('', 72, 'orange',
                                  (self.screen.get_width()/2, 100))
         self.message_bottom = Stamp('', 40, 'orange',
@@ -111,18 +108,15 @@ class Game:
         self.lvl += 1
         self.state = 'WAITING'
 
-        self.message_top.set_txt('Level {}'.format(self.lvl))
-        self.message_bottom.set_txt(
-            'INFO: {}'.format(choice(info)))
-
         self.fill_box()
         self.set_time()
         self.set_speed()
-        self.strew()
-
+        self.circuit.strew(self.valve, self.end, self.lvl)
         self.liquid.reset(self.valve)
-
-        self.countdown = Stamp(self.time, 40, 'light-blue', (1680, 900))
+        self.countdown.set_txt(self.time)
+        self.message_top.set_txt('Level {}'.format(self.lvl))
+        self.message_bottom.set_txt(
+            'INFO: {}'.format(choice(info)))
 
         if self.music:
             pygame.mixer.music.play(loops=-1)
@@ -141,72 +135,6 @@ class Game:
         if self.speed < flood_max_speed:
             self.speed = flood_max_speed
 
-    def clear_circuit(self):
-        """ Clear the circuit dict """
-
-        for pos in self.circuit.keys():
-            self.circuit[pos] = None
-
-    def get_nexts(self, pos):
-        """ Util method for generating a ghost path to the end """
-
-        for i in (-tile_size, tile_size):
-            x = (pos[0]+i, pos[1])
-            if x in self.circuit.keys() and self.circuit[x] is None:
-                yield x
-            y = (pos[0], pos[1]+i)
-            if y in self.circuit.keys() and self.circuit[y] is None:
-                yield y
-
-    def strew(self):
-        """ Strew valve, end and several blocks on the game board """
-
-        self.clear_circuit()
-
-        pos = (randint(1, board_tile_x-2) * tile_size,
-               randint(1, board_tile_y-2) * tile_size)
-
-        self.circuit[pos] = '#'
-        self.valve.rect.topleft = choice(list(self.get_nexts(pos)))
-        self.circuit[self.valve.rect.topleft] = self.valve
-        self.valve.align(pos)
-
-        for _ in range(5 + self.lvl*2):
-            nexts = list(self.get_nexts(pos))
-            if nexts:
-                prev = pos
-                pos = choice(nexts)
-                self.circuit[pos] = '#'
-            else:
-                break
-
-        self.end.rect.topleft = pos
-        self.circuit[pos] = self.end
-        self.end.align(prev)
-
-        for i in range(randint(self.lvl, self.lvl+1)):
-            block = self.factory.get_block()
-            block.randomize_image()
-
-            free = list(self.get_free())
-
-            if free:
-                block.rect.topleft = choice(free)
-                self.circuit[block.rect.topleft] = block
-            else:
-                break
-
-        for pos, pipe in self.circuit.items():
-            if pipe == '#':
-                self.circuit[pos] = None
-
-    def get_free(self):
-        """ Get the list of free positions """
-
-        for pos, pipe in self.circuit.items():
-            if pipe is None:
-                yield pos
-
     def fill_box(self):
         """ Refill the pipe's box """
 
@@ -217,21 +145,6 @@ class Game:
             pipe = self.factory.get_random()
             pipe.rect.topleft = (250, 460 + i * 80)
             self.box.append(pipe)
-
-    def get_locked(self):
-        """ Get the list of the locked pipes """
-
-        for pipe in self.circuit.values():
-            if pipe and pipe.locked:
-                yield pipe.rect.topleft
-
-    def is_locked(self, pos):
-        """ Checks if the position is locked """
-
-        if pos in self.get_locked():
-            return True
-        else:
-            return False
 
     def on_mouse_click(self):
         """ Handle button click event """
@@ -265,7 +178,7 @@ class Game:
     def drop_pipe(self, pos):
         """ Drop the current pipe on the board """
 
-        if self.is_locked(pos):
+        if self.circuit.is_locked(pos):
             return
 
         if self.state == 'WAITING':
@@ -277,7 +190,7 @@ class Game:
 
         self.put.play()
         pipe.rect.topleft = pos
-        self.circuit[pipe.rect.topleft] = pipe
+        self.circuit.add(pipe)
 
         self.update_gain(pipe.rect.center, pipe.cost)
 
@@ -292,13 +205,13 @@ class Game:
             self.countdown.set_txt(int(self.countdown.txt) + 5)
             pygame.time.set_timer(self.COUNTDOWN, 1000)
 
-        elif self.circuit[pos] and not self.circuit[pos].immutable:
+        elif self.circuit.is_mutable(pos):
             if name == 'wrench':
                 self.switch.play()
-                self.circuit[pos].rotate(1)
+                self.circuit.rotate(pos, 1)
             elif name == 'bomb':
                 self.smash.play()
-                self.circuit[pos] = None
+                self.circuit.delete(pos)
 
         else:
             self.match.play()
@@ -318,7 +231,7 @@ class Game:
     def flood(self):
         """ Floods the circuit """
 
-        pipe = self.liquid.flood(self.circuit)
+        pipe = self.liquid.flood(self.circuit.grid)
 
         if pipe == 'flooding':
             return
@@ -372,9 +285,7 @@ class Game:
         self.layer1.fill((96, 93, 86))
         self.layer3.fill((255, 255, 255, 0))
 
-        for pipe in self.circuit.values():
-            if pipe:
-                pipe.draw(self.layer1)
+        self.circuit.draw(self.layer1)
 
         self.plop.draw(self.layer1)
         self.liquid.draw(self.layer2)
@@ -439,7 +350,7 @@ class Game:
             self.giveup_btn.process()
             self.continue_btn.process()
 
-            self.cursor.process(self.is_locked, self.box[0])
+            self.cursor.process(self.box[0])
 
             self.draw()
 

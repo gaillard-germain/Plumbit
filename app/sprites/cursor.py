@@ -4,7 +4,7 @@ from pygame import image as pgimage, mouse
 class Cursor:
     """ A Cursor """
 
-    def __init__(self, offset):
+    def __init__(self, offset, is_locked):
         self.images = {
             'drop': pgimage.load('./images/drop.png'),
             'locked': pgimage.load('./images/locked.png'),
@@ -14,10 +14,10 @@ class Cursor:
         }
         self.pin = 'drop'
         self.rect = self.images['drop'].get_rect()
-
         self.offset = offset
+        self.is_locked = is_locked
 
-    def process(self, is_locked, pipe):
+    def process(self, pipe):
         """ Move the cursor on the board """
 
         mouse_pos = mouse.get_pos()
@@ -32,7 +32,7 @@ class Cursor:
             self.pin = 'delete'
         elif pipe.name == 'wrench':
             self.pin = 'rotate'
-        elif is_locked(self.rect.topleft):
+        elif self.is_locked(self.rect.topleft):
             self.pin = 'locked'
         else:
             self.pin = 'drop'
