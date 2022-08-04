@@ -3,6 +3,7 @@ board_tile_x = 17
 board_tile_y = 12
 
 flood_max_speed = 20
+pipe_in_queue = 5
 
 colors = {
     'red': (194, 78, 16),

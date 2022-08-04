@@ -2,6 +2,7 @@ import pygame
 from random import choice
 
 from factory import Factory
+from box import Box
 from circuit import Circuit
 from config import info, tile_size, board_tile_x, board_tile_y, flood_max_speed
 from sprites.tool import Tool
@@ -37,7 +38,6 @@ class Game:
         self.FLOOD = pygame.USEREVENT + 2
         self.ANIM = pygame.USEREVENT + 3
 
-        self.box = []
         self.lvl = 0
         self.time = 60
         self.speed = 62
@@ -69,6 +69,7 @@ class Game:
         )
 
         self.factory = Factory()
+        self.box = Box(self.factory)
         self.circuit = Circuit(self.factory)
         self.cursor = Cursor(self.board_offset, self.circuit.is_locked)
         self.liquid = Liquid()
@@ -108,7 +109,7 @@ class Game:
         self.lvl += 1
         self.state = 'WAITING'
 
-        self.fill_box()
+        self.box.fill()
         self.set_time()
         self.set_speed()
         self.circuit.strew(self.valve, self.end, self.lvl)
@@ -135,17 +136,6 @@ class Game:
         if self.speed < flood_max_speed:
             self.speed = flood_max_speed
 
-    def fill_box(self):
-        """ Refill the pipe's box """
-
-        if self.box:
-            self.box.clear()
-
-        for i in range(5):
-            pipe = self.factory.get_random()
-            pipe.rect.topleft = (250, 460 + i * 80)
-            self.box.append(pipe)
-
     def on_mouse_click(self):
         """ Handle button click event """
 
@@ -157,23 +147,13 @@ class Game:
             emit = self.giveup_btn.click()
 
             if (self.board.contains(self.cursor.rect)):
-                if isinstance(self.box[0], Tool):
-                    self.drop_tool(self.cursor.rect.topleft, self.box[0].name)
+                if isinstance(self.box.get_current(), Tool):
+                    self.drop_tool(self.cursor.rect.topleft,
+                                   self.box.get_current().name)
                 else:
                     self.drop_pipe(self.cursor.rect.topleft)
 
         return emit
-
-    def pickup(self):
-        """ Pickup the first pipe in the box
-            and add a new random one in the queue """
-
-        picked = self.box.pop(0)
-        self.box.append(self.factory.get_random())
-        for i, pipe in enumerate(self.box):
-            pipe.rect.topleft = (250, 460 + i * 80)
-
-        return picked
 
     def drop_pipe(self, pos):
         """ Drop the current pipe on the board """
@@ -186,7 +166,7 @@ class Game:
             pygame.time.set_timer(self.COUNTDOWN, 1000)
             self.message_bottom.set_txt('Incoming fluid...')
 
-        pipe = self.pickup()
+        pipe = self.box.pickup()
 
         self.put.play()
         pipe.rect.topleft = pos
@@ -197,7 +177,7 @@ class Game:
     def drop_tool(self, pos, name):
         """ Use tool """
 
-        self.pickup()
+        self.box.pickup()
 
         if name == 'stopwatch':
             self.bip.play()
@@ -301,10 +281,7 @@ class Game:
         self.score.draw(self.screen)
         self.countdown.draw(self.screen)
         self.arrow.draw(self.screen)
-
-        for pipe in self.box:
-            pipe.draw(self.screen)
-
+        self.box.draw(self.screen)
         self.message_top.draw(self.screen)
         self.message_bottom.draw(self.screen)
 
@@ -350,7 +327,7 @@ class Game:
             self.giveup_btn.process()
             self.continue_btn.process()
 
-            self.cursor.process(self.box[0])
+            self.cursor.process(self.box.get_current())
 
             self.draw()
 
