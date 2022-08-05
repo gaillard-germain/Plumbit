@@ -13,13 +13,13 @@ class Factory:
                 'name': 'stopwatch',
                 'images': [pgimage.load('./images/stopwatch.png')],
                 'type': 'tool',
-                'weight': 8
+                'weight': 4
             },
             {
                 'name': 'bomb',
                 'images': [pgimage.load('./images/bomb.png')],
                 'type': 'tool',
-                'weight': 12
+                'weight': 10
             },
             {
                 'name': 'wrench',
@@ -49,23 +49,11 @@ class Factory:
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 40
+                'weight': 20
             },
             {
                 'name': 'straight',
-                'images': [pgimage.load('./images/regular_tb.png')],
-                'apertures': [0, 1, 0, 1],
-                'cost': -50,
-                'gain': 100,
-                'modifier': 0,
-                'locked': False,
-                'immutable': False,
-                'type': 'pipe',
-                'weight': 55
-            },
-            {
-                'name': 'straight',
-                'images': [pgimage.load('./images/regular_lr.png')],
+                'images': [pgimage.load('./images/straight.png')],
                 'apertures': [1, 0, 1, 0],
                 'cost': -50,
                 'gain': 100,
@@ -73,35 +61,11 @@ class Factory:
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 55
+                'weight': 60
             },
             {
                 'name': 'elbow',
-                'images': [pgimage.load('./images/regular_tr.png')],
-                'apertures': [0, 1, 1, 0],
-                'cost': -50,
-                'gain': 100,
-                'modifier': 0,
-                'locked': False,
-                'immutable': False,
-                'type': 'pipe',
-                'weight': 50
-            },
-            {
-                'name': 'elbow',
-                'images': [pgimage.load('./images/regular_tl.png')],
-                'apertures': [1, 1, 0, 0],
-                'cost': -50,
-                'gain': 100,
-                'modifier': 0,
-                'locked': False,
-                'immutable': False,
-                'type': 'pipe',
-                'weight': 50
-            },
-            {
-                'name': 'elbow',
-                'images': [pgimage.load('./images/regular_br.png')],
+                'images': [pgimage.load('./images/elbow.png')],
                 'apertures': [0, 0, 1, 1],
                 'cost': -50,
                 'gain': 100,
@@ -109,20 +73,8 @@ class Factory:
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 50
+                'weight': 100
             },
-            {
-                'name': 'elbow',
-                'images': [pgimage.load('./images/regular_bl.png')],
-                'apertures': [1, 0, 0, 1],
-                'cost': -50,
-                'gain': 100,
-                'modifier': 0,
-                'locked': False,
-                'immutable': False,
-                'type': 'pipe',
-                'weight': 50
-            }
         ]
         self.extra = {
             'valve': {
@@ -185,7 +137,12 @@ class Factory:
                        k=1)[0]
 
         if data['type'] == 'pipe':
-            return Pipe(data)
+            pipe = Pipe(data)
+
+            if pipe.name != 'cross':
+                pipe.rotate()
+
+            return pipe
 
         elif data['type'] == 'tool':
             return Tool(data)
