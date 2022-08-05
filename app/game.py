@@ -128,8 +128,8 @@ class Game:
     def set_time(self):
         """ Decrease time for each 5 lvl """
 
-        if not self.lvl % 5 and self.time > 5:
-            self.time -= 5
+        if not self.lvl % 2 and self.time > 10:
+            self.time -= 2
 
     def set_speed(self):
         """ Increase flood speed """

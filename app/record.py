@@ -131,6 +131,12 @@ class Record:
     def save_score(self):
         """ Enter Button callback """
 
+        self.name.txt = self.name.txt.strip()
+
+        if (self.name.txt == 'Enter your name'
+                or not self.name.txt.replace(' ', '')):
+            self.name.txt = 'Unknown'
+
         self.topten.insert(self.rank, dict(name=self.name.txt,
                            level=self.lvl,
                            score=self.score))

@@ -19,7 +19,7 @@ info = [
     'Countdown starts when you click on the board.',
     'The filter adds +50 to your gains.',
     'When the liquid crosses a cross it goes straight.',
-    'Time decreases by 5 seconds every 5 levels.',
+    'Time decreases by 2 seconds every 2 levels.',
     'The Flood button starts the liquid immediately.',
     'The give-up button brings you back to the menu.',
     'You cannot replace a flooded pipe.',
