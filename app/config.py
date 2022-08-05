@@ -16,8 +16,8 @@ colors = {
 }
 
 info = [
-    'Countdown starts when you place the first pipe.',
-    'The golden-cross doubles your gains but it is rare!',
+    'Countdown starts when you click on the board.',
+    'The filter adds +50 to your gains.',
     'When the liquid crosses a cross it goes straight.',
     'Time decreases by 5 seconds every 5 levels.',
     'The Flood button starts the liquid immediately.',

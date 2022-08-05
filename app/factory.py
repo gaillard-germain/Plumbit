@@ -28,16 +28,16 @@ class Factory:
                 'weight': 15
             },
             {
-                'name': 'cross',
-                'images': [pgimage.load('./images/golden_cross.png')],
-                'apertures': [1, 1, 1, 1],
-                'cost': -200,
+                'name': 'filter',
+                'images': [pgimage.load('./images/filter.png')],
+                'apertures': [1, 0, 1, 0],
+                'cost': -100,
                 'gain': 50,
-                'modifier': 1,
+                'modifier': 50,
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 1
+                'weight': 4
             },
             {
                 'name': 'cross',

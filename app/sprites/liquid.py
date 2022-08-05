@@ -5,19 +5,24 @@ from sprites.pipe import Pipe
 
 class Liquid:
     def __init__(self):
-        self.image = pgimage.load('./images/liquid.png')
-        self.rect = self.image.get_rect()
+        self.images = [
+            pgimage.load('./images/liquid.png'),
+            pgimage.load('./images/liquid2.png')
+        ]
+        self.pin = 0
+        self.rect = self.images[0].get_rect()
         self.prev = None
         self.path = (0, 0)
-        self.modifier = 1
+        self.modifier = 0
 
     def reset(self, valve):
         """ Reset the Liquid position and modifier """
 
         self.prev = valve
+        self.pin = 0
         self.rect.topleft = valve.rect.topleft
         self.path = (0, 0)
-        self.modifier = 1
+        self.modifier = 0
 
     def check(self, circuit):
         """ Returns the next floodable pipe """
@@ -46,14 +51,15 @@ class Liquid:
 
             if pipe.rect.contains(self.rect):
                 if pipe.modifier:
+                    self.pin = 1
                     self.modifier += pipe.modifier
 
                 if pipe.name == 'cross' and pipe.locked:
-                    pipe.gain = 200
+                    pipe.gain *= 2
 
                 if pipe.name != 'end':
                     pipe.clog(self.path)
-                    pipe.gain *= self.modifier
+                    pipe.gain += self.modifier
 
                 pipe.immutable = True
                 self.prev = pipe
@@ -66,4 +72,4 @@ class Liquid:
     def draw(self, surface):
         """ draw liquid """
 
-        surface.blit(self.image, self.rect.topleft)
+        surface.blit(self.images[self.pin], self.rect.topleft)
