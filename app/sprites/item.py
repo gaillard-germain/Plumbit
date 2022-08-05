@@ -20,8 +20,7 @@ class Item:
     def anim(self):
         """ Anim the item """
 
-        length = len(self.images)
-        if self.pin == length-1:
+        if self.pin == len(self.images)-1:
             self.pin = 0
         else:
             self.pin += 1
