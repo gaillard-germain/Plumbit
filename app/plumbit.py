@@ -10,7 +10,7 @@ class Plumbit:
     """ Plumbit """
 
     def __init__(self):
-        pygame.mixer.pre_init(buffer=2048)
+        pygame.mixer.pre_init()
         pygame.mixer.init()
         pygame.init()
         pygame.display.set_caption("Plumb'it")
