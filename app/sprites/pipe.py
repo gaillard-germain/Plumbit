@@ -1,6 +1,7 @@
 from pygame import transform
 from random import randint
 
+from config import tile_size, board_tile_x, board_tile_y
 from sprites.item import Item
 
 
@@ -42,13 +43,13 @@ class Pipe(Item):
 
         for index, aperture in enumerate(self.apertures):
             if aperture:
-                if index == 0:
+                if index == 0 and self.rect.left > 0:
                     yield ((self.rect.left - self.rect.width), self.rect.top)
-                if index == 1:
+                if index == 1 and self.rect.top > 0:
                     yield (self.rect.left, (self.rect.top - self.rect.height))
-                if index == 2:
+                if index == 2 and self.rect.right < tile_size * board_tile_x:
                     yield (self.rect.right, self.rect.top)
-                if index == 3:
+                if index == 3 and self.rect.bottom < tile_size * board_tile_y:
                     yield (self.rect.left, self.rect.bottom)
 
     def clog(self, path):

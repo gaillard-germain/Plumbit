@@ -87,6 +87,9 @@ class Game:
                                     (self.screen.get_width()/2,
                                      self.screen.get_height()-100))
         self.plop = Stamp('', 32)
+        # self.dev = Stamp('', 32, 'white',
+        #                  (self.screen.get_width()/2,
+        #                   self.screen.get_height()-50))
 
         self.valve = self.factory.get_valve()
         self.end = self.factory.get_end()
@@ -171,6 +174,7 @@ class Game:
         self.put.play()
         pipe.rect.topleft = pos
         self.circuit.add(pipe)
+        # self.dev.set_txt(pos)
 
         self.update_gain(pipe.rect.center, pipe.cost)
 
@@ -284,6 +288,7 @@ class Game:
         self.box.draw(self.screen)
         self.message_top.draw(self.screen)
         self.message_bottom.draw(self.screen)
+        # self.dev.draw(self.screen)
 
         if self.state == 'WIN' or self.state == 'LOOSE':
             self.continue_btn.draw(self.screen)
