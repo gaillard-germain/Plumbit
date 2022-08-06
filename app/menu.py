@@ -6,8 +6,6 @@ from sprites.stamp import Stamp
 
 class Menu:
     def __init__(self, screen, topten, function_quit, function_music):
-        pygame.mixer.music.load('./sounds/water-drops.ogg')
-
         self.screen = screen
         self.topten = topten
         self.quit = function_quit
@@ -72,6 +70,7 @@ class Menu:
 
         self.display_topten()
 
+        pygame.mixer.music.load('./sounds/water-drops.ogg')
         pygame.mixer.music.play(loops=-1)
 
         while True:

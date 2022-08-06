@@ -18,8 +18,6 @@ class Game:
         self.screen = screen
         self.quit = function_quit
 
-        pygame.mixer.music.load('./sounds/music.ogg')
-
         self.put = pygame.mixer.Sound('./sounds/put.ogg')
         self.switch = pygame.mixer.Sound('./sounds/switch.ogg')
         self.smash = pygame.mixer.Sound('./sounds/smash.ogg')
@@ -29,8 +27,6 @@ class Game:
         self.sub = pygame.mixer.Sound('./sounds/sub.ogg')
         self.loose = pygame.mixer.Sound('./sounds/loose.ogg')
         self.win = pygame.mixer.Sound('./sounds/win.ogg')
-
-        pygame.mixer.music.set_volume(0.4)
 
         self.music = True
 
@@ -306,6 +302,7 @@ class Game:
     def process(self):
         """ Process Game """
 
+        pygame.mixer.music.load('./sounds/music.ogg')
         self.reset()
 
         clock = pygame.time.Clock()

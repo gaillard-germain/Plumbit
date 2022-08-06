@@ -13,6 +13,7 @@ class Plumbit:
         pygame.mixer.pre_init()
         pygame.mixer.init()
         pygame.init()
+        pygame.mixer.music.set_volume(0.5)
         pygame.display.set_caption("Plumb'it")
 
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
