@@ -24,6 +24,7 @@ It is developed in python3 and uses the Pygame library.
 ## Credit
 - Code by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
 - Art by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
+- Sounds from [soundbible.com](https://soundbible.com/)
 - Music: "Solve The Puzzle" by patrick DEARTEAGA [patrickdearteaga.com](https://patrickdearteaga.com)
 
 ## License
