@@ -9,6 +9,8 @@ from sprites.stamp import Stamp
 
 class Record:
     def __init__(self, screen, function_quit):
+        self.applause = pygame.mixer.Sound('./sounds/applause.ogg')
+
         self.screen = screen
         self.quit = function_quit
         self.score = 0
@@ -98,6 +100,8 @@ class Record:
 
     def process(self):
         """ Process Record """
+
+        self.applause.play()
 
         while True:
             for event in pygame.event.get():
