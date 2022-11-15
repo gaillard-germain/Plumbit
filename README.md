@@ -19,13 +19,17 @@ It is developed in python3 and uses the Pygame library.
 - Create a python3 virtual environement: `python3 -m venv <your venv name>`
 - Activate your venv `source <your venv name>/bin/activate`
 - Install the requirements with PIP: `pip install -r requirements.txt`
-- `python plumbit.py` to run.
+- Run: `python app/plumbit.py` or `./plumbit.sh` if your on a GNU/Linux.
 
 ## Credit
 - Code by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
-- Art by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
+- Art and graphics by Germain GAILLARD [germain@gaillard.dev](mailto:germain@gaillard.dev)
 - Sounds from [soundbible.com](https://soundbible.com/)
 - Music: "Solve The Puzzle" by patrick DEARTEAGA [patrickdearteaga.com](https://patrickdearteaga.com)
 
 ## License
 Plumb'it is under MIT license.
+
+## Note
+This game is still in development and optimize for a 1920x1080 screen.
+Feel free to contribute...
