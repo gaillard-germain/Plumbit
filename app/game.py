@@ -128,8 +128,6 @@ class Game:
         if self.music:
             pygame.mixer.music.play(loops=-1)
 
-        self.dev.set_txt('flood speed: {} ms'.format(self.speed))
-
     def set_time(self):
         """ Decrease time """
 
@@ -223,30 +221,40 @@ class Game:
             return
 
         elif pipe is None:
-            self.state = 'LOOSE'
-            pygame.time.set_timer(self.COUNTDOWN, 0)
-            pygame.time.set_timer(self.FLOOD, 0)
-            pygame.mixer.music.stop()
-            self.loose.play()
-            self.message_top.set_txt('Level {} FAILED'.format(self.lvl))
-            self.message_bottom.set_txt('Click CONTINUE button')
-            pygame.event.clear()
+            self.lvl_failed()
 
         else:
             gain = pipe.gain
 
             if pipe == self.end:
                 gain += int(self.countdown.txt) * 10
-                self.state = 'WIN'
-                pygame.time.set_timer(self.FLOOD, 0)
-                pygame.mixer.music.stop()
-                self.win.play()
-                self.message_top.set_txt('Level {} COMPLETE'.format(self.lvl))
-                self.message_bottom.set_txt('Click CONTINUE button')
-                self.lvl += 1
-                pygame.event.clear()
+                self.lvl_complete()
 
             self.update_gain(pipe.rect.center, gain)
+
+    def lvl_failed(self):
+        """ When player loose """
+
+        self.state = 'LOOSE'
+        pygame.time.set_timer(self.COUNTDOWN, 0)
+        pygame.time.set_timer(self.FLOOD, 0)
+        pygame.mixer.music.stop()
+        self.loose.play()
+        self.message_top.set_txt('Level {} FAILED'.format(self.lvl))
+        self.message_bottom.set_txt('Click CONTINUE button')
+        pygame.event.clear()
+
+    def lvl_complete(self):
+        """ When player win """
+
+        self.state = 'WIN'
+        pygame.time.set_timer(self.FLOOD, 0)
+        pygame.mixer.music.stop()
+        self.win.play()
+        self.message_top.set_txt('Level {} COMPLETE'.format(self.lvl))
+        self.message_bottom.set_txt('Click CONTINUE button')
+        self.lvl += 1
+        pygame.event.clear()
 
     def update_gain(self, pos, value):
         """ Modify score every time a pipe is flooded or placed """
