@@ -2,6 +2,7 @@ tile_size = 64
 board_tile_x = 17
 board_tile_y = 12
 
+min_time = 10
 flood_max_speed = 20
 pipe_in_queue = 5
 
@@ -19,12 +20,12 @@ info = [
     'Countdown starts when you play a pipe or the stopwatch.',
     'The filter adds +50 to your gains.',
     'When the liquid crosses a cross it goes straight.',
-    'Time decreases by 2 seconds every 2 levels.',
+    'Time decreases every level.',
     'The Flood button starts the liquid immediately.',
     'The give-up button brings you back to the menu.',
     'You cannot replace a flooded pipe.',
     'The number of obstacles increases with the level.',
-    'Flood speed increases with the level',
+    'Flood speed increases with the levels',
     'The wrench rotate a pipe once (anti-clockwise).',
     'The bomb is useful to clear obstacles.',
     'Flooding before the countdown finish grants a score bonus.',

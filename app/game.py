@@ -4,7 +4,9 @@ from random import choice
 from factory import Factory
 from box import Box
 from circuit import Circuit
-from config import info, tile_size, board_tile_x, board_tile_y, flood_max_speed
+from config import (
+    info, tile_size, board_tile_x, board_tile_y, flood_max_speed, min_time
+)
 from sprites.tool import Tool
 from sprites.cursor import Cursor
 from sprites.button import Button
@@ -83,9 +85,13 @@ class Game:
                                     (self.screen.get_width()/2,
                                      self.screen.get_height()-100))
         self.plop = Stamp('', 32)
-        # self.dev = Stamp('', 32, 'white',
-        #                  (self.screen.get_width()/2,
-        #                   self.screen.get_height()-50))
+
+        # ## dev tool ## #
+        self.dev = Stamp('', 32, 'white',
+                         (self.screen.get_width()/2,
+                          self.screen.get_height()-50))
+        # self.dev.set_txt('<text here>') # to display something
+        # ##### #
 
         self.valve = self.factory.get_valve()
         self.end = self.factory.get_end()
@@ -93,7 +99,7 @@ class Game:
     def reset(self):
         """ Reset score, level and time """
         self.score.set_txt(0)
-        self.lvl = 0
+        self.lvl = 1
         self.time = 60
         self.speed = 60
 
@@ -103,14 +109,15 @@ class Game:
     def set_up(self):
         """ Set_up the game """
 
-        self.layer2.fill((255, 255, 255, 0))
+        if self.lvl > 1:
+            self.set_time()
+            self.set_speed()
 
-        self.lvl += 1
         self.state = 'WAITING'
 
+        self.layer2.fill((255, 255, 255, 0))
+
         self.box.fill()
-        self.set_time()
-        self.set_speed()
         self.circuit.strew(self.valve, self.end, self.lvl)
         self.liquid.reset(self.valve)
         self.countdown.set_txt(self.time)
@@ -121,19 +128,19 @@ class Game:
         if self.music:
             pygame.mixer.music.play(loops=-1)
 
-    def set_time(self):
-        """ Decrease time for each 5 lvl """
+        self.dev.set_txt('flood speed: {} ms'.format(self.speed))
 
-        if not self.lvl % 2 and self.time > 10:
+    def set_time(self):
+        """ Decrease time """
+
+        if self.time > min_time:
             self.time -= 2
 
     def set_speed(self):
         """ Increase flood speed """
 
         if self.speed > flood_max_speed:
-            self.speed -= self.lvl
-        if self.speed < flood_max_speed:
-            self.speed = flood_max_speed
+            self.speed -= 2
 
     def on_mouse_click(self):
         """ Handle button click event """
@@ -170,7 +177,6 @@ class Game:
         self.put.play()
         pipe.rect.topleft = pos
         self.circuit.add(pipe)
-        # self.dev.set_txt(pos)
 
         self.update_gain(pipe.rect.center, pipe.cost)
 
@@ -222,7 +228,7 @@ class Game:
             pygame.time.set_timer(self.FLOOD, 0)
             pygame.mixer.music.stop()
             self.loose.play()
-            self.message_top.set_txt('YOU LOOSE')
+            self.message_top.set_txt('Level {} FAILED'.format(self.lvl))
             self.message_bottom.set_txt('Click CONTINUE button')
             pygame.event.clear()
 
@@ -235,8 +241,9 @@ class Game:
                 pygame.time.set_timer(self.FLOOD, 0)
                 pygame.mixer.music.stop()
                 self.win.play()
-                self.message_top.set_txt('YOU WIN')
+                self.message_top.set_txt('Level {} COMPLETE'.format(self.lvl))
                 self.message_bottom.set_txt('Click CONTINUE button')
+                self.lvl += 1
                 pygame.event.clear()
 
             self.update_gain(pipe.rect.center, gain)
@@ -284,7 +291,10 @@ class Game:
         self.box.draw(self.screen)
         self.message_top.draw(self.screen)
         self.message_bottom.draw(self.screen)
-        # self.dev.draw(self.screen)
+
+        # ### dev tool ### #
+        self.dev.draw(self.screen)
+        # ###### #
 
         if self.state == 'WIN' or self.state == 'LOOSE':
             self.continue_btn.draw(self.screen)
