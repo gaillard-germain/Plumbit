@@ -16,7 +16,7 @@ colors = {
 }
 
 info = [
-    'Countdown starts when you click on the board.',
+    'Countdown starts when you play a pipe or the stopwatch.',
     'The filter adds +50 to your gains.',
     'When the liquid crosses a cross it goes straight.',
     'Time decreases by 2 seconds every 2 levels.',
@@ -25,7 +25,8 @@ info = [
     'You cannot replace a flooded pipe.',
     'The number of obstacles increases with the level.',
     'Flood speed increases with the level',
-    'The wrench rotate a pipe once.',
+    'The wrench rotate a pipe once (anti-clockwise).',
     'The bomb is useful to clear obstacles.',
-    'Flooding before the countdown finish grants a score bonus.'
+    'Flooding before the countdown finish grants a score bonus.',
+    'The stopwatch give you a break of 5 seconds.'
 ]
