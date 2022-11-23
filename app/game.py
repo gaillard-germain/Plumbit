@@ -361,7 +361,7 @@ class Game:
     # ## Buttons callbacks ## #
 
     def flood_now(self):
-        """ Flood Button callback """
+        """ Flood Button callback: starts flooding the circuit """
 
         self.sub.play()
         pygame.time.set_timer(self.COUNTDOWN, 0)
@@ -369,7 +369,7 @@ class Game:
         self.message_bottom.set_txt('HURRY !!!')
 
     def give_up(self):
-        """ Give-up Button callback """
+        """ Give-up Button callback: returns to menu """
 
         pygame.mixer.music.stop()
         pygame.time.set_timer(self.COUNTDOWN, 0)
@@ -379,7 +379,8 @@ class Game:
         return 'BACK'
 
     def next_step(self):
-        """ Continue to next lvl or back to the menu """
+        """ Continue button callback: Continue to next lvl or back to
+            the menu """
 
         if self.state == 'WIN':
             self.set_up()
