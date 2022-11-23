@@ -76,6 +76,8 @@ class Game:
         self.flood_btn = Button(['FLOOD'], (140, 50), 'light-blue',
                                 self.flood_now)
         self.giveup_btn = Button(['GIVE-UP'], (140, 150), 'red', self.give_up)
+        self.continue_btn = Button(['CONTINUE'], (140, 50), 'green',
+                                   self.next_step)
         self.score = Stamp(0, 40, 'green', (1673, 177))
         self.countdown = Stamp('', 40, 'light-blue', (1680, 900))
         self.message_top = Stamp('', 72, 'orange',
@@ -144,7 +146,7 @@ class Game:
         """ Handle button click event """
 
         if self.state == 'LOOSE' or self.state == 'WIN':
-            emit = self.next_step()
+            emit = self.continue_btn.click()
 
         else:
             self.flood_btn.click()
@@ -158,15 +160,6 @@ class Game:
                     self.drop_pipe(self.cursor.rect.topleft)
 
         return emit
-
-    def next_step(self):
-        """ Continue to next lvl or back to the menu """
-
-        if self.state == 'WIN':
-            self.set_up()
-
-        elif self.state == 'LOOSE':
-            return self.give_up()
 
     def drop_pipe(self, pos):
         """ Drop the current pipe on the board """
@@ -250,7 +243,7 @@ class Game:
         pygame.mixer.music.stop()
         self.loose.play()
         self.message_top.set_txt('Level {} FAILED'.format(self.lvl))
-        self.message_bottom.set_txt('Click to continue')
+        self.message_bottom.set_txt('Click CONTINUE button')
         pygame.event.clear()
 
     def lvl_complete(self):
@@ -261,7 +254,7 @@ class Game:
         pygame.mixer.music.stop()
         self.win.play()
         self.message_top.set_txt('Level {} COMPLETE'.format(self.lvl))
-        self.message_bottom.set_txt('Click to continue')
+        self.message_bottom.set_txt('Click CONTINUE button')
         self.lvl += 1
         pygame.event.clear()
 
@@ -315,7 +308,10 @@ class Game:
         self.dev.draw(self.screen)
         # ###### #
 
-        if self.state != 'WIN' and self.state != 'LOOSE':
+        if self.state == 'WIN' or self.state == 'LOOSE':
+            self.continue_btn.draw(self.screen)
+
+        else:
             self.flood_btn.draw(self.screen)
             self.giveup_btn.draw(self.screen)
 
@@ -353,6 +349,7 @@ class Game:
 
             self.flood_btn.process()
             self.giveup_btn.process()
+            self.continue_btn.process()
 
             self.cursor.process(self.box.get_current())
 
@@ -380,3 +377,12 @@ class Game:
         pygame.time.set_timer(self.ANIM, 0)
 
         return 'BACK'
+
+    def next_step(self):
+        """ Continue to next lvl or back to the menu """
+
+        if self.state == 'WIN':
+            self.set_up()
+
+        elif self.state == 'LOOSE':
+            return self.give_up()
