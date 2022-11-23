@@ -2,7 +2,9 @@ tile_size = 64
 board_tile_x = 17
 board_tile_y = 12
 
+max_time = 60
 min_time = 10
+flood_min_speed = 60
 flood_max_speed = 20
 pipe_in_queue = 5
 
@@ -29,5 +31,12 @@ info = [
     'The wrench rotate a pipe once (anti-clockwise).',
     'The bomb is useful to clear obstacles.',
     'Flooding before the countdown finish grants a score bonus.',
-    'The stopwatch give you a break of 5 seconds.'
+    'The stopwatch give you a break of 5 seconds.',
+    'Better to deal with what you got',
+    'The liquid comes through the red valve.',
+    'You must connect the red valve to the blue one.',
+    'When the countdown end, you still can place pipes.',
+    'Place the pipes wisely, cause it costs money.',
+    'Use the crosses to loop and gain extra money.',
+    'Plan ahead is the key to victory.'
 ]

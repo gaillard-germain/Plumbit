@@ -5,7 +5,8 @@ from factory import Factory
 from box import Box
 from circuit import Circuit
 from config import (
-    info, tile_size, board_tile_x, board_tile_y, flood_max_speed, min_time
+    info, tile_size, board_tile_x, board_tile_y, max_time, min_time,
+    flood_min_speed, flood_max_speed
 )
 from sprites.tool import Tool
 from sprites.cursor import Cursor
@@ -36,9 +37,9 @@ class Game:
         self.FLOOD = pygame.USEREVENT + 2
         self.ANIM = pygame.USEREVENT + 3
 
-        self.lvl = 0
-        self.time = 60
-        self.speed = 62
+        self.lvl = 1
+        self.time = max_time
+        self.speed = flood_min_speed
         self.state = 'WAITING'
 
         self.dashboard_left = pygame.image.load('./images/dashboard_left.png')
@@ -84,22 +85,23 @@ class Game:
                                      self.screen.get_height()-100))
         self.plop = Stamp('', 32)
 
-        # ## dev tool ## #
+        # ### dev tool ### #
         self.dev = Stamp('', 32, 'white',
                          (self.screen.get_width()/2,
                           self.screen.get_height()-50))
-        # self.dev.set_txt('<text here>') # to display something
-        # ##### #
+        # self.dev.set_txt('<text here>') # to display something...
+        # ###### #
 
         self.valve = self.factory.get_valve()
         self.end = self.factory.get_end()
 
     def reset(self):
         """ Reset score, level and time """
+
         self.score.set_txt(0)
         self.lvl = 1
-        self.time = 60
-        self.speed = 60
+        self.time = max_time
+        self.speed = flood_min_speed
 
         pygame.time.set_timer(self.ANIM, 15)
         self.set_up()
@@ -278,6 +280,8 @@ class Game:
         self.plop.set_txt(txt, color, pos)
 
     def switch_music(self):
+        """ Switch music ON or OFF """
+
         self.music = not self.music
 
     def draw(self):
@@ -322,7 +326,7 @@ class Game:
         self.arrow.anim()
 
     def process(self):
-        """ Process Game """
+        """ Game's loop """
 
         pygame.mixer.music.load('./sounds/music.ogg')
         self.reset()
