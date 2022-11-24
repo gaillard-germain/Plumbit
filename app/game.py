@@ -111,11 +111,10 @@ class Game:
     def set_up(self):
         """ Set_up the game """
 
-        if self.lvl > 1:
-            self.set_time()
-            self.set_speed()
-
         self.state = 'WAITING'
+
+        self.set_time()
+        self.set_speed()
 
         self.layer2.fill((255, 255, 255, 0))
 
@@ -134,13 +133,13 @@ class Game:
         """ Decrease time """
 
         if self.time > min_time:
-            self.time -= 2
+            self.time = max_time - (self.lvl - 1) * 2
 
     def set_speed(self):
         """ Increase flood speed """
 
         if self.speed > flood_max_speed:
-            self.speed -= 2
+            self.speed = flood_min_speed - (self.lvl - 1) * 2
 
     def on_mouse_click(self):
         """ Handle button click event """
@@ -189,7 +188,9 @@ class Game:
             self.bip.play()
             pygame.time.set_timer(self.FLOOD, 0)
             self.countdown.set_txt(int(self.countdown.txt) + 5)
-            pygame.time.set_timer(self.COUNTDOWN, 1000)
+
+            if self.state != 'WAITING':
+                pygame.time.set_timer(self.COUNTDOWN, 1000)
 
         elif self.circuit.is_mutable(pos):
             if name == 'wrench':
@@ -369,7 +370,7 @@ class Game:
         self.message_bottom.set_txt('HURRY !!!')
 
     def give_up(self):
-        """ Give-up Button callback: returns to menu """
+        """ Give-up Button callback: backs to menu """
 
         pygame.mixer.music.stop()
         pygame.time.set_timer(self.COUNTDOWN, 0)

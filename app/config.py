@@ -19,7 +19,7 @@ colors = {
 }
 
 info = [
-    'Countdown starts when you play a pipe or the stopwatch.',
+    'Countdown starts when you place a pipe.',
     'The filter adds +50 to your gains.',
     'When the liquid crosses a cross it goes straight.',
     'Time decreases every level.',
