@@ -2,6 +2,7 @@ import pygame
 
 from sprites.button import Button
 from sprites.stamp import Stamp
+from config import font_title
 
 
 class Menu:
@@ -13,12 +14,13 @@ class Menu:
                                     self.screen.get_height()/2),
                                     pygame.SRCALPHA, 32)
         self.play_btn = Button(
-            ['PLAY'], (self.screen.get_width()/2, 820), 'green', self.play)
+            ['PLAY'], (self.screen.get_width()/2, 800), 'green', self.play)
         self.quit_btn = Button(
             ['QUIT'], (self.screen.get_width()/2, 900), 'red', function_quit)
 
         self.title = Stamp("PLUMB'IT", 72, 'red',
-                           (self.screen.get_width()/2, 150))
+                           (self.screen.get_width()/2, 150),
+                           font_path=font_title)
         self.stamp = Stamp('', 40, 'light-blue')
 
     def on_mouse_click(self):

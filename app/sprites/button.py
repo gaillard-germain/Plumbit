@@ -20,7 +20,7 @@ class Button:
             stamp = Stamp(label, 32, 'dark-grey',
                           (90, image1.get_height()/2), 'left')
             stamp.draw(image1)
-            stamp.set_txt(label, color)
+            stamp.set_txt(label, color=color)
             stamp.draw(image2)
 
             self.images.append(image1)

@@ -8,6 +8,9 @@ flood_min_speed = 60
 flood_max_speed = 20
 pipe_in_queue = 5
 
+font_default = './fonts/TheConfessionRegular.ttf'
+font_title = './fonts/TheKingMaker.ttf'
+
 colors = {
     'red': (194, 78, 16),
     'green': (85, 167, 20),

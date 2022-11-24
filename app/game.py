@@ -6,7 +6,7 @@ from box import Box
 from circuit import Circuit
 from config import (
     info, tile_size, board_tile_x, board_tile_y, max_time, min_time,
-    flood_min_speed, flood_max_speed
+    flood_min_speed, flood_max_speed, font_title
 )
 from sprites.cursor import Cursor
 from sprites.button import Button
@@ -84,6 +84,9 @@ class Game:
         self.countdown = Stamp('', 40, 'light-blue', (1680, 900))
         self.message_top = Stamp('', 72, 'orange',
                                  (self.screen.get_width()/2, 100))
+        self.message_center = Stamp('', 10, pos=(self.screen.get_width()/2,
+                                                 self.screen.get_height()/2),
+                                    font_path=font_title)
         self.message_bottom = Stamp('', 40, 'orange',
                                     (self.screen.get_width()/2,
                                      self.screen.get_height()-100))
@@ -125,6 +128,7 @@ class Game:
         self.liquid.reset(self.valve)
         self.countdown.set_txt(self.time)
         self.message_top.set_txt('Level {}'.format(self.lvl))
+        self.message_center.set_txt('')
         self.message_bottom.set_txt(
             'INFO: {}'.format(choice(info)))
 
@@ -199,7 +203,7 @@ class Game:
         pygame.time.set_timer(self.FLOOD, 0)
         pygame.mixer.music.stop()
         self.loose.play()
-        self.message_top.set_txt('Level {} FAILED'.format(self.lvl))
+        self.message_center.set_txt('FAILED', size=10, color='red')
         self.message_bottom.set_txt('Click CONTINUE button')
         pygame.event.clear()
 
@@ -210,7 +214,7 @@ class Game:
         pygame.time.set_timer(self.FLOOD, 0)
         pygame.mixer.music.stop()
         self.win.play()
-        self.message_top.set_txt('Level {} COMPLETE'.format(self.lvl))
+        self.message_center.set_txt('COMPLETE', size=10, color='green')
         self.message_bottom.set_txt('Click CONTINUE button')
         self.lvl += 1
         pygame.event.clear()
@@ -227,7 +231,7 @@ class Game:
             txt = '{} $'.format(value)
             color = 'red'
 
-        self.plop.set_txt(txt, color, pos)
+        self.plop.set_txt(txt, color=color, pos=pos)
 
     def draw(self):
         """ Draw every game things on screen """
@@ -254,6 +258,7 @@ class Game:
         self.arrow.draw(self.screen)
         self.box.draw(self.screen)
         self.message_top.draw(self.screen)
+        self.message_center.draw(self.screen)
         self.message_bottom.draw(self.screen)
 
         # ### dev tool ### #
@@ -273,6 +278,9 @@ class Game:
 
         self.plop.fly(-20)
         self.arrow.anim()
+
+        if self.state == 'WIN' or self.state == 'LOOSE':
+            self.message_center.scale(150)
 
     def process(self):
         """ Game's loop """
