@@ -238,7 +238,7 @@ class Game:
 
         self.screen.fill((66, 63, 56))
         self.layer1.fill((96, 93, 86))
-        self.layer3.fill((255, 255, 255, 0))
+        self.layer3.fill((0, 0, 0, 0))
 
         self.circuit.draw(self.layer1)
 
@@ -258,7 +258,6 @@ class Game:
         self.arrow.draw(self.screen)
         self.box.draw(self.screen)
         self.message_top.draw(self.screen)
-        self.message_center.draw(self.screen)
         self.message_bottom.draw(self.screen)
 
         # ### dev tool ### #
@@ -266,6 +265,9 @@ class Game:
         # ###### #
 
         if self.state == 'WIN' or self.state == 'LOOSE':
+            self.layer3.fill((0, 0, 0, 80))
+            self.screen.blit(self.layer3, self.board_offset)
+            self.message_center.draw(self.screen)
             self.continue_btn.draw(self.screen)
 
         else:
