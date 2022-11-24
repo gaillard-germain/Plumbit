@@ -3,7 +3,7 @@ from config import colors, font_default
 
 
 class Stamp:
-    def __init__(self, txt, size=20, color='black', pos=(0, 0),
+    def __init__(self, txt, size=10, color='black', pos=(0, 0),
                  align='center', font_path=font_default):
         self.txt = txt
         self.font_path = font_path
@@ -48,14 +48,18 @@ class Stamp:
 
         surface.blit(self.img, self.rect.topleft)
 
-    def fly(self, max_y):
+    def fly(self, max_height):
         """ make the stamp floating up """
 
-        if self.rect.top >= max_y:
-            self.rect.move_ip(0, -2)
+        if self.rect.top >= max_height:
+            self.rect.move_ip(0, -3)
+            self.swell(24, 1, self.rect.center)
         else:
-            self.img.fill((255, 255, 255, 0))
+            self.img.fill((0, 0, 0, 0))
 
-    def scale(self, max_size):
+    def swell(self, max_size, delta, pos=None):
         if self.size <= max_size:
-            self.set_txt(self.txt, size=self.size+8)
+            if pos:
+                self.set_txt(self.txt, size=self.size+delta, pos=pos)
+            else:
+                self.set_txt(self.txt, size=self.size+delta)

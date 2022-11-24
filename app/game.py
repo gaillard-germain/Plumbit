@@ -90,7 +90,7 @@ class Game:
         self.message_bottom = Stamp('', 40, 'orange',
                                     (self.screen.get_width()/2,
                                      self.screen.get_height()-100))
-        self.plop = Stamp('', 32)
+        self.plop = Stamp('', font_path=font_title)
 
         # ### dev tool ### #
         self.dev = Stamp('', 32, 'white',
@@ -226,12 +226,12 @@ class Game:
 
         if int(value) > 0:
             txt = '+{} $'.format(value)
-            color = 'green'
+            color = 'light_green'
         else:
             txt = '{} $'.format(value)
-            color = 'red'
+            color = 'light_red'
 
-        self.plop.set_txt(txt, color=color, pos=pos)
+        self.plop.set_txt(txt, size=10, color=color, pos=pos)
 
     def draw(self):
         """ Draw every game things on screen """
@@ -240,10 +240,9 @@ class Game:
         self.layer1.fill((96, 93, 86))
 
         self.circuit.draw(self.layer1)
-
-        self.plop.draw(self.layer1)
         self.liquid.draw(self.layer2)
         self.cursor.draw(self.layer3)
+        self.plop.draw(self.layer3)
         self.screen.blit(self.layer1, self.board_offset)
         self.screen.blit(self.layer2, self.board_offset)
         self.screen.blit(self.layer3, self.board_offset)
@@ -281,7 +280,7 @@ class Game:
         self.arrow.anim()
 
         if self.state == 'WIN' or self.state == 'LOOSE':
-            self.message_center.scale(150)
+            self.message_center.swell(150, 8)
 
     def process(self):
         """ Game's loop """

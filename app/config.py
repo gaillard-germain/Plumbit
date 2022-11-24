@@ -13,7 +13,9 @@ font_title = './fonts/TheKingMaker.ttf'
 
 colors = {
     'red': (194, 78, 16),
+    'light_red': (235, 135, 102),
     'green': (85, 167, 20),
+    'light_green': (139, 246, 150),
     'light-blue': (13, 167, 172),
     'orange': (200, 125, 31),
     'dark-grey': (46, 52, 53),
