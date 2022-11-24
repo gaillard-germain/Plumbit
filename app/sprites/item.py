@@ -11,6 +11,7 @@ class Item:
         self.images = data['images'].copy()
         self.pin = 0
         self.rect = Rect(0, 0, tile_size, tile_size)
+        self.use = data['callback']
 
     def draw(self, surface):
         """ Blit the item on the surface """

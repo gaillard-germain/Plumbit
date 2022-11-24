@@ -29,7 +29,7 @@ class Pipe(Item):
                 self.images[i] = transform.rotate(image, 90)
 
     def align(self, pos):
-        """ align the pipe aperture to the given position """
+        """ Align the pipe aperture to the given position """
 
         count = 0
         while pos not in self.open_to():

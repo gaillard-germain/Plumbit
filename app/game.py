@@ -8,7 +8,6 @@ from config import (
     info, tile_size, board_tile_x, board_tile_y, max_time, min_time,
     flood_min_speed, flood_max_speed
 )
-from sprites.tool import Tool
 from sprites.cursor import Cursor
 from sprites.button import Button
 from sprites.liquid import Liquid
@@ -67,7 +66,8 @@ class Game:
             (self.screen.get_height() - self.board.height)/2
         )
 
-        self.factory = Factory()
+        self.factory = Factory(self.use_pipe, self.use_stopwatch,
+                               self.use_wrench, self.use_bomb)
         self.box = Box(self.factory)
         self.circuit = Circuit(self.factory)
         self.cursor = Cursor(self.board_offset, self.circuit.is_locked)
@@ -152,56 +152,9 @@ class Game:
             emit = self.giveup_btn.click()
 
             if (self.board.contains(self.cursor.rect)):
-                if isinstance(self.box.get_current(), Tool):
-                    self.drop_tool(self.cursor.rect.topleft,
-                                   self.box.get_current().name)
-                else:
-                    self.drop_pipe(self.cursor.rect.topleft)
+                self.box.get_current().use(self.cursor.rect.topleft)
 
         return emit
-
-    def drop_pipe(self, pos):
-        """ Drop the current pipe on the board """
-
-        if self.circuit.is_locked(pos):
-            return
-
-        if self.state == 'WAITING':
-            self.state = 'RUNNING'
-            pygame.time.set_timer(self.COUNTDOWN, 1000)
-            self.message_bottom.set_txt('Incoming fluid...')
-
-        pipe = self.box.pickup()
-
-        self.put.play()
-        pipe.rect.topleft = pos
-        self.circuit.add(pipe)
-
-        self.update_gain(pipe.rect.center, pipe.cost)
-
-    def drop_tool(self, pos, name):
-        """ Use tool """
-
-        self.box.pickup()
-
-        if name == 'stopwatch':
-            self.bip.play()
-            pygame.time.set_timer(self.FLOOD, 0)
-            self.countdown.set_txt(int(self.countdown.txt) + 5)
-
-            if self.state != 'WAITING':
-                pygame.time.set_timer(self.COUNTDOWN, 1000)
-
-        elif self.circuit.is_mutable(pos):
-            if name == 'wrench':
-                self.switch.play()
-                self.circuit.rotate(pos, 1)
-            elif name == 'bomb':
-                self.smash.play()
-                self.circuit.delete(pos)
-
-        else:
-            self.match.play()
 
     def tic(self):
         """ Decrease countdown every second, and start flooding at 0 """
@@ -272,11 +225,6 @@ class Game:
             color = 'red'
 
         self.plop.set_txt(txt, color, pos)
-
-    def switch_music(self):
-        """ Switch music ON or OFF """
-
-        self.music = not self.music
 
     def draw(self):
         """ Draw every game things on screen """
@@ -359,7 +307,12 @@ class Game:
             pygame.display.update()
             clock.tick(30)
 
-    # ## Buttons callbacks ## #
+    # ## Callbacks ## #
+
+    def switch_music(self):
+        """ Menu's Music Button callback: Switch music ON or OFF """
+
+        self.music = not self.music
 
     def flood_now(self):
         """ Flood Button callback: starts flooding the circuit """
@@ -380,7 +333,7 @@ class Game:
         return 'BACK'
 
     def next_step(self):
-        """ Continue button callback: Continue to next lvl or back to
+        """ Continue Button callback: Continue to next lvl or back to
             the menu """
 
         if self.state == 'WIN':
@@ -388,3 +341,56 @@ class Game:
 
         elif self.state == 'LOOSE':
             return self.give_up()
+
+    def use_pipe(self, pos):
+        """ Pipe callback: place a pipe """
+
+        if self.circuit.is_locked(pos):
+            return
+
+        if self.state == 'WAITING':
+            self.state = 'RUNNING'
+            pygame.time.set_timer(self.COUNTDOWN, 1000)
+            self.message_bottom.set_txt('Incoming fluid...')
+
+        pipe = self.box.pickup()
+
+        self.put.play()
+        pipe.rect.topleft = pos
+        self.circuit.add(pipe)
+
+        self.update_gain(pipe.rect.center, pipe.cost)
+
+    def use_stopwatch(self, pos):
+        """ Stopwatch callback: use a stopwatch """
+
+        self.box.pickup()
+
+        self.bip.play()
+        pygame.time.set_timer(self.FLOOD, 0)
+        self.countdown.set_txt(int(self.countdown.txt) + 5)
+
+        if self.state != 'WAITING':
+            pygame.time.set_timer(self.COUNTDOWN, 1000)
+
+    def use_wrench(self, pos):
+        """ Wrench callback: use a wrench """
+
+        self.box.pickup()
+
+        if self.circuit.is_mutable(pos):
+            self.switch.play()
+            self.circuit.rotate(pos, 1)
+        else:
+            self.match.play()
+
+    def use_bomb(self, pos):
+        """ Bomb callback: use a bomb """
+
+        self.box.pickup()
+
+        if self.circuit.is_mutable(pos):
+            self.smash.play()
+            self.circuit.delete(pos)
+        else:
+            self.match.play()

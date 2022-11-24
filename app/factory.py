@@ -7,25 +7,28 @@ from sprites.tool import Tool
 
 
 class Factory:
-    def __init__(self):
+    def __init__(self, use_pipe, use_stopwatch, use_wrench, use_bomb):
         self.stock = [
             {
                 'name': 'stopwatch',
                 'images': [pgimage.load('./images/stopwatch.png')],
                 'type': 'tool',
-                'weight': 4
+                'weight': 4,
+                'callback': use_stopwatch
             },
             {
                 'name': 'bomb',
                 'images': [pgimage.load('./images/bomb.png')],
                 'type': 'tool',
-                'weight': 10
+                'weight': 10,
+                'callback': use_bomb
             },
             {
                 'name': 'wrench',
                 'images': [pgimage.load('./images/wrench.png')],
                 'type': 'tool',
-                'weight': 15
+                'weight': 15,
+                'callback': use_wrench
             },
             {
                 'name': 'filter',
@@ -37,7 +40,8 @@ class Factory:
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 4
+                'weight': 4,
+                'callback': use_pipe
             },
             {
                 'name': 'cross',
@@ -49,7 +53,8 @@ class Factory:
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 20
+                'weight': 20,
+                'callback': use_pipe
             },
             {
                 'name': 'straight',
@@ -61,7 +66,8 @@ class Factory:
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 60
+                'weight': 60,
+                'callback': use_pipe
             },
             {
                 'name': 'elbow',
@@ -73,7 +79,8 @@ class Factory:
                 'locked': False,
                 'immutable': False,
                 'type': 'pipe',
-                'weight': 100
+                'weight': 100,
+                'callback': use_pipe
             },
         ]
         self.extra = {
@@ -89,7 +96,8 @@ class Factory:
                 'modifier': 0,
                 'locked': True,
                 'immutable': True,
-                'type': 'pipe'
+                'type': 'pipe',
+                'callback': None
             },
             'end': {
                 'name': 'end',
@@ -100,7 +108,8 @@ class Factory:
                 'modifier': 0,
                 'locked': True,
                 'immutable': True,
-                'type': 'pipe'
+                'type': 'pipe',
+                'callback': None
             },
             'block': {
                 'name': 'block',
@@ -110,7 +119,8 @@ class Factory:
                 ],
                 'locked': True,
                 'immutable': False,
-                'type': 'block'
+                'type': 'block',
+                'callback': None
             }
         }
 
