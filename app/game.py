@@ -76,6 +76,8 @@ class Game:
         self.flood_btn = Button(['FLOOD'], (140, 50), 'light-blue',
                                 self.flood_now)
         self.giveup_btn = Button(['GIVE-UP'], (140, 150), 'red', self.give_up)
+        self.music_btn = Button(['MUSIC ON', 'MUSIC OFF'], (140, 250),
+                                'light-blue', self.switch_music)
         self.continue_btn = Button(['CONTINUE'], (140, 50), 'green',
                                    self.next_step)
         self.score = Stamp(0, 40, 'green', (1673, 177))
@@ -148,6 +150,7 @@ class Game:
             emit = self.continue_btn.click()
 
         else:
+            self.music_btn.click()
             self.flood_btn.click()
             emit = self.giveup_btn.click()
 
@@ -263,6 +266,7 @@ class Game:
         else:
             self.flood_btn.draw(self.screen)
             self.giveup_btn.draw(self.screen)
+            self.music_btn.draw(self.screen)
 
     def anim(self):
         """ Process some animations """
@@ -298,6 +302,7 @@ class Game:
 
             self.flood_btn.process()
             self.giveup_btn.process()
+            self.music_btn.process()
             self.continue_btn.process()
 
             self.cursor.process(self.box.get_current())
@@ -310,9 +315,14 @@ class Game:
     # ## Callbacks ## #
 
     def switch_music(self):
-        """ Menu's Music Button callback: Switch music ON or OFF """
+        """ Music Button callback: Switch music ON or OFF """
 
         self.music = not self.music
+
+        if self.music:
+            pygame.mixer.music.play(loops=-1)
+        else:
+            pygame.mixer.music.stop()
 
     def flood_now(self):
         """ Flood Button callback: starts flooding the circuit """

@@ -20,8 +20,7 @@ class Plumbit:
 
         self.game = Game(self.screen, self.quit)
         self.record = Record(self.screen, self.quit)
-        self.menu = Menu(self.screen, self.record.topten, self.quit,
-                         self.game.switch_music)
+        self.menu = Menu(self.screen, self.record.topten, self.quit)
 
     def display_game(self):
         """ The game """

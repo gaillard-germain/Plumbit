@@ -5,20 +5,17 @@ from sprites.stamp import Stamp
 
 
 class Menu:
-    def __init__(self, screen, topten, function_quit, function_music):
+    def __init__(self, screen, topten, function_quit):
         self.screen = screen
         self.topten = topten
         self.quit = function_quit
         self.layer = pygame.Surface((self.screen.get_width()/3,
                                     self.screen.get_height()/2),
                                     pygame.SRCALPHA, 32)
-        self.music_btn = Button(
-            ['MUSIC ON', 'MUSIC OFF'], (self.screen.get_width()/2, 800),
-            'light-blue', function_music)
         self.play_btn = Button(
-            ['PLAY'], (self.screen.get_width()/2, 880), 'green', self.play)
+            ['PLAY'], (self.screen.get_width()/2, 820), 'green', self.play)
         self.quit_btn = Button(
-            ['QUIT'], (self.screen.get_width()/2, 960), 'red', function_quit)
+            ['QUIT'], (self.screen.get_width()/2, 900), 'red', function_quit)
 
         self.title = Stamp("PLUMB'IT", 72, 'red',
                            (self.screen.get_width()/2, 150))
@@ -27,7 +24,6 @@ class Menu:
     def on_mouse_click(self):
         """ Handle buttons click """
 
-        self.music_btn.click()
         emit = self.play_btn.click()
         self.quit_btn.click()
 
@@ -60,8 +56,6 @@ class Menu:
             ((self.screen.get_width() - self.layer.get_width())/2,
              (self.screen.get_height() - self.layer.get_height())/2)
         )
-
-        self.music_btn.draw(self.screen)
         self.play_btn.draw(self.screen)
         self.quit_btn.draw(self.screen)
 
@@ -84,7 +78,6 @@ class Menu:
                         pygame.mixer.music.stop()
                         return
 
-            self.music_btn.process()
             self.play_btn.process()
             self.quit_btn.process()
 
