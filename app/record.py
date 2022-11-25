@@ -5,6 +5,7 @@ import json
 
 from sprites.button import Button
 from sprites.stamp import Stamp
+from config import font_title
 
 
 class Record:
@@ -20,9 +21,13 @@ class Record:
             (self.screen.get_width()/2, self.screen.get_height()/2 + 100),
             'green', self.save_score
         )
-        self.title = Stamp('', 48, 'light-blue',
+        self.title = Stamp('Well done!', 56, 'green',
                            (self.screen.get_width()/2,
-                            self.screen.get_height()/2 - 100))
+                            self.screen.get_height()/2 - 300),
+                           font_path=font_title)
+        self.message = Stamp('', 48, 'light-blue',
+                             (self.screen.get_width()/2,
+                              self.screen.get_height()/2 - 100))
         self.name = Stamp('Enter your name', 40, 'red',
                           (self.screen.get_width()/2,
                            self.screen.get_height()/2))
@@ -73,7 +78,7 @@ class Record:
                 break
 
         if self.rank is not None:
-            self.title.set_txt('{} is a new RECORD!'.format(self.score))
+            self.message.set_txt('{} is a new RECORD!'.format(self.score))
             return 'RECORD'
         else:
             return 'MENU'
@@ -95,6 +100,7 @@ class Record:
 
         self.screen.fill((40, 42, 44))
         self.title.draw(self.screen)
+        self.message.draw(self.screen)
         self.name.draw(self.screen)
         self.enter_btn.draw(self.screen)
 
