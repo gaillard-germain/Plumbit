@@ -5,8 +5,8 @@ from factory import Factory
 from box import Box
 from circuit import Circuit
 from config import (
-    info, tile_size, board_tile_x, board_tile_y, max_time, min_time,
-    flood_min_speed, flood_max_speed, font_title
+    tile_size, board_tile_x, board_tile_y, max_time, min_time,
+    flood_min_speed, flood_max_speed, font_title, info, colors
 )
 from sprites.cursor import Cursor
 from sprites.button import Button
@@ -46,7 +46,7 @@ class Game:
             './images/dashboard_right.png')
 
         self.layer1 = pygame.Surface(
-            (tile_size*board_tile_x, tile_size*board_tile_y),
+            (tile_size*board_tile_x, tile_size*board_tile_y)
         )
         self.layer2 = pygame.Surface(
             (tile_size*board_tile_x, tile_size*board_tile_y),
@@ -54,7 +54,7 @@ class Game:
             32
         )
         self.layer3 = pygame.Surface(
-            (tile_size*board_tile_x, tile_size*board_tile_y),
+            (self.screen.get_width(), self.screen.get_height()),
             pygame.SRCALPHA,
             32
         )
@@ -82,8 +82,9 @@ class Game:
                                    self.next_step)
         self.score = Stamp(0, 40, 'green', (1673, 177))
         self.countdown = Stamp('', 40, 'light-blue', (1680, 900))
-        self.message_top = Stamp('', 72, 'orange',
-                                 (self.screen.get_width()/2, 100))
+        self.message_top = Stamp('', 56, 'orange',
+                                 (self.screen.get_width()/2, 100),
+                                 font_path=font_title)
         self.message_center = Stamp('', 10, pos=(self.screen.get_width()/2,
                                                  self.screen.get_height()/2),
                                     font_path=font_title)
@@ -236,16 +237,16 @@ class Game:
     def draw(self):
         """ Draw every game things on screen """
 
-        self.screen.fill((66, 63, 56))
-        self.layer1.fill((96, 93, 86))
+        self.screen.fill(colors['background'])
+        self.layer1.fill(colors['board'])
 
         self.circuit.draw(self.layer1)
+        self.cursor.draw(self.layer1)
+        self.plop.draw(self.layer1)
         self.liquid.draw(self.layer2)
-        self.cursor.draw(self.layer3)
-        self.plop.draw(self.layer3)
+
         self.screen.blit(self.layer1, self.board_offset)
         self.screen.blit(self.layer2, self.board_offset)
-        self.screen.blit(self.layer3, self.board_offset)
         self.screen.blit(self.dashboard_left, (0, 0))
         self.screen.blit(
             self.dashboard_right,
@@ -255,23 +256,24 @@ class Game:
         self.countdown.draw(self.screen)
         self.arrow.draw(self.screen)
         self.box.draw(self.screen)
+
+        if self.state == 'WIN' or self.state == 'LOOSE':
+            self.layer3.fill((0, 0, 0, 100))
+            self.screen.blit(self.layer3, (0, 0))
+            self.message_center.draw(self.screen)
+            self.continue_btn.draw(self.screen)
+
+        else:
+            self.flood_btn.draw(self.screen)
+            self.giveup_btn.draw(self.screen)
+            self.music_btn.draw(self.screen)
+
         self.message_top.draw(self.screen)
         self.message_bottom.draw(self.screen)
 
         # ### dev tool ### #
         self.dev.draw(self.screen)
         # ###### #
-
-        if self.state == 'WIN' or self.state == 'LOOSE':
-            self.layer3.fill((0, 0, 0, 80))
-            self.message_center.draw(self.screen)
-            self.continue_btn.draw(self.screen)
-
-        else:
-            self.layer3.fill((0, 0, 0, 0))
-            self.flood_btn.draw(self.screen)
-            self.giveup_btn.draw(self.screen)
-            self.music_btn.draw(self.screen)
 
     def anim(self):
         """ Process some animations """
