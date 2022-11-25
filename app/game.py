@@ -276,7 +276,8 @@ class Game:
     def anim(self):
         """ Process some animations """
 
-        self.plop.fly(-20)
+        self.plop.fly(-20, 3)
+        self.plop.swell(24, 1, self.plop.rect.center)
         self.arrow.anim()
 
         if self.state == 'WIN' or self.state == 'LOOSE':

@@ -37,13 +37,13 @@ class Menu:
         self.layer.fill((255, 255, 255, 0))
         for i, player in enumerate(self.topten):
             self.stamp.set_txt(player["name"], pos=(
-                0, i * 50 + 20), align='left')
+                0, i * 50 + 20), alignement='left')
             self.stamp.draw(self.layer)
             self.stamp.set_txt('lvl. {}'.format(player["level"]), pos=(
                 self.layer.get_width()/2, i * 50 + 20))
             self.stamp.draw(self.layer)
             self.stamp.set_txt(player["score"], pos=(
-                self.layer.get_width(), i * 50 + 20), align='right')
+                self.layer.get_width(), i * 50 + 20), alignement='right')
             self.stamp.draw(self.layer)
 
     def draw(self):
