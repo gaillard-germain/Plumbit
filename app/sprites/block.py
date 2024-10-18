@@ -15,7 +15,7 @@ class Block(Item):
     def rotate(self, coef):
         """ Rotate the block """
 
-        for i in range(coef):
+        for _ in range(coef):
             for i, image in enumerate(self.images):
                 self.images[i] = transform.rotate(image, 90)
 

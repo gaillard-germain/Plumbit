@@ -16,6 +16,8 @@ class Record:
         self.quit = function_quit
         self.score = 0
         self.rank = None
+        self.lvl = 1
+        self.topten = None
         self.enter_btn = Button(
             ['ENTER'],
             (self.screen.get_width()/2, self.screen.get_height()/2 + 100),
@@ -55,7 +57,8 @@ class Record:
         if len(self.name.txt) < 12:
             self.name.set_txt(self.name.txt + event.unicode)
 
-    def check_file(self):
+    @staticmethod
+    def check_file():
         """ Check if topten.json exists, if not copy it from a clean file """
 
         if not os.path.exists('topten.json'):

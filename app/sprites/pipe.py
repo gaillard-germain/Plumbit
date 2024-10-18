@@ -23,7 +23,7 @@ class Pipe(Item):
         if not coef:
             coef = randint(0, 3)
 
-        for i in range(coef):
+        for _ in range(coef):
             self.apertures.append(self.apertures.pop(0))
             for i, image in enumerate(self.images):
                 self.images[i] = transform.rotate(image, 90)
@@ -44,13 +44,13 @@ class Pipe(Item):
         for index, aperture in enumerate(self.apertures):
             if aperture:
                 if index == 0 and self.rect.left > 0:
-                    yield ((self.rect.left - self.rect.width), self.rect.top)
+                    yield (self.rect.left - self.rect.width), self.rect.top
                 if index == 1 and self.rect.top > 0:
-                    yield (self.rect.left, (self.rect.top - self.rect.height))
+                    yield self.rect.left, (self.rect.top - self.rect.height)
                 if index == 2 and self.rect.right < tile_size * board_tile_x:
-                    yield (self.rect.right, self.rect.top)
+                    yield self.rect.right, self.rect.top
                 if index == 3 and self.rect.bottom < tile_size * board_tile_y:
-                    yield (self.rect.left, self.rect.bottom)
+                    yield self.rect.left, self.rect.bottom
 
     def clog(self, path):
         """ Clogs the opening through which the liquid has passed """

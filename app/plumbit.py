@@ -27,10 +27,12 @@ class Plumbit:
 
         self.game.process()
 
-        next = self.record.check(int(self.game.score.txt), self.game.lvl)
-        if next == 'MENU':
+        next_step = self.record.check(int(self.game.score.txt), self.game.lvl)
+
+        if next_step == 'MENU':
             return self.display_menu()
-        elif next == 'RECORD':
+
+        elif next_step == 'RECORD':
             return self.display_record()
 
     def display_menu(self):
@@ -47,7 +49,8 @@ class Plumbit:
 
         return self.display_menu()
 
-    def quit(self):
+    @staticmethod
+    def quit():
         """ Quit function """
 
         pygame.quit()

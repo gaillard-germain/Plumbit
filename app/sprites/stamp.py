@@ -4,12 +4,12 @@ from app.config import colors, font_default
 
 class Stamp:
     def __init__(self, txt, size=10, color='black', pos=(0, 0),
-                 alignement='center', font_path=font_default):
+                 alignment='center', font_path=font_default):
         self.txt = str(txt)
         self.size = size
         self.color = colors[color]
         self.pos = pos
-        self.alignement = alignement
+        self.alignment = alignment
         self.font_path = font_path
 
         self.font = pgfont.Font(self.font_path, self.size)
@@ -19,14 +19,14 @@ class Stamp:
         self.align()
 
     def align(self):
-        if self.alignement == 'center':
+        if self.alignment == 'center':
             self.rect.center = self.pos
-        elif self.alignement == 'left':
+        elif self.alignment == 'left':
             self.rect.midleft = self.pos
-        elif self.alignement == 'right':
+        elif self.alignment == 'right':
             self.rect.midright = self.pos
 
-    def set_txt(self, txt, size=None, color=None, pos=None, alignement=None):
+    def set_txt(self, txt, size=None, color=None, pos=None, alignment=None):
         """ Reset the stamp text and align it in terms of its bulk """
 
         self.txt = str(txt)
@@ -41,8 +41,8 @@ class Stamp:
         if pos:
             self.pos = pos
 
-        if alignement:
-            self.alignement = alignement
+        if alignment:
+            self.alignment = alignment
 
         self.img = self.font.render(self.txt, True, self.color)
         self.rect = self.img.get_rect()
