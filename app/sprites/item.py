@@ -1,6 +1,6 @@
 from pygame import Rect
 
-from config import tile_size
+from app.config import tile_size
 
 
 class Item:

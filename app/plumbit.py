@@ -1,9 +1,9 @@
 import pygame
 import sys
 
-from game import Game
-from menu import Menu
-from record import Record
+from app.game import Game
+from app.menu import Menu
+from app.record import Record
 
 
 class Plumbit:
@@ -52,7 +52,3 @@ class Plumbit:
 
         pygame.quit()
         sys.exit()
-
-
-if __name__ == '__main__':
-    Plumbit().display_menu()

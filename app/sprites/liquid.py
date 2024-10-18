@@ -1,6 +1,6 @@
 from pygame import image as pgimage
 
-from sprites.pipe import Pipe
+from app.sprites.pipe import Pipe
 
 
 class Liquid:

@@ -1,7 +1,7 @@
 from pygame import image as pgimage, mouse, mixer, draw as pgdraw
 
-from config import colors
-from sprites.stamp import Stamp
+from app.config import colors
+from app.sprites.stamp import Stamp
 
 
 class Button:

@@ -1,4 +1,4 @@
-from config import pipe_in_queue
+from app.config import pipe_in_queue
 
 
 class Box:

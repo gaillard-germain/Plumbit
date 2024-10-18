@@ -1,8 +1,8 @@
 from pygame import transform
 from random import randint
 
-from config import tile_size, board_tile_x, board_tile_y
-from sprites.item import Item
+from app.config import tile_size, board_tile_x, board_tile_y
+from app.sprites.item import Item
 
 
 class Pipe(Item):

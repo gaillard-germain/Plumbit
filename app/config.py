@@ -42,7 +42,7 @@ info = [
     'Better to deal with what you got',
     'The liquid comes through the red valve.',
     'You must connect the red valve to the blue one.',
-    'When the countdown end, you still can place pipes.',
+    'When the countdown ends, you still can place pipes.',
     'Place the pipes wisely, cause it costs money.',
     'Use the crosses to loop and gain extra money.',
     'Plan ahead is the key to victory.'

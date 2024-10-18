@@ -1,18 +1,18 @@
 import pygame
 from random import choice
 
-from factory import Factory
-from box import Box
-from circuit import Circuit
-from config import (
+from app.factory import Factory
+from app.box import Box
+from app.circuit import Circuit
+from app.config import (
     tile_size, board_tile_x, board_tile_y, max_time, min_time,
     flood_min_speed, flood_max_speed, font_title, info, colors
 )
-from sprites.cursor import Cursor
-from sprites.button import Button
-from sprites.liquid import Liquid
-from sprites.arrow import Arrow
-from sprites.stamp import Stamp
+from app.sprites.cursor import Cursor
+from app.sprites.button import Button
+from app.sprites.liquid import Liquid
+from app.sprites.arrow import Arrow
+from app.sprites.stamp import Stamp
 
 
 class Game:
@@ -159,7 +159,7 @@ class Game:
             self.flood_btn.click()
             emit = self.giveup_btn.click()
 
-            if (self.board.contains(self.cursor.rect)):
+            if self.board.contains(self.cursor.rect):
                 self.box.get_current().use(self.cursor.rect.topleft)
 
         return emit

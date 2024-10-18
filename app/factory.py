@@ -1,9 +1,9 @@
 from pygame import image as pgimage
 from random import choices
 
-from sprites.pipe import Pipe
-from sprites.block import Block
-from sprites.tool import Tool
+from app.sprites.pipe import Pipe
+from app.sprites.block import Block
+from app.sprites.tool import Tool
 
 
 class Factory:

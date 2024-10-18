@@ -1,8 +1,8 @@
 import pygame
 
-from sprites.button import Button
-from sprites.stamp import Stamp
-from config import font_title
+from app.sprites.button import Button
+from app.sprites.stamp import Stamp
+from app.config import font_title
 
 
 class Menu:

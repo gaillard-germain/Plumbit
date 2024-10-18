@@ -1,7 +1,7 @@
 from pygame import transform
 from random import randint
 
-from sprites.item import Item
+from app.sprites.item import Item
 
 
 class Block(Item):

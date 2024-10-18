@@ -1,4 +1,4 @@
-from sprites.item import Item
+from app.sprites.item import Item
 
 
 class Tool(Item):
