@@ -6,11 +6,11 @@ class Cursor:
 
     def __init__(self, offset, is_locked):
         self.images = {
-            'drop': pgimage.load('./images/drop.png'),
-            'locked': pgimage.load('./images/locked.png'),
-            'rotate': pgimage.load('./images/rotate.png'),
-            'delete': pgimage.load('./images/delete.png'),
-            'time': pgimage.load('./images/time.png')
+            'drop': pgimage.load('./images/drop.png').convert_alpha(),
+            'locked': pgimage.load('./images/locked.png').convert_alpha(),
+            'rotate': pgimage.load('./images/rotate.png').convert_alpha(),
+            'delete': pgimage.load('./images/delete.png').convert_alpha(),
+            'time': pgimage.load('./images/time.png').convert_alpha()
         }
         self.pin = 'drop'
         self.rect = self.images['drop'].get_rect()

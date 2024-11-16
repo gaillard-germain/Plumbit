@@ -3,7 +3,7 @@ from pygame import image as pgimage
 
 class Arrow:
     def __init__(self):
-        self.image = pgimage.load('./images/arrow.png')
+        self.image = pgimage.load('./images/arrow.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.start_pos = (200, 460)
         self.rect.topleft = self.start_pos

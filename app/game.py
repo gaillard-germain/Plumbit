@@ -41,7 +41,7 @@ class Game:
         self.speed = flood_min_speed
         self.state = 'WAITING'
 
-        self.dashboard_left = pygame.image.load('./images/dashboard_left.png')
+        self.dashboard_left = pygame.image.load('./images/dashboard_left.png').convert_alpha()
         self.dashboard_right = pygame.image.load(
             './images/dashboard_right.png')
 

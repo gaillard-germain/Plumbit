@@ -12,8 +12,8 @@ class Button:
         self.sound = mixer.Sound('./sounds/click.ogg')
         self.images = []
         for i, label in enumerate(labels):
-            image1 = pgimage.load('./images/button.png')
-            image2 = pgimage.load('./images/button.png')
+            image1 = pgimage.load('./images/button.png').convert_alpha()
+            image2 = pgimage.load('./images/button.png').convert_alpha()
             pgdraw.circle(image2, colors[color], (40, image1.get_height()/2),
                           24)
 

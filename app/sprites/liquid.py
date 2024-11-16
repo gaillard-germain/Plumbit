@@ -6,8 +6,8 @@ from app.sprites.pipe import Pipe
 class Liquid:
     def __init__(self):
         self.images = [
-            pgimage.load('./images/liquid.png'),
-            pgimage.load('./images/liquid2.png')
+            pgimage.load('./images/liquid.png').convert_alpha(),
+            pgimage.load('./images/liquid2.png').convert_alpha()
         ]
         self.pin = 0
         self.rect = self.images[0].get_rect()

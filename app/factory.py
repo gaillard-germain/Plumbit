@@ -11,28 +11,28 @@ class Factory:
         self.stock = [
             {
                 'name': 'stopwatch',
-                'images': [pgimage.load('./images/stopwatch.png')],
+                'images': [pgimage.load('./images/stopwatch.png').convert_alpha()],
                 'type': 'tool',
                 'weight': 4,
                 'callback': use_stopwatch
             },
             {
                 'name': 'bomb',
-                'images': [pgimage.load('./images/bomb.png')],
+                'images': [pgimage.load('./images/bomb.png').convert_alpha()],
                 'type': 'tool',
                 'weight': 10,
                 'callback': use_bomb
             },
             {
                 'name': 'wrench',
-                'images': [pgimage.load('./images/wrench.png')],
+                'images': [pgimage.load('./images/wrench.png').convert_alpha()],
                 'type': 'tool',
                 'weight': 15,
                 'callback': use_wrench
             },
             {
                 'name': 'filter',
-                'images': [pgimage.load('./images/filter.png')],
+                'images': [pgimage.load('./images/filter.png').convert_alpha()],
                 'apertures': [1, 0, 1, 0],
                 'cost': -100,
                 'gain': 50,
@@ -45,7 +45,7 @@ class Factory:
             },
             {
                 'name': 'cross',
-                'images': [pgimage.load('./images/cross.png')],
+                'images': [pgimage.load('./images/cross.png').convert_alpha()],
                 'apertures': [1, 1, 1, 1],
                 'cost': -75,
                 'gain': 100,
@@ -58,7 +58,7 @@ class Factory:
             },
             {
                 'name': 'straight',
-                'images': [pgimage.load('./images/straight.png')],
+                'images': [pgimage.load('./images/straight.png').convert_alpha()],
                 'apertures': [1, 0, 1, 0],
                 'cost': -50,
                 'gain': 100,
@@ -71,7 +71,7 @@ class Factory:
             },
             {
                 'name': 'elbow',
-                'images': [pgimage.load('./images/elbow.png')],
+                'images': [pgimage.load('./images/elbow.png').convert_alpha()],
                 'apertures': [0, 0, 1, 1],
                 'cost': -50,
                 'gain': 100,
@@ -87,8 +87,8 @@ class Factory:
             'valve': {
                 'name': 'valve',
                 'images': [
-                    pgimage.load('./images/valve_1.png'),
-                    pgimage.load('./images/valve_1a.png')
+                    pgimage.load('./images/valve_1.png').convert_alpha(),
+                    pgimage.load('./images/valve_1a.png').convert_alpha()
                 ],
                 'apertures': [0, 0, 1, 0],
                 'cost': 0,
@@ -101,7 +101,7 @@ class Factory:
             },
             'end': {
                 'name': 'end',
-                'images': [pgimage.load('./images/valve_2.png')],
+                'images': [pgimage.load('./images/valve_2.png').convert_alpha()],
                 'apertures': [0, 0, 1, 0],
                 'cost': 0,
                 'gain': 300,
@@ -114,8 +114,8 @@ class Factory:
             'block': {
                 'name': 'block',
                 'images': [
-                    pgimage.load('./images/block.png'),
-                    pgimage.load('./images/block2.png')
+                    pgimage.load('./images/block.png').convert_alpha(),
+                    pgimage.load('./images/block2.png').convert_alpha()
                 ],
                 'locked': True,
                 'immutable': False,
